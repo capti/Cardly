@@ -35,6 +35,7 @@
 - [BrandBook](https://www.figma.com/design/JEGceh2Gm2ZW494FGIaT0A/Cardly-Brandbook?node-id=0-1&t=OAp4Ihb40HiQLx4m-1)
 - [Пользовательские пути](https://www.figma.com/board/s0O3zvAPgI4DXJF2BDwrAS/user-scenario?node-id=0-1&t=WPJXqXWfhTH9b5QX-1)
 - [Swagger API](https://github.com/capti/Cardly/blob/main/Documentation/Swagger/cardly.yaml)
+- [Диаграммы](https://github.com/capti/Cardly/tree/main/Documentation/Diagrams)
 
 
 ---
