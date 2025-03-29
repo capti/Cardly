@@ -42,7 +42,7 @@
 
 ## Презентация проекта
 
-[Презентация - 1 аттестация](https://github.com/capti/Cardly/blob/main/Documentation/%D0%9F%D1%80%D0%B5%D0%B7%D0%B5%D0%BD%D1%82%D0%B0%D1%86%D0%B8%D1%8F.pdf)
+[Презентация технического задания- 1 аттестация](https://github.com/capti/Cardly/blob/main/Documentation/%D0%9F%D1%80%D0%B5%D0%B7%D0%B5%D0%BD%D1%82%D0%B0%D1%86%D0%B8%D1%8F.pdf)
 
 ## Видео защиты проекта 🎥
-
+[Видеопрезентация технического задания RUTUB](https://rutube.ru/video/private/495ed0d28afb267b57f242186af0053f/?p=t5f3gbQUlFE5zIx2hcnJZQ)
