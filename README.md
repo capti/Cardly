@@ -9,7 +9,7 @@
 
 - **[Доброва Анна](https://github.com/dobrayAnika)** - *Team Lead, PM*
 - **[Чершнев Евгений](https://github.com/floyzzzy)** - *Аналитик* 
-- **[Григорьев Иван](https://github.com/ChipoDev)** - *backend-разработчик, Frontend-разработчик*
+- **[Григорьев Иван](https://github.com/ChipoDev)** - *Backend-разработчик, Frontend-разработчик*
 - **[Папонов Данил](https://github.com/danil13231212341)** - *Дизайнер** 
 - **[Бирюков Дмитрий](https://github.com/birbik)** - *Тестировщик*
 - **[Наумов Никита](https://github.com/capti)** - *DevOps*
