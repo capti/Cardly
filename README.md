@@ -37,5 +37,5 @@ Roadmap [pdf](https://github.com/capti/Cardly/blob/main/Documentation/roadmap.pd
 
 [Пользовательские пути](https://www.figma.com/board/s0O3zvAPgI4DXJF2BDwrAS/user-scenario?node-id=0-1&t=WPJXqXWfhTH9b5QX-1)
 
-[Финансовая модель](https://github.com/capti/Cardly/tree/main/Documentation/Financial%20model) 
+Способы монетизации приложения [pdf}() [docx]()
 ---
