@@ -29,15 +29,11 @@
 
 ## Документация
 
-Roadmap [pdf](https://github.com/capti/Cardly/blob/main/Documentation/roadmap.pdf) [docx](https://github.com/capti/Cardly/blob/main/Documentation/roadmap.docx)
-
-Целевая аудитория и рынок [pdf](https://github.com/capti/Cardly/blob/main/Documentation/%D0%A6%D0%B5%D0%BB%D0%B5%D0%B2%D0%B0%D1%8F%20%D0%B0%D1%83%D0%B4%D0%B8%D1%82%D0%BE%D1%80%D0%B8%D1%8F%20%D0%B8%20%D1%80%D1%8B%D0%BD%D0%BE%D0%BA.pdf) [docx](https://github.com/capti/Cardly/blob/main/Documentation/%D0%A6%D0%B5%D0%BB%D0%B5%D0%B2%D0%B0%D1%8F%20%D0%B0%D1%83%D0%B4%D0%B8%D1%82%D0%BE%D1%80%D0%B8%D1%8F%20%D0%B8%20%D1%80%D1%8B%D0%BD%D0%BE%D0%BA.docx)
-
-[Диаграммы](https://github.com/capti/Cardly/tree/main/Documentation/Diagrams)
-
-[BrandBook](https://www.figma.com/design/JEGceh2Gm2ZW494FGIaT0A/Cardly-Brandbook?node-id=0-1&t=OAp4Ihb40HiQLx4m-1)
-
-[Пользовательские пути](https://www.figma.com/board/s0O3zvAPgI4DXJF2BDwrAS/user-scenario?node-id=0-1&t=WPJXqXWfhTH9b5QX-1)
+- Roadmap [pdf](https://github.com/capti/Cardly/blob/main/Documentation/roadmap.pdf) [docx](https://github.com/capti/Cardly/blob/main/Documentation/roadmap.docx)
+- Целевая аудитория и рынок [pdf](https://github.com/capti/Cardly/blob/main/Documentation/%D0%A6%D0%B5%D0%BB%D0%B5%D0%B2%D0%B0%D1%8F%20%D0%B0%D1%83%D0%B4%D0%B8%D1%82%D0%BE%D1%80%D0%B8%D1%8F%20%D0%B8%20%D1%80%D1%8B%D0%BD%D0%BE%D0%BA.pdf) [docx](https://github.com/capti/Cardly/blob/main/Documentation/%D0%A6%D0%B5%D0%BB%D0%B5%D0%B2%D0%B0%D1%8F%20%D0%B0%D1%83%D0%B4%D0%B8%D1%82%D0%BE%D1%80%D0%B8%D1%8F%20%D0%B8%20%D1%80%D1%8B%D0%BD%D0%BE%D0%BA.docx)
+- [Диаграммы](https://github.com/capti/Cardly/tree/main/Documentation/Diagrams)
+- [BrandBook](https://www.figma.com/design/JEGceh2Gm2ZW494FGIaT0A/Cardly-Brandbook?node-id=0-1&t=OAp4Ihb40HiQLx4m-1)
+- [Пользовательские пути](https://www.figma.com/board/s0O3zvAPgI4DXJF2BDwrAS/user-scenario?node-id=0-1&t=WPJXqXWfhTH9b5QX-1)
 
 
 ---
