@@ -30,8 +30,7 @@
 
 ## Документация
 
-**Roadmap**:
-[PDF](https://github.com/capti/Cardly/blob/main/Documentation/roadmap.pdf) | [DOCX](https://github.com/capti/Cardly/blob/main/Documentation/roadmap.docx)
+Roadmap [pdf](https://github.com/capti/Cardly/blob/main/Documentation/roadmap.pdf) [docx](https://github.com/capti/Cardly/blob/main/Documentation/roadmap.docx)
 
 [Диаграммы](https://github.com/capti/Cardly/tree/main/Documentation/Diagrams)
 
