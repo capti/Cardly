@@ -22,6 +22,7 @@
 [Figma](https://www.figma.com/design/JEGceh2Gm2ZW494FGIaT0A/Cardly-Brandbook?node-id=0-1&t=OAp4Ihb40HiQLx4m-1) — Brandbook, UI-Kit
 
 [Jira](https://progecttp.atlassian.net/jira/software/projects/FCCX/boards/3) - Task Manager
+
 ---
 
 ## Документация
