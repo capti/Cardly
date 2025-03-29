@@ -27,7 +27,7 @@
 
 ## Документация
 
-**Rpadmap**:
+**Roadmap**:
 [PDF](https://github.com/capti/Cardly/blob/main/Documentation/roadmap.pdf) | [DOCX](https://github.com/capti/Cardly/blob/main/Documentation/roadmap.docx)
 
 ---
