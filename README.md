@@ -20,8 +20,11 @@
 ## Сервисы
 
 [Figma](https://www.figma.com/design/JEGceh2Gm2ZW494FGIaT0A/Cardly-Brandbook?node-id=0-1&t=OAp4Ihb40HiQLx4m-1) — Brandbook, UI-Kit
+
 [Figma](https://www.figma.com/design/ljUhVgNlQLElUQvEOcWSBz/Makets?node-id=0-1&t=3v5P2D8Ki25GG22M-1) — Design
+
 [Jira](https://progecttp.atlassian.net/jira/software/projects/FCCX/boards/3) - Task Manager
+
 [Figma](https://www.figma.com/board/s0O3zvAPgI4DXJF2BDwrAS/user-scenario?node-id=0-1&t=WPJXqXWfhTH9b5QX-1) —  User's scenarios
 
 ---
