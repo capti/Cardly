@@ -24,7 +24,7 @@
 
 ---
 
-## Документация 📚
+## Документация 
 
 - Roadmap [PDF](https://github.com/capti/Cardly/blob/main/Documentation/roadmap.pdf) | [DOCX](https://github.com/capti/Cardly/blob/main/Documentation/roadmap.docx)
 - Целевая аудитория и рынок [PDF](https://github.com/capti/Cardly/blob/main/Documentation/%D0%A6%D0%B5%D0%BB%D0%B5%D0%B2%D0%B0%D1%8F%20%D0%B0%D1%83%D0%B4%D0%B8%D1%82%D0%BE%D1%80%D0%B8%D1%8F%20%D0%B8%20%D1%80%D1%8B%D0%BD%D0%BE%D0%BA.pdf) | [DOCX](https://github.com/capti/Cardly/blob/main/Documentation/%D0%A6%D0%B5%D0%BB%D0%B5%D0%B2%D0%B0%D1%8F%20%D0%B0%D1%83%D0%B4%D0%B8%D1%82%D0%BE%D1%80%D0%B8%D1%8F%20%D0%B8%20%D1%80%D1%8B%D0%BD%D0%BE%D0%BA.docx)
@@ -44,5 +44,5 @@
 
 [Презентация технического задания- 1 аттестация](https://github.com/capti/Cardly/blob/main/Documentation/%D0%9F%D1%80%D0%B5%D0%B7%D0%B5%D0%BD%D1%82%D0%B0%D1%86%D0%B8%D1%8F.pdf)
 
-## Видео защиты проекта 🎥
+## Видео защиты проекта 
 [Видеопрезентация технического задания RUTUB](https://rutube.ru/video/private/495ed0d28afb267b57f242186af0053f/?p=t5f3gbQUlFE5zIx2hcnJZQ)
