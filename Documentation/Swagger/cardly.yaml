@@ -1,0 +1,3573 @@
+openapi: 3.0.0
+info:
+  title: Cadrly API
+  version: 0.1.0
+  description: Приложение для обмена коллекционными карточками
+
+servers:
+  - url: https://cardly.ru/api
+    description: Production server
+tags:
+  - name: Authentication
+    description: Регистрация, вход и управление аккаунтом
+  - name: Profile
+    description: Операции в профиле пользователя
+  - name: OtherProfile
+    description: Операции при просмотре профиля другого пользователя
+  - name: Inventory
+    description: Операции на странице "Инвентарь"
+  - name: Home
+    description: Операции на странице "Главное меню"
+  - name: Trades
+    description: Операции на странице "Обменник"
+  - name: Shop
+    description: Операции на странице "Магазин"
+  - name: Admin
+    description: Функции администратора
+
+paths:
+  /auth/register:
+    post:
+      tags: [Authentication]
+      summary: Регистрация нового пользователя
+      description: |
+        Принимает email, имя пользователя и пароль.
+        Если email и пароль валидны, отправляет код подтверждения.
+        Возвращает временный токен для верификации.
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "user@example.com"
+                  description: Email пользователя
+                username:
+                  type: string
+                  minLength: 3
+                  maxLength: 25
+                  example: "Коллекционер_123"
+                  description: "Имя пользователя (3-25 символов)"
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  example: "Password123!"
+                  description: "Пароль (минимум 8 символов)"
+              required: [email, username, password]
+      responses:
+        200:
+          description: Код подтверждения отправлен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tempToken:
+                    type: string
+                    example: "temp_abc123"
+                  message:
+                    type: string
+                    example: "Код подтверждения отправлен на email"
+        400:
+          description: Неверный формат данных
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Некорректный формат введенных данных"
+        409:
+          description: Пользователь уже существует
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Пользователь с таким email уже существует"
+        500:
+          $ref: '#/components/responses/ServerError'
+
+  /auth/verify:
+    post:
+      tags: [Authentication]
+      summary: Подтверждение email
+      description: |
+        Проверяет код подтверждения.
+        Если код подтверждения верный - создает аккаунт и возвращает данные пользователя.
+      operationId: verifyEmail
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tempToken:
+                  type: string
+                  example: "temp_abc123"
+                  description: "Временный токен из ответа регистрации"
+                code:
+                  type: string
+                  pattern: "^\\d{6}$"
+                  example: "123456"
+                  description: "6-значный код подтверждения"
+              required: [tempToken, code]
+      responses:
+        200:
+          description: Успешная регистрация
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: "session_id=abcde12345; HttpOnly; Path=/; Secure"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Неверный код или токен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Неверный код подтверждения"
+                  canRetry:
+                    type: boolean
+                    example: true
+        410:
+          description: Истек срок действия кода
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Код устарел, запросите новый"
+        500:
+          $ref: '#/components/responses/ServerError'
+
+  /auth/resend-code:
+    post:
+      tags: [Authentication]
+      summary: Повторная отправка кода
+      description: Отправляет новый код подтверждения
+      operationId: resendVerificationCode
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tempToken:
+                  type: string
+                  example: "temp_abc123"
+              required: [tempToken]
+      responses:
+        200:
+          description: Новый код отправлен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Новый код подтверждения отправлен"
+        400:
+          $ref: '#/components/responses/BadRequest'
+        500:
+          $ref: '#/components/responses/ServerError'
+          
+  /auth/login:
+    post:
+      tags: [Authentication]
+      summary: Вход в систему
+      description: |
+        Аутентификация пользователя по email и паролю.
+        Если данные введены верно - устанавливает сессионную cookie.
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "user@example.com"
+                password:
+                  type: string
+                  format: password
+                  example: "SecurePass123!"
+              required: [email, password]
+      responses:
+        200:
+          description: Успешный вход
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: "session_id=abcde12345; HttpOnly; Path=/; Secure"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Неверный формат email
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Неверный фортмат email"
+              
+        401:
+          description: Неверные учетные данные
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Неверный email или пароль"
+        500:
+          $ref: '#/components/responses/ServerError'
+          
+  /auth/forgot-password:
+    post:
+      tags: [Authentication]
+      summary: Запрос кода для сброса пароля
+      description: Отправляет код подтверждения для сброса пароля, если email существует в системе
+      operationId: requestPasswordReset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "user@example.com"
+              required: [email]
+      responses:
+        200:
+          description: Код подтверждения отправлен на email
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resetToken:
+                    type: string
+                    example: "reset_xyz789"
+                  message:
+                    type: string
+                    example: "Код подтверждения отправлен на email"
+        400:
+          description: Неверный формат данных
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Некорректный формат emaila"
+        404:
+          description: Пользователь с указанным email не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Пользователь с таким email не зарегистрирован"
+        500:
+          $ref: '#/components/responses/ServerError'
+          
+  /auth/reset-password:
+    post:
+      tags: [Authentication]
+      summary: Сброс пароля
+      description: Устанавливает новый пароль после подтверждения кода
+      operationId: resetPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resetToken:
+                  type: string
+                  example: "reset_xyz789"
+                code:
+                  type: string
+                  pattern: "^\\d{6}$"
+                  example: "654321"
+                newPassword:
+                  type: string
+                  format: password
+                  minLength: 8
+                  example: "NewSecurePass123!"
+              required: [resetToken, code, newPassword]
+      responses:
+        200:
+          description: Пароль изменен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Пароль успешно изменен"
+        400:
+          description: Неверный код или токен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Неверный код подтверждения"
+        500:
+          $ref: '#/components/responses/ServerError'
+          
+  /auth/check:
+    get:
+      tags: [Authentication]
+      summary: Проверка статуса аутентификации
+      description: |
+        Проверяет, авторизован ли пользователь по сессионной cookie.
+        Возвращает данные пользователя, если сессия активна.
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Пользователь авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        401:
+          description: Пользователь не авторизован
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isAuthenticated:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Требуется авторизация"
+        500:
+          $ref: '#/components/responses/ServerError'
+          
+  /auth/refresh:
+    post:
+      tags: [Authentication]
+      summary: Обновление сессии
+      description: |
+        Обновляет сессионную cookie.
+        Требуется валидная существующая сессия.
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Сессия успешно обновлена
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: "session_id=new_abcde12345; HttpOnly; Path=/; Secure"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        500:
+          $ref: '#/components/responses/ServerError'
+          
+  /auth/logout:
+    post:
+      tags: [Authentication]
+      summary: Выход из системы
+      description: |
+        Завершает текущую сессию пользователя.
+        Удаляет сессионную cookie.
+      security:
+        - bearerAuth: []
+      responses:
+        204:
+          description: Успешный выход
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: "session_id=; HttpOnly; Path=/; Secure; Expires=Thu, 01 Jan 1970 00:00:00 GMT"
+        500:
+          $ref: '#/components/responses/ServerError'
+          
+  /profile:
+    get:
+      tags: [Profile]
+      summary: Получение данных профиля
+      description: |
+        Загружает данные профиля пользователя.
+        - Проверяет авторизацию
+        - Возвращает статистику, избранные карты и достижения
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Данные профиля
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userStats:
+                    $ref: "#/components/schemas/UserStats"
+                  favoriteCards:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Card"
+                    maxItems: 5
+                  favoriteAchievements:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Achievement"
+                    maxItems: 4
+                  user_ID:
+                    type: integer
+                    example: 123
+                    description: "ID пользователя"
+                  username:
+                    type: string
+                    example: "Коллекционер_123"
+                    description: "Имя пользователя"
+                  avatar_url:
+                    type: string
+                    format: url
+                    example: "https://example.com/avatars/user123.jpg"
+                    description: "Ссылка на аватар пользователя"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        500:
+          $ref: '#/components/responses/ServerError'
+          
+  /profile/achievements:
+    get:
+      tags: [Profile]
+      summary: Получение списка достижений
+      description: |
+        Возвращает полный список достижений с текущим статусом выполнения
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Список достижений
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  achievements:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Achievement"
+        500:
+          $ref: '#/components/responses/ServerError'
+          
+  /profile/achievements/favorites/count:
+    get:
+      tags: [Profile]
+      summary: Проверка количества избранных достижений
+      description: |
+        Возвращает текущее количество избранных достижений
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Количество избранных
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    maximum: 4
+                    example: 3
+                  canAddMore:
+                    type: boolean
+                    example: true
+        500:
+          $ref: '#/components/responses/ServerError'
+          
+  /profile/achievements/{achievement_ID}/favorite-add:
+    post:
+      tags: [Profile]
+      summary: Добавить достижение в избранное
+      description: |
+        Добавляет достижение в избранное (максимум 4)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: achievement_ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Успешно добавлено в избранное
+        400:
+          description: Невозможно добавить в избранное (лимит достигнут)
+        500:
+          $ref: '#/components/responses/ServerError'
+          
+  /profile/achievements/{achievement_ID}/favorite-delete:
+    delete:
+      tags: [Profile]
+      summary: Удалить достижение из избранного
+      description: |
+        Удаляет достижение из избранного
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: achievement_ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Успешно удалено из избранного
+        500:
+          $ref: '#/components/responses/ServerError'
+          
+  /profile/settings:
+    get:
+      tags: [Profile]
+      summary: Получение настроек
+      description: |
+        Возвращает текущие настройки профиля
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Настройки профиля
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserSettings"
+        500:
+          $ref: '#/components/responses/ServerError'
+          
+  /profile/settings-change:
+    put:
+      tags: [Profile]
+      summary: Обновление настроек
+      description: |
+        Обновляет настройки профиля
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserSettings"
+      responses:
+        200:
+          description: Настройки обновлены
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserSettings"
+        500:
+          $ref: '#/components/responses/ServerError'
+          
+  /other-profile/{user_ID}:
+    get:
+      tags: [OtherProfile]
+      summary: Получение данных профиля другого пользователя
+      description: |
+        Загружает данные профиля другого пользователя.
+        - Возвращает статистику, избранные карты и достижения
+        - Проверяет настройки приватности инвентаря
+      parameters:
+        - in: path
+          name: user_ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Данные профиля
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userStats:
+                    $ref: "#/components/schemas/UserStats"
+                  favoriteCards:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Card"
+                    maxItems: 5
+                  favoriteAchievements:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Achievement"
+                    maxItems: 4
+                  inventoryVisible:
+                    type: boolean
+                    example: true
+                  id:
+                    type: integer
+                    example: "456"
+                  username:
+                    type: string
+                    example: "Игрок_456"
+        500:
+          $ref: '#/components/responses/ServerError'
+          
+  /other-profile/{user_ID}/achievements:
+    get:
+      tags: [OtherProfile]
+      summary: Получение списка достижений другого пользователя
+      description: |
+        Возвращает полный список достижений с текущим статусом выполнения
+      parameters:
+        - in: path
+          name: user_ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Список достижений
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  achievements:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Achievement"
+        500:
+          $ref: '#/components/responses/ServerError'
+
+  /other-profile/{user_ID}/inventory:
+    get:
+      tags: [OtherProfile]
+      summary: Просмотр инвентаря другого пользователя
+      description: |
+        Возвращает инвентарь пользователя, если он не скрыт в настройках
+      parameters:
+        - in: path
+          name: user_ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Инвентарь пользователя
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cards:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Card"
+                  collections:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Collection"
+        403:
+          description: Инвентарь скрыт
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Пользователь скрыл свой инвентарь"
+        500:
+          $ref: '#/components/responses/ServerError'
+          
+  /other-profile/inventory/sort:
+    post:
+      tags: [OtherProfile]
+      summary: Сортировка карт в инвентаре другого пользователя
+      description: |
+        Сортирует карты в инвентаре другого пользователя
+        (по редкости, по коллекциям, механизм сортировки подробнее описан в инвентаре)
+      parameters:
+        - in: query
+          name: user_ID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sortType:
+                  type: string
+                  enum: [rarity_desc, rarity_asc, collection, reset]
+      responses:
+        200:
+          description: Отсортированный список карт
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  inventory:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Card"
+        500:
+          $ref: '#/components/responses/ServerError'
+          
+  /other-profile/card/{card_ID}/view:
+    get:
+      tags: [OtherProfile]
+      summary: Просмотр карты другого пользователя
+      description: |
+        Возвращает детальную информацию о карте другого пользователя
+        и возвращает кнопку для создания предложения обмена
+      parameters:
+        - in: path
+          name: card_ID
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: owner_ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Информация о карте
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  card:
+                    $ref: "#/components/schemas/Card"
+        500:
+          $ref: '#/components/responses/ServerError'
+          
+  /other-profile/card/{card_ID}/initiate-trade:
+    post:
+      tags: [OtherProfile]
+      summary: Предложение обмена
+      description: |
+        Создает предложение обмена для указанной карты
+        и перенаправляет на страницу создания обмена
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: card_ID
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: owner_ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Перенаправление на создание обмена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  redirectUrl:
+                    type: string
+                    example: "/trades/create?requested_card=123&owner=456"
+        400:
+          description: Невозможно предложить обмен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Недостаточно карт для обмена"
+        409:
+          description: Конфликт при попытке обмена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Невозможно предложить обмен - у владельца только один экземпляр этой карты"
+                  cardQuantity:
+                    type: integer
+                    example: 1
+                    description: "Количество экземпляров карты у владельца"
+        500:
+          $ref: '#/components/responses/ServerError'
+          
+  /other-profile/{user_ID}/report:
+    post:
+      tags: [OtherProfile]
+      summary: Подача жалобы на пользователя
+      description: |
+         Перенаправляет на страницу создания жалобы.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: user_ID
+          required: true
+          schema:
+            type: integer
+            description: ID пользователя, на которого подается жалоба
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                  enum: ["Неуместный никнейм", "Неуместный аватар", "Другое"]
+                  example: "Неуместный никнейм"
+                  description: "Причина жалобы"
+                comment:
+                  type: string
+                  maxLength: 500
+                  nullable: true
+                  example: "Никнейм содержит нецензурные слова"
+                  description: "Дополнительные комментарии"
+              required: [reason]
+      responses:
+        200:
+          description: Перенаправление на страницу создания жалобы
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  redirectUrl:
+                    type: string
+                    example: "/report/create?reported_user=123"
+                  reportDraft:
+                    $ref: "#/components/schemas/Report"
+        500:
+          $ref: '#/components/responses/ServerError'
+          
+  /inventory:
+    get:
+      tags: [Inventory]
+      summary: Получение данных инвентаря
+      description: |
+        Загружает данные инвентаря пользователя.
+        - Проверяет авторизацию пользователя
+        - Если пользователь не авторизован - возвращает ошибку 401
+        - Если авторизован - возвращает список его карт, список избранных карт и баланс 
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Успешная загрузка инвентаря
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  inventory:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Card"
+                  favoriteCards:
+                    type: array
+                    items:
+                      type: integer
+                    description: "ID избранных карт"
+                  collections:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Collection"
+                  balance:
+                    type: integer
+                    example: 2500
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        500:
+          $ref: '#/components/responses/ServerError'
+          
+  /inventory/card/{card_ID}/quantity:
+    get:
+      tags: [Inventory]
+      summary: Проверка количества экземпляров карты
+      description: |
+        Возвращает количество экземпляров карты у пользователя.
+        Если экземпляров больше 1 - можно разбирать/выставлять на обмен.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: card_ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Информация о количестве карт
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 3
+                  canDisassemble:
+                    type: boolean
+                    example: true
+                  canTrade:
+                    type: boolean
+                    example: true
+        500:
+          $ref: '#/components/responses/ServerError'
+
+  /inventory/favorites/count:
+    get:
+      tags: [Inventory]
+      summary: Получение количества избранных карт
+      description: |
+        Возвращает текущее количество избранных карт.
+        Если количество меньше 5 - можно добавлять новые карты в избранное.
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Количество избранных карт
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 3
+                  canAddMore:
+                    type: boolean
+                    example: true
+        500:
+          $ref: '#/components/responses/ServerError'
+          
+  /inventory/card/{card_ID}/favorite:
+    get:
+      tags: [Inventory]
+      summary: Проверка статуса карты
+      description: |
+        Проверяет, добавлена ли карта в избранное.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: card_ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Статус избранного
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isFavorite:
+                    type: boolean
+                    example: false
+        500:
+          $ref: '#/components/responses/ServerError'
+  /inventory/card/{card_ID}/favorite-add:
+    post:
+      tags: [Inventory]
+      summary: Добавление карты в избранное
+      description: |
+        Добавляет карту в избранное, если:
+        - Карта не добавлена в "избранное"
+        - Общее количество избранных карт < 5
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: card_ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Карта успешно добавлена в избранное
+        400:
+          description: Невозможно добавить карту в избранное
+        500:
+          $ref: '#/components/responses/ServerError'
+
+  /inventory/card/{card_ID}/favorite-delete:
+    delete:
+      tags: [Inventory]
+      summary: Удаление карты из избранного
+      description: |
+        Удаляет карту из избранного.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: card_ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Карта успешно удалена из избранного
+        500:
+          $ref: '#/components/responses/ServerError'
+          
+  /inventory/sort:
+    post:
+      tags: [Inventory]
+      summary: Сортировка карт в инвентаре
+      description: |
+        Сортирует карты в инвентаре(по редкости, по коллекциям):
+        - При выборе по редкости:
+        - 1 нажатие: по убыванию редкости (Уникальная → Легендарная → Эпическая → Редкая → Обычная)
+        - 2 нажатие: по возрастанию редкости
+        - 3 нажатие: сброс сортировки
+        - При выборе "по коллекциям": сначала идут карты из одной коллекции, коллекции сортируются по ID.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sortType:
+                  type: string
+                  enum: [rarity_desc, rarity_asc, collection, reset]
+      responses:
+        200:
+          description: Отсортированный список карт
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cards:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Card"
+        500:
+          $ref: '#/components/responses/ServerError'
+          
+  /inventory/destroy:
+    post:
+      tags: [Inventory]
+      summary: Разбор карты на валюту
+      description: |
+        Разбирает карту на валюту, если:
+        - У пользователя есть минимум 2 экземпляра этой карты
+        - Добавляет стоимость карты на баланс пользователя
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                card_ID:
+                  type: integer
+                  minimum: 1  
+                  example: 501
+              required: [card_ID]
+      responses:
+        200:
+          description: Карта успешно разобрана
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  newBalance:
+                    type: integer
+                    example: 2550  
+                  destroyedCardId:
+                    type: integer
+                    example: 501
+        500:
+          $ref: '#/components/responses/ServerError'
+  /inventory/card/{card_ID}/trade-status:
+    get:
+      tags: [Inventory]
+      summary: Проверка статуса обмена карты
+      description: |
+        Проверяет, выставлена ли карта на обмен.
+        Возвращает статус карты.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: card_ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Статус обмена карты
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isOnTrade:
+                    type: boolean
+                    example: true
+                    description: "Выставлена ли карта на обмен"
+        500:
+          $ref: '#/components/responses/ServerError'
+          
+  /inventory/put-on-trade:
+    post:
+      tags: [Inventory]
+      summary: Выставление карты на обмен
+      description: |
+        Выставляет карту на обмен, если:
+        - У пользователя есть минимум 2 экземпляра этой карты
+        - Карта еще не выставлена на обмен
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                card_ID:
+                  type: integer
+                  minimum: 1  
+                  example: 501
+              required: [card_ID]
+      responses:
+        200:
+          description: Карта готова к обмену
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  redirectUrl:
+                    type: string
+                    example: "/trades/create?requested_card=123&owner=456"
+        400:
+          description: Невозможно выставить карту на обмен
+        500:
+          $ref: '#/components/responses/ServerError'
+          
+  /inventory/card/{card_ID}/trade-cancel:
+    post:
+      tags: [Inventory]
+      summary: Снятие карты с обмена
+      description: Возвращает карту из раздела "На обмен" в Инвентарь
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: card_ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Карта успешно снята с обмена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Карта успешно снята с обмена"
+        500:
+          $ref: '#/components/responses/ServerError'      
+  /home/search:
+    get:
+      tags: [Home]
+      summary: Поиск пользователей
+      description: |
+        Поиск пользователей по никнейму или ID
+      parameters:
+        - in: query
+          name: query
+          description: Никнейм или ID пользователя
+          schema:
+            type: string
+      responses:
+        200:
+          description: Список найденных пользователей
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        400:
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Введите минимум 3 символа для поиска"
+        404:
+          description: Пользователь не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Пользователь с введеными данными не найден"
+        500:
+          $ref: '#/components/responses/ServerError'
+        
+  /home/notifications:
+    get:
+      tags: [Home]
+      summary: Просмотр уведомлений
+      description: |
+        Возвращает список уведомлений пользователя
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Список уведомлений
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Notification"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        500:
+          $ref: '#/components/responses/ServerError'
+          
+  /home/notifications/{notification_ID}:
+    get:
+      tags: [Home]
+      summary: Просмотр уведомления
+      description: |
+        Возвращает информацию по конкретному уведомлению
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: notification_ID
+          required: true
+          schema:
+            type: integer
+            example: 123
+            description: "ID уведомления"
+      responses:
+        200:
+          description: Детальная информация об уведомлении
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notification"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        500:
+          $ref: '#/components/responses/ServerError'   
+        
+  /home/notifications/{notification_ID}/navigate:
+    post:
+      tags: [Home]
+      summary: Переход по ссылке в  уведомлении
+      description: |
+        Перенаправляет на страницу обмена, связанного с уведомлением
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: notification_ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Перенаправление на страницу обмена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  redirectUrl:
+                    type: string
+                    example: "/trades/123"
+        404:
+          description: Предложение обмена не найдено
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Данное предложение обмена уже не существует"
+        500:
+          $ref: '#/components/responses/ServerError'
+  /home/generate-card/themes:
+    get:
+      tags: [Home]
+      summary: Получение списка тем для генерации карт
+      description: |
+        Возвращает список доступных тем для генерации уникальных карт
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Список тем
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Theme"
+        500:
+          $ref: '#/components/responses/ServerError'
+  /home/generate-card:
+    post:
+      tags: [Home]
+      summary: Генерация уникальной карты
+      description: |
+        Генерирует уникальную карту по выбранной теме, если на балансе достаточно средств
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                theme_ID:
+                  type: integer
+                  example: 901
+                  description: "ID выбранной темы"
+              required: [theme_ID]
+      responses:
+        200:
+          description: Карта успешно сгенерирована
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  card:
+                    $ref: "#/components/schemas/Card"
+                  newBalance:
+                    type: integer
+                    example: 1500
+        402:
+          description: Недостаточно средств
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Недостаточно средств для генерации карты"
+                  requiredAmount:
+                    type: integer
+                    example: 1000
+        500:
+          $ref: '#/components/responses/ServerError'
+  /home/news:
+    get:
+      tags: [Home]
+      summary: Получение списока новостей
+      description: |
+        Возвращает список новостей
+      responses:
+        200:
+          description: Список новостей
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/News"
+        404:
+          description: Новостей не найдено
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Новостей пока нет"
+        500:
+          $ref: '#/components/responses/ServerError'
+  /home/news/{news_ID}:
+    get:
+      tags: [Home]
+      summary: Просмотр новости
+      description: |
+        Возвращает полную информацию по конкретной новости
+      parameters:
+        - in: path
+          name: news_ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Детальная информация о новости
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/News"
+        500:
+          $ref: '#/components/responses/ServerError'
+  /home/quests:
+    get:
+      tags: [Home]
+      summary: Получение списка квестов
+      description: |
+        Возвращает список ежедневных и еженедельных квестов с их статусом
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Список квестов
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  dailyQuests:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Quest"
+                  weeklyQuests:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Quest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        500:
+          $ref: '#/components/responses/ServerError'
+  /home/quests/{quest_ID}/change-status:
+    post:
+      tags: [Home]
+      summary: Изменение статуса выполнения квеста
+      description: |
+        Изменение статуса выполнения квеста
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: quest_ID
+          required: true
+          schema:
+            type: integer
+            example: 123
+            description: "ID квеста"
+      responses:
+        200:
+          description: Статус квеста успешно изменен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  quest:
+                    $ref: "#/components/schemas/Quest"
+                  message:
+                    type: string
+                    example: "Статус квеста успешно изменен"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        500:
+          $ref: '#/components/responses/ServerError'
+          
+  /home/quests/claim-reward:
+    post:
+      tags: [Home]
+      summary: Получение награды за выполнение квестов
+      description: |
+        Выдает награду за выполнение квестов
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                questType:
+                  type: string
+                  enum: [daily, weekly]
+                  example: "daily"
+              required: [questType]
+      responses:
+        200:
+          description: Награда получена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  receivedCoins:
+                    type: integer
+                    example: 500
+                  receivedPacks:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Pack"
+                  newBalance:
+                    type: integer
+                    example: 2000
+        400:
+          description: Не все квесты выполнены
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Выполнены не  все квесты, необходимые для получения награды"
+        500:
+          $ref: '#/components/responses/ServerError'
+  /trades:
+    get:
+      tags: [Trades]
+      summary: Получить все доступные предложения обмена
+      description: |
+        Возвращает список всех доступных предложений обмена.
+        Можно провести поиск по названию карты.
+      parameters:
+        - in: query
+          name: search
+          description: Поиск по названию карты
+          schema:
+            type: string
+      responses:
+        200:
+          description: Список предложений обмена
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Trade"
+        500:
+          $ref: '#/components/responses/ServerError'
+  /trades/{trade_id}:
+    get:
+      tags: [Trades]
+      summary: Получить детали предложения обмена
+      description: |
+        Возвращает полную информацию о конкретном предложении обмена.
+      parameters:
+        - in: path
+          name: trade_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Детали предложения обмена
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Trade"
+        404:
+          description: Предложение обмена не найдено
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Предложение обмена не найдено"
+        500:
+          $ref: '#/components/responses/ServerError'
+  /trades/initiate:
+    post:
+      tags: [Trades]
+      summary: Создать новое предложение обмена
+      description: |
+        Создает новое предложение обмена.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                offeredCardId:
+                  type: integer
+                  example: 401
+                  description: ID карты, которую предлагает текущий пользователь
+                requestedCardId:
+                  type: array
+                  items:
+                    type: integer 
+                  description: ID карт, на которые пользователь готов совершить "быстрый обмен"
+                  example: [100, 200]
+              required: [receivingUserId, requestedCardId, offeredCardId]
+      responses:
+        201:
+          description: Предложение обмена успешно создано
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Trade"
+        400:
+          description: Невозможно создать предложение обмена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Недостаточно карт для обмена"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        500:
+          $ref: '#/components/responses/ServerError'
+  /trades/my:
+    get:
+      tags: [Trades]
+      summary: Получение моих обменов
+      description: |
+        Возвращает список всех обменов текущего пользователя с их статусами.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: user_id
+          required: true
+          schema:
+            type: integer
+            example: 123
+            description: "ID текущего пользователя"
+      responses:
+        200:
+          description: Список моих обменов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Trade"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        500:
+          $ref: '#/components/responses/ServerError'
+  /trades/{trade_id}/accept:
+    post:
+      tags: [Trades]
+      summary: Принять предложение обмена
+      description: |
+        Принимает предложение обмена, если текущий пользователь - получатель обмена.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: trade_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Обмен успешно принят
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Обмен успешно завершен"
+                
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          description: Нет прав для принятия этого обмена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Вы не можете принять этот обмен"
+        500:
+          $ref: '#/components/responses/ServerError'
+          
+  /trades/{trade_id}/reject:
+    post:
+      tags: [Trades]
+      summary: Отклонить предложение обмена
+      description: |
+        Отклоняет предложение обмена, если текущий пользователь - получатель обмена.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: trade_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Обмен успешно отклонен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Обмен отклонен"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        500:
+          $ref: '#/components/responses/ServerError'
+          
+  /trades/{trade_id}/cancel:
+    post:
+      tags: [Trades]
+      summary: Отменить предложение обмена
+      description: |
+        Отменяет предложение обмена, если текущий пользователь является инициатором.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: trade_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Обмен успешно отменен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Обмен отменен"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        500:
+          $ref: '#/components/responses/ServerError'
+          
+  /shop/packs:
+    get:
+      tags: [Shop]
+      summary: Получение списка наборов
+      description: |
+        Возвращает список доступных для покупки наборов карт
+      responses:
+        200:
+          description: Список наборов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Pack"
+        500:
+          $ref: '#/components/responses/ServerError'
+
+  /shop/packs/{pack_id}:
+    get:
+      tags: [Shop]
+      summary: Просмотр содержимого набора
+      description: |
+        Возвращает подробную информацию о наборе и возможных картах
+      parameters:
+        - in: path
+          name: pack_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Информация о наборе
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pack"
+        500:
+          $ref: '#/components/responses/ServerError'
+  /shop/packs/{pack_id}/buy:
+    post:
+      tags: [Shop]
+      summary: Покупка набора карт
+      description: |
+        Покупает набор карт, если:
+        - Пользователь авторизован
+        - На балансе достаточно средств
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: pack_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Успешная покупка
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  receivedCards:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Card"
+                  newBalance:
+                    type: integer
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        402:
+          description: Недостаточно средств
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Недостаточно средств на балансе"
+                  requiredAmount:
+                    type: integer
+                    example: 1000
+        500:
+          $ref: '#/components/responses/ServerError'
+  /shop/packs/{pack_id}/open:
+    post:
+      tags: [Shop]
+      summary: Открытие купленного набора карт
+      description: |
+        Открывает ранее купленный набор карт, показывая выпавшие карты
+        и добавляя их в инвентарь пользователя.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: pack_id
+          required: true
+          schema:
+            type: integer
+            example: 1
+            description: "ID набора карт"
+      responses:
+        200:
+          description: Набор успешно открыт
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  receivedCards:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Card"
+                    description: "Карты, полученные из набора"
+                  newCardsAdded:
+                    type: boolean
+                    example: true
+                    description: "Были ли карты успешно добавлены в инвентарь"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        500:
+          $ref: '#/components/responses/ServerError'
+        
+  /shop/coins/offers:
+    get:
+      tags: [Shop]
+      summary: Получение предложений по монетам
+      description: |
+        Возвращает список доступных пакетов монет
+      responses:
+        200:
+          description: Список предложений
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CoinOffer"
+        500:
+          $ref: '#/components/responses/ServerError'
+  /shop/coins/offers/{offer_id}:
+    get:
+      tags: [Shop]
+      summary: Просмотр предложения монет
+      description: |
+        Возвращает детализацию предложения по монетам
+      parameters:
+        - in: path
+          name: offer_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Информация о предложении
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CoinOffer"
+        500:
+          $ref: '#/components/responses/ServerError'
+  /shop/coins/offers/{offer_id}/purchase:
+    post:
+      tags: [Shop]
+      summary: Покупка монет
+      description: |
+        Инициирует процесс покупки монет через платежный шлюз
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: offer_id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                redirectUrl:
+                  type: string
+                  format: uri
+                  example: "https://cardly.ru/shop/payment-callback"
+              required: [redirectUrl]
+      responses:
+        200:
+          description: Перенаправление на платежный шлюз
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  paymentUrl:
+                    type: string
+                    format: uri
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        500:
+          $ref: '#/components/responses/ServerError'
+  /shop/payments/process:
+    post:
+      tags: [Shop]
+      summary: Обработка платежа 
+      description: |
+         обработка результата платежа от платежного шлюза
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentCallback"
+      responses:
+        200:
+          description: Платеж обработан
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  transactionId:
+                    type: string
+        500:
+          $ref: '#/components/responses/ServerError'
+  /admin/cards:
+    post:
+      tags: [Admin]
+      summary: Создание новой карты
+      description: Создает новую карту в системе
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Card'
+      responses:
+        201:
+          description: Карта успешно создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/ServerError'
+  /admin/cards/{card_ID}:
+    put:
+      tags: [Admin]
+      summary: Обновление карты
+      description: Обновляет информацию о карте
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: card_ID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Card'
+      responses:
+        200:
+          description: Карта успешно обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/ServerError'
+    delete:
+      tags: [Admin]
+      summary: Удаление карты
+      description: Удаляет карту из системы
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: card_ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        204:
+          description: Карта успешно удалена
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/ServerError'
+  /admin/collections:
+    post:
+      tags: [Admin]
+      summary: Создание новой коллекции
+      description: Создает новую коллекцию карт
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Collection'
+      responses:
+        201:
+          description: Коллекция успешно создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Collection'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/ServerError'
+  /admin/collections/{collection_ID}:
+    put:
+      tags: [Admin]
+      summary: Обновление коллекции
+      description: Обновляет информацию о коллекции
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: collection_ID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Collection'
+      responses:
+        200:
+          description: Коллекция успешно обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Collection'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/ServerError'    
+    delete:
+      tags: [Admin]
+      summary: Удаление коллекцию
+      description: Удаляет коллекцию из системы
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: collection_ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        204:
+          description: Коллекция успешно удалена
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/ServerError'
+  /admin/packs:
+    post:
+      tags: [Admin]
+      summary: Создание нового набора
+      description: Создает новый набор карт
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pack'
+      responses:
+        201:
+          description: Набор успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pack'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/ServerError'
+  /admin/packs/{pack_ID}:
+    put:
+      tags: [Admin]
+      summary: Обновление набора
+      description: Обновляет информацию о наборе
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: pack_ID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pack'
+      responses:
+        200:
+          description: Набор успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pack'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/ServerError'    
+    delete:
+      tags: [Admin]
+      summary: Удаление набор
+      description: Удаляет набор из системы
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: pack_ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        204:
+          description: Набор успешно удален
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/ServerError'
+  /admin/coin-offers:
+    post:
+      tags: [Admin]
+      summary: Создание предложения покупки монет
+      description: Создает новое предложение покупки монет в системе
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CoinOffer'
+      responses:
+        201:
+          description: Предложение успешно создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoinOffer'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/ServerError'
+  
+    get:
+      tags: [Admin]
+      summary: Получение списка предложений покупки монет
+      description: Возвращает список всех предложений покупки монет
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Список предложений успешно получен
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CoinOffer'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/ServerError'
+  
+  /admin/coin-offers/{offer_id}:
+    put:
+      tags: [Admin]
+      summary: Обновление предложения покупки монет
+      description: Обновляет информацию о предложении покупки монет
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: offer_id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CoinOffer'
+      responses:
+        200:
+          description: Предложение успешно обновлено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoinOffer'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/ServerError'    
+  
+    delete:
+      tags: [Admin]
+      summary: Удаление предложения покупки монет
+      description: Удаляет предложение покупки монет из системы
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: offer_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        204:
+          description: Предложение успешно удалено
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/ServerError'
+  /admin/news:
+    post:
+      tags: [Admin]
+      summary: Создание новости
+      description: Создает новую новость в системе
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/News'
+      responses:
+        201:
+          description: Новость успешно создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/News'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/ServerError'
+  /admin/news/{news_ID}:
+    put:
+      tags: [Admin]
+      summary: Обновление новости
+      description: Обновляет информацию о новости
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: news_ID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/News'
+      responses:
+        200:
+          description: Новость успешно обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/News'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/ServerError'    
+    delete:
+      tags: [Admin]
+      summary: Удаление новости
+      description: Удаляет новость из системы
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: news_ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        204:
+          description: Новость успешно удалена
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/ServerError'
+  /admin/achievements:
+    post:
+      tags: [Admin]
+      summary: Создание достижения
+      description: Создает новое достижение в системе
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Achievement'
+      responses:
+        201:
+          description: Достижение успешно создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Achievement'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/ServerError'
+  /admin/achievements/{achievement_ID}:
+    put:
+      tags: [Admin]
+      summary: Обновление достижения
+      description: Обновляет информацию о достижении
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: achievement_ID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Achievement'
+      responses:
+        200:
+          description: Достижение успешно обновлено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Achievement'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/ServerError'    
+    delete:
+      tags: [Admin]
+      summary: Удаление достижения
+      description: Удаляет достижение из системы
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: achievement_ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        204:
+          description: Достижение успешно удалено
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/ServerError'
+  /admin/trades:
+    get:
+      tags: [Admin]
+      summary: Получение списка обменов
+      description: Возвращает список всех обменов в системе
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Список обменов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Trade'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/ServerError'
+  /admin/trades/{trade_ID}/invalidate:
+    post:
+      tags: [Admin]
+      summary: Признание обмена недействительным
+      description: |
+        Помечает обмен как недействительный и возвращает карты участникам
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: trade_ID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                  description: Причина аннулирования обмена
+              required: [reason]
+      responses:
+        200:
+          description: Обмен аннулирован
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Обмен успешно аннулирован"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/ServerError'
+  /admin/reports:
+    get:
+      tags: [Admin]
+      summary: Просмотр списка жалоб
+      description: Возвращает список всех жалоб в системе
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Список жалоб
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Report'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/ServerError'
+  /admin/reports/{report_ID}:
+    get:
+      tags: [Admin]
+      summary: Просмотр деталей жалобы
+      description: Возвращает полную информацию о жалобе
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: report_ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Детали жалобы
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Report'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/ServerError'
+    put:
+      tags: [Admin]
+      summary: Обновление статуса жалобы
+      description: Обновляет статус жалобы и применяет меры к пользователю
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: report_ID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [pending, reviewed, resolved]
+                  example: "resolved"
+                action:
+                  type: string
+                  enum: [none, warning, temporary_ban, permanent_ban]
+                  example: "temporary_ban"
+                banDurationDays:
+                  type: integer
+                  nullable: true
+                  example: 7
+                  description: "Длительность бана в днях (только для temporary_ban)"
+                comment:
+                  type: string
+                  nullable: true
+                  example: "Пользователь получил временный бан на 7 дней за нарушение правил"
+              required: [status, action]
+      responses:
+        200:
+          description: Статус жалобы обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Report'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          description: Жалоба не найдена
+        500:
+          $ref: '#/components/responses/ServerError'
+  /admin/users/{user_ID}/ban:
+    post:
+      tags: [Admin]
+      summary: Блокировка пользователя
+      description: Блокирует пользователя на указанный срок или навсегда
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: user_ID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                banType:
+                  type: string
+                  enum: [temporary, permanent]
+                  example: "temporary"
+                durationDays:
+                  type: integer
+                  nullable: true
+                  example: 7
+                  description: "Длительность бана в днях"
+                reason:
+                  type: string
+                  example: "Нарушение правил сообщества"
+              required: [banType, reason]
+      responses:
+        200:
+          description: Пользователь заблокирован
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Пользователь успешно заблокирован"
+                  banEndDate:
+                    type: string
+                    format: date-time
+                    nullable: true
+                    example: "2024-06-20T12:00:00Z"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          description: Пользователь не найден
+        500:
+          $ref: '#/components/responses/ServerError'
+  /admin/users/{user_ID}/unban:
+    post:
+      tags: [Admin]
+      summary: Разблокировка пользователя
+      description: Снимает блокировку с пользователя
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: user_ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Пользователь разблокирован
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Пользователь успешно разблокирован"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          description: Пользователь не найден
+        500:
+          $ref: '#/components/responses/ServerError'
+  /admin/users/{user_ID}/delete:
+    delete:
+      tags: [Admin]
+      summary: Удаление пользователя
+      description: Полностью удаляет аккаунт пользователя из системы
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: user_ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        204:
+          description: Пользователь успешно удален
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          description: Пользователь не найден
+        500:
+          $ref: '#/components/responses/ServerError'         
+  /admin/users/{user_ID}/inventory/{card_ID}:
+    delete:
+      tags: [Admin]
+      summary: Удаление карты из инвентаря пользователя
+      description: Удаляет конкретную карту из коллекции пользователя
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: user_ID
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: card_ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        204:
+          description: Карта успешно удалена из инвентаря
+        400:
+          description: Неверный запрос
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/ServerError'
+  /admin/users/{user_ID}/achievements/{achievement_ID}:
+    delete:
+      tags: [Admin]
+      summary: Отзыв достижения у пользователя
+      description: Удаляет достижение из списка полученных пользователем
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: user_ID
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: achievement_ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        204:
+          description: Достижение успешно отозвано
+        400:
+          description: Неверный запрос
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/ServerError'
+  /admin/users/{user_ID}/quests/{quest_ID}/reset:
+    post:
+      tags: [Admin]
+      summary: Сброс выполнения квеста
+      description: Сбрасывает статус выполнения квеста для пользователя
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: user_ID
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: quest_ID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                  description: Причина сброса квеста
+                removeRewards:
+                  type: boolean
+                  default: false
+                  description: Нужно ли удалить награды за квест
+              required: [reason]
+      responses:
+        200:
+          description: Квест успешно сброшен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Квест успешно сброшен"
+                  rewardsRemoved:
+                    type: boolean
+                    example: true
+        400:
+          description: Неверный запрос 
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/ServerError'          
+  /admin/stats:
+    get:
+      tags: [Admin]
+      summary: Получение статистики системы
+      description: Возвращает статистику по пользователям, картам, обменам и т.д.
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Статистика системы
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalUsers:
+                    type: integer
+                    example: 1000
+                  activeUsers:
+                    type: integer
+                    example: 750
+                  bannedUsers:
+                    type: integer
+                    example: 25
+                  totalCards:
+                    type: integer
+                    example: 5000
+                  totalTrades:
+                    type: integer
+                    example: 1200
+                  completedTrades:
+                    type: integer
+                    example: 1000
+                  invalidatedTrades:
+                    type: integer
+                    example: 50
+                  pendingReports:
+                    type: integer
+                    example: 15
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/ServerError'          
+components:
+  schemas:
+    News:
+      type: object
+      properties:
+        news_ID:
+          type: integer
+          example: 1
+          description: "Уникальный идентификатор новости"
+        title:
+          type: string
+          example: "Новое обновление системы"
+          description: "Заголовок новости"
+        content:
+          type: string
+          example: "Мы добавили новые карты в коллекцию"
+          description: "Содержание новости"
+        pictures:
+          type: array
+          items:
+            type: string
+            format: url
+          example: ["https://example.com/news1.jpg", "https://example.com/news2.jpg"]
+          description: "Ссылки на изображения"
+        datePosted:
+          type: string
+          format: date-time
+          example: "2024-05-20T14:48:00Z"
+          description: "Дата публикации"
+      required:
+        - news_ID
+        - title
+        - content
+        - datePosted
+
+    Achievement:
+      type: object
+      properties:
+        achievement_ID:
+          type: integer
+          example: 101
+          description: "Уникальный идентификатор достижения"
+        name:
+          type: string
+          example: "Мастер коллекционирования"
+          description: "Название достижения"
+        imageURL:
+          type: string
+          format: url
+          example: "https://example.com/achievements/master.png"
+          description: "Ссылка на изображение"
+        description:
+          type: string
+          example: "Соберите 10 полных коллекций"
+          description: "Описание достижения"
+        isUnlocked:
+          type: boolean
+          example: false
+          description: "Статус получения"
+      required:
+        - achievement_ID
+        - name
+        - imageURL
+        - description
+        - isUnlocked
+
+    Notification:
+      type: object
+      properties:
+        notification_ID:
+          type: integer
+          example: 201
+          description: "Уникальный идентификатор уведомления"
+        user:
+          $ref: "#/components/schemas/User"
+          description: "Пользователь, которому отправлено уведомление"
+        message:
+          type: string
+          example: "Ваша карта была успешно обменяна"
+          description: "Текст уведомления"
+        links:
+          type: array
+          items:
+            type: string
+            format: url
+          example: ["https://example.com/exchange-details"]
+          description: "Ссылка на подробности обмена"
+        notificationDateTime:
+          type: string
+          format: date-time
+          example: "2024-05-20T15:30:00Z"
+          description: "Дата и время уведомления"
+      required:
+        - notification_ID
+        - user
+        - message
+        - notificationDateTime
+
+    Report:
+      type: object
+      properties:
+        report_ID:
+          type: integer
+          example: 301
+          description: "Уникальный идентификатор жалобы"
+        reporter:
+          $ref: "#/components/schemas/User"
+          description: "Пользователь, отправивший жалобу"
+        reportedUser:
+          $ref: "#/components/schemas/User"
+          description: "Пользователь, на которого пожаловались"
+        reportDateTime:
+          type: string
+          format: date-time
+          example: "2024-05-20T16:45:00Z"
+          description: "Дата и время жалобы"
+        reason:
+          type: string
+          example: "Непристойный контент"
+          description: "непристойный никнейм"
+        status:
+          type: string
+          enum: ["На рассмотрении", "Подтверждено", "Отклонено"]
+          example: "На расмотрении"
+          description: "Статус рассмотрения"
+      required:
+        - report_ID
+        - reporter
+        - reportedUser
+        - reportDateTime
+        - reason
+        - status
+
+    Pack:
+      type: object
+      properties:
+        pack_ID:
+          type: integer
+          example: 401
+          description: "Уникальный идентификатор набора"
+        name:
+          type: string
+          example: "Стартовый набор"
+          description: "Название набора"
+        imageURL:
+          type: string
+          format: url
+          example: "https://example.com/packs/starter.png"
+          description: "Ссылка на изображение"
+        cards:
+          type: array
+          items:
+            $ref: "#/components/schemas/Card"
+          description: "Карты в наборе"
+        price:
+          type: integer
+          example: 1000
+          description: "Цена"
+      required:
+        - pack_ID
+        - name
+        - imageURL
+        - cards
+        - price
+
+    Card:
+      type: object
+      properties:
+        card_ID:
+          type: integer
+          example: 501
+          description: "Уникальный идентификатор карты"
+        name:
+          type: string
+          example: "Ледяной феникс"
+          description: "Название карты"
+        imageURL:
+          type: string
+          format: url
+          example: "https://example.com/cards/pheonix.png"
+          description: "Ссылка на изображение"
+        description:
+          type: string
+          example: "Ледяной Феникс — это мифическое существо, воплощающее силу зимы и вечного обновления. Его перья сверкают как морозный утренний иней, а глаза светятся холодным синим светом."
+          description: "Описание карты"
+        rarity:
+          type: string
+          enum: ["Обычная", "Редкая", "Эпическая", "Легендарная", "Уникальная"]
+          example: "Редкая"
+          description: "Редкость карты"
+        min_price:
+          type: integer
+          example: 50
+          description: "Минимальная цена - используется для разбора карточки"
+        theme:
+          type: string
+          nullable: true
+          example: "Мифическое существо"
+          description: "Тематика, на которую была сгенерирвана карта (только для уникальных карт)"
+        isGenerated:
+          type: boolean
+          example: false
+          description: "Флаг показывающий сгенерированная ли карта (true для уникальных, false для остальных)"
+      required:
+        - card_ID
+        - name
+        - imageURL
+        - rarity
+        - min_price
+        - isGenerated
+
+    User:
+      type: object
+      properties:
+        user_ID:
+          type: integer
+          example: 1
+          description: "Уникальный идентификатор"
+        username:
+          type: string
+          example: "Коллекционер_123"
+          description: "Имя пользователя"
+        email:
+          type: string
+          format: email
+          example: "user@example.com"
+          description: "Электронная почта"
+        password:
+          type: string
+          format: password
+          writeOnly: true
+          description: "Пароль"
+        favoriteCards:
+          type: array
+          items:
+            $ref: "#/components/schemas/Card"
+          description: "Избранные карты"
+        onChange:
+          type: array
+          items:
+            $ref: "#/components/schemas/Card"
+          description: "Карты на обмен"
+        inventoryCards:
+          type: array
+          items:
+            $ref: "#/components/schemas/Card"
+          description: "Карты в инвентаре"
+        balance:
+          type: integer
+          example: 2500
+          description: "Баланс"
+        avatar_url:
+          type: string
+          format: url
+          example: "https://example.com/avatars/user1.png"
+          description: "Аватар пользователя"
+        achievements:
+          type: array
+          items:
+            $ref: "#/components/schemas/Achievement"
+          description: "Достижения"
+        favoriteAchievements:
+          type: array
+          items:
+            $ref: "#/components/schemas/Achievement"
+          description: "Избранные достижения"
+        notifications:
+          type: array
+          items:
+            $ref: "#/components/schemas/Notification"
+          description: "Уведомления"
+      required:
+        - user_ID
+        - username
+        - email
+        - password
+        - balance
+        - inventoryCards
+        - achievements
+
+    Payment:
+      type: object
+      properties:
+        payment_ID:
+          type: integer
+          example: 601
+          description: "Уникальный идентификатор платежа"
+        user:
+          $ref: "#/components/schemas/User"
+          description: "Пользователь"
+        paymentSUM:
+          type: number
+          format: double
+          example: 199.99
+          description: "Сумма платежа"
+        bankCardData:
+          type: array
+          items:
+            type: string
+          writeOnly: true
+          description: "Данные карты (только для записи)"
+        paymentStatus:
+          type: string
+          enum: ["В обработке", "Оплачено", "Ошибка"]
+          example: "Оплачено"
+          description: "Статус платежа"
+        paymentDateTime:
+          type: string
+          format: date-time
+          example: "2024-05-20T17:30:00Z"
+          description: "Дата и время платежа"
+      required:
+        - payment_ID
+        - user
+        - paymentSUM
+        - paymentStatus
+        - paymentDateTime
+
+    Trade:
+      type: object
+      properties:
+        trade_ID:
+          type: integer
+          example: 701
+          description: "Уникальный идентификатор обмена"
+        offeringUser:
+          $ref: "#/components/schemas/User"
+          description: "Пользователь, предлагающий обмен"
+        offeringCards:
+          type: array
+          items:
+            $ref: "#/components/schemas/Card"
+          description: "Предлагаемые карты"
+        receivingUser:
+          $ref: "#/components/schemas/User"
+          description: "Пользователь, получающий предложение"
+        receivingCards:
+          type: array
+          items:
+            $ref: "#/components/schemas/Card"
+          description: "Запрашиваемые карты"
+        isConfirmed:
+          type: boolean
+          example: false
+          description: "Статус подтверждения"
+        tradeDateTime:
+          type: string
+          format: date-time
+          example: "2024-05-20T18:00:00Z"
+          description: "Дата и время обмена"
+      required:
+        - trade_ID
+        - offeringUser
+        - offeringCards
+        - receivingUser
+        - receivingCards
+        - isConfirmed
+        - tradeDateTime
+
+    Collection:
+      type: object
+      properties:
+        collection_ID:
+          type: integer
+          example: 801
+          description: "Уникальный идентификатор коллекции"
+        name:
+          type: string
+          example: "Драконы"
+          description: "Название коллекции"
+        cards:
+          type: array
+          items:
+            $ref: "#/components/schemas/Card"
+          description: "Карты в коллекции"
+        imageURL:
+          type: string
+          format: url
+          example: "https://example.com/collections/dragons.png"
+          description: "Обложка коллекции"
+      required:
+        - collection_ID
+        - name
+        - cards
+        - imageURL
+
+    Theme:
+      type: object
+      properties:
+        theme_ID:
+          type: integer
+          example: 901
+          description: "Уникальный идентификатор темы"
+        name:
+          type: string
+          example: "Мифические существа"
+          description: "Название темы"
+        description:
+          type: string
+          example: "Создайте изображение мифического существа"
+          description: "Описание темы"
+      required:
+        - theme_ID
+        - name
+        
+    UserStats:
+      type: object
+      properties:
+        totalCards:
+          type: integer
+          example: 150
+        completedCollections:
+          type: integer
+          example: 5
+
+    CoinOffer:
+      type: object
+      properties:
+        offer_id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Стартовый набор"
+        coinsAmount:
+          type: integer
+          example: 100
+        price:
+          type: number
+          format: double
+          example: 99.90
+        imageUrl:
+          type: string
+          format: uri
+        description:
+          type: string
+          nullable: true
+          example: "Стартовый набор. Вы можете получить..."
+
+    PaymentCallback:
+      type: object
+      properties:
+        transactionId:
+          type: string
+        status:
+          type: string
+          enum: ["Успешно", "Ошибка", "В процессе"]
+        amount:
+          type: number
+        currency:
+          type: string
+        offerId:
+          type: integer
+      required:
+        - transactionId
+        - status
+        - amount
+
+
+    UserSettings:
+      type: object
+      properties:
+        notificationsEnabled:
+          type: boolean
+          example: true
+          description: "Включены ли уведомления"
+        showInventory:
+          type: boolean
+          example: false
+          description: "Виден ли инвентарь другим пользователям"
+        autoDeclineTrades:
+          type: boolean
+          example: false
+          description: "Автоматически отклонять все входящие предложения обмена"
+      required:
+        - notificationsEnabled
+        - showInventory
+        - autoDeclineTrades
+
+    Quest:
+      type: object
+      properties:
+        quest_ID:
+          type: integer
+          example: 1
+          description: "Уникальный идентификатор квеста"
+        name:
+          type: string
+          example: "Соберите 5 карт"
+          description: "Название квеста"
+        description:
+          type: string
+          example: "Соберите 5 карт из коллекции Драконы"
+          description: "Описание квеста"
+        progress:
+          type: integer
+          example: 3
+          description: "Текущий прогресс"
+        target:
+          type: integer
+          example: 5
+          description: "Целевое значение"
+        rewardCoins:
+          type: integer
+          example: 200
+          description: "Награда в монетах"
+        rewardPacks:
+          type: array
+          items:
+            $ref: "#/components/schemas/Pack"
+          description: "Награда в наборах"
+        isCompleted:
+          type: boolean
+          example: false
+          description: "Выполнен ли квест"
+        isClaimed:
+          type: boolean
+          example: false
+          description: "Получена ли награда"
+      required:
+        - quest_ID
+        - name
+        - description
+        - progress
+        - target
+        - rewardCoins
+        - isCompleted
+        - isClaimed
+
+  responses:
+    BadRequest:
+      description: Неверный формат запроса
+      
+    Unauthorized:
+      description: Ошибка аутентификации
+      
+    ServerError:
+      description: Что-то пошло не так
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Что-то пошло не так, попробуйте позже"
+              code:
+                type: string
+                example: "INTERNAL_SERVER_ERROR"
+              timestamp:
+                type: string
+                format: date-time
+                example: "2024-05-20T12:00:00Z"
+
+      
+    InvalidToken:
+      description: Невалидный токен
+      
+    Forbidden:
+      description: Доступ запрещен
+      
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
