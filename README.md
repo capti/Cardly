@@ -19,7 +19,7 @@
 ## Сервисы
 
 - Figma [User paths](https://www.figma.com/board/s0O3zvAPgI4DXJF2BDwrAS/user-paths?node-id=0-1&p=f&t=3ufcMhcMNEwCXd1o-0)
-- Figma [UI-kit](https://www.figma.com/design/JEGceh2Gm2ZW494FGIaT0A/Cardly-Brandbook?node-id=44-59&p=f&t=d6eTvzQ74P8yNRGe-0) | [Design](https://www.figma.com/design/ljUhVgNlQLElUQvEOcWSBz/Makets?node-id=0-1&t=3v5P2D8Ki25GG22M-1)
+- Figma [UI-kit](https://www.figma.com/design/JEGceh2Gm2ZW494FGIaT0A/Cardly-Brandbook?node-id=44-59&p=f&t=d6eTvzQ74P8yNRGe-0) | [Design](https://www.figma.com/design/ljUhVgNlQLElUQvEOcWSBz/Makets?node-id=0-1&t=3v5P2D8Ki25GG22M-1) | [BrandBook](https://www.figma.com/design/JEGceh2Gm2ZW494FGIaT0A/Cardly-Brandbook?node-id=0-1&t=OAp4Ihb40HiQLx4m-1)
 - Jira [Jira-Task Manager](https://id.atlassian.com/invite/p/jira-software?id=QN1WxX0URg-5Gy9WJ0o66w)
 
 ---
