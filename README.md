@@ -32,7 +32,7 @@
 - SWOT-анализ [PDF](https://github.com/capti/Cardly/blob/main/Documentation/SWOT-%D0%B0%D0%BD%D0%B0%D0%BB%D0%B8%D0%B7.pdf) | [DOCX](https://github.com/capti/Cardly/blob/main/Documentation/SWOT-%D0%B0%D0%BD%D0%B0%D0%BB%D0%B8%D0%B7.docx)
 - [Финансовая модель](https://github.com/capti/Cardly/tree/main/Documentation/Financial%20model)
 - [Диаграммы](https://github.com/capti/Cardly/tree/main/Documentation/Diagrams)
-- [BrandBook](https://www.figma.com/design/JEGceh2Gm2ZW494FGIaT0A/Cardly-Brandbook?node-id=0-1&t=OAp4Ihb40HiQLx4m-1)
+- [BrandBook](https://www.figma.com/design/JEGceh2Gm2ZW494FGIaT0A/Cardly-Brandbook?node-id=0-1&t=OAp4Ihb40HiQLx4m-1) | [PDF](https://github.com/capti/Cardly/blob/main/Documentation/brandbook.pdf)
 - [Пользовательские пути](https://www.figma.com/board/s0O3zvAPgI4DXJF2BDwrAS/user-scenario?node-id=0-1&t=WPJXqXWfhTH9b5QX-1)
 - [Swagger API](https://github.com/capti/Cardly/blob/main/Documentation/Swagger/cardly.yaml)
 - [Диаграммы](https://github.com/capti/Cardly/tree/main/Documentation/Diagrams)
