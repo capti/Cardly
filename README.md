@@ -56,7 +56,7 @@
 
 **Мы оценили**
 
--[Наш чек-лист](https://github.com/capti/Cardly/blob/main/Documentation/%D0%A4%D0%B8%D0%B4%D0%B1%D1%8D%D0%BA.pdf)
+[Наш чек-лист](https://github.com/capti/Cardly/blob/main/Documentation/%D0%A4%D0%B8%D0%B4%D0%B1%D1%8D%D0%BA.pdf)
 
 **Нас оценили**
 
