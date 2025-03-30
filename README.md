@@ -49,3 +49,18 @@
 
 ## Видео защиты проекта 
 [Видеопрезентация технического задания RUTUB](https://rutube.ru/video/private/495ed0d28afb267b57f242186af0053f/?p=t5f3gbQUlFE5zIx2hcnJZQ)
+
+---
+
+## Проверка
+
+**Мы оценили**
+
+-[Наш чек-лист](https://github.com/capti/Cardly/blob/main/Documentation/%D0%A4%D0%B8%D0%B4%D0%B1%D1%8D%D0%BA.pdf)
+
+**Нас оценили**
+
+- Команда 5-3 (https://github.com/TrefflyTeam/documentation/blob/main/%D0%A0%D0%B5%D0%B7%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%82%D1%8B%20%D0%BE%D1%86%D0%B5%D0%BD%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F%20%D0%BE%D1%82%20%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B%205.3.pdf)
+- Команда 5-4(https://github.com/TP-Jobsy/jobsy-docs/blob/main/%D0%A7%D0%B5%D0%BA%D0%BB%D0%B8%D1%81%D1%82%201%20%D1%8D%D1%82%D0%B0%D0%BF.pdf)
+- Команда 6-1(https://gitlab.usr0.ru/tailoredtastes/tailoredtastes-documentation/-/tree/master/%D0%9A%D1%80%D0%BE%D1%81%D1%81-%D0%BF%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%BA%D0%B0?ref_type=heads)
+- Команда 6-2(https://github.com/AlexanderLaptev/Taskbench/blob/main/docs/%D0%A7%D0%B5%D0%BA%D0%BB%D0%B8%D1%81%D1%82%201%20%D1%8D%D1%82%D0%B0%D0%BF.pdf)
