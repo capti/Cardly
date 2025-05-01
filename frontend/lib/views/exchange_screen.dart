@@ -27,16 +27,6 @@ class _ExchangeScreenState extends State<ExchangeScreen> with SingleTickerProvid
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFF4E3),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFFFF4E3),
-        elevation: 0,
-        title: const Text(
-          'Обменник', 
-          style: TextStyle(color: Colors.black)
-          ),
-        iconTheme: const IconThemeData(color: Colors.black),
-        toolbarHeight: 40,
-      ),
       body: Column(
         children: [
           Padding(
