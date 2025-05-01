@@ -146,95 +146,97 @@ class _ExchangeScreenState extends State<ExchangeScreen> with SingleTickerProvid
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
-            child: Row(
-              children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFD6A574),
-                    foregroundColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+          if (_tabController.index == 0) ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+              child: Row(
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFD6A574),
+                      foregroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      elevation: 0,
+                      padding: EdgeInsets.zero,
                     ),
-                    elevation: 0,
-                    padding: EdgeInsets.zero,
+                    onPressed: () {},
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Text('Создать обмен'),
+                          SizedBox(width: 8),
+                          Icon(Icons.add),
+                        ],
+                      ),
+                    ),
                   ),
-                  onPressed: () {},
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.search, 
+                      size: 32),
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                children: [
+                  PopupMenuButton<String>(
+                    onSelected: (value) {
+                      setState(() {
+                        _sortValue = value;
+                      });
+                    },
+                    color: const Color(0xFFEAD2B7),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    offset: const Offset(0, 36),
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: 'По дате',
+                        child: Text('По дате', 
+                        style: TextStyle(fontSize: 20)
+                        ),
+                      ),
+                      const PopupMenuItem(
+                        value: 'По редкости',
+                        child: Text(
+                          'По  редкости', 
+                          style: TextStyle(
+                            fontSize: 20)
+                            ),
+                      ),
+                    ],
                     child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Text('Создать обмен'),
-                        SizedBox(width: 8),
-                        Icon(Icons.add),
+                      children: [
+                        const Text(
+                          'Сортировка',
+                          style: TextStyle(
+                            color: Colors.black, 
+                            fontSize: 20, 
+                            fontWeight: FontWeight.w400
+                            ),
+                        ),
+                        const Icon(
+                          Icons.arrow_drop_down, 
+                          color: Colors.black
+                          ),
                       ],
                     ),
                   ),
-                ),
-                const Spacer(),
-                IconButton(
-                  icon: const Icon(
-                    Icons.search, 
-                    size: 32),
-                  onPressed: () {},
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              children: [
-                PopupMenuButton<String>(
-                  onSelected: (value) {
-                    setState(() {
-                      _sortValue = value;
-                    });
-                  },
-                  color: const Color(0xFFEAD2B7),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  offset: const Offset(0, 36),
-                  itemBuilder: (context) => [
-                    const PopupMenuItem(
-                      value: 'По дате',
-                      child: Text('По дате', 
-                      style: TextStyle(fontSize: 20)
-                      ),
-                    ),
-                    const PopupMenuItem(
-                      value: 'По редкости',
-                      child: Text(
-                        'По  редкости', 
-                        style: TextStyle(
-                          fontSize: 20)
-                          ),
-                    ),
-                  ],
-                  child: Row(
-                    children: [
-                      const Text(
-                        'Сортировка',
-                        style: TextStyle(
-                          color: Colors.black, 
-                          fontSize: 20, 
-                          fontWeight: FontWeight.w400
-                          ),
-                      ),
-                      const Icon(
-                        Icons.arrow_drop_down, 
-                        color: Colors.black
-                        ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+          ],
           Expanded(
             child: IndexedStack(
               index: _tabController.index,
