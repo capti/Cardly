@@ -216,9 +216,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isExchangeScreen = _currentIndex == 3;
     return Scaffold(
       backgroundColor: const Color(0xFFFFF4E3),
-      appBar: AppBar(
+      appBar: isExchangeScreen ? null : AppBar(
         backgroundColor: const Color(0xFFFFF4E3),
         elevation: 0,
         leading: Container(
@@ -292,7 +293,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ],
       ),
-      body: _getScreenByIndex(_currentIndex),
+      body: isExchangeScreen
+          ? SafeArea(child: _getScreenByIndex(_currentIndex))
+          : _getScreenByIndex(_currentIndex),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           color: Color(0xFFDEB37D),
