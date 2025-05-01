@@ -216,17 +216,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isExchangeScreen = _currentIndex == 3;
     return Scaffold(
       backgroundColor: const Color(0xFFFFF4E3),
-      appBar: isExchangeScreen ? null : AppBar(
+      appBar: AppBar(
         backgroundColor: const Color(0xFFFFF4E3),
         elevation: 0,
         leading: Container(
           margin: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: Colors.black, width: 2),
           ),
           child: IconButton(
             icon: Image.asset(
@@ -239,6 +237,41 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         actions: [
           if (_currentIndex == 2) ...[
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              margin: const EdgeInsets.only(right: 4),
+              decoration: BoxDecoration(
+                color: const Color(0xFFEDD6B0),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Row(
+                children: [
+                  const Text(
+                    '1000',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Image.asset(
+                    'assets/icons/деньги.png',
+                    height: 20,
+                    width: 20,
+                  ),
+                ],
+              ),
+            ),
+            IconButton(
+              icon: Image.asset(
+                'assets/icons/поиск.png',
+                height: 24,
+                color: Colors.black,
+              ),
+              onPressed: () {},
+            ),
+          ] else if (_currentIndex == 1) ...[
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
               margin: const EdgeInsets.only(right: 4),
@@ -293,9 +326,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ],
       ),
-      body: isExchangeScreen
-          ? SafeArea(child: _getScreenByIndex(_currentIndex))
-          : _getScreenByIndex(_currentIndex),
+      body: _getScreenByIndex(_currentIndex),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           color: Color(0xFFDEB37D),
