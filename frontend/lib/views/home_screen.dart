@@ -237,22 +237,59 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         actions: [
-          IconButton(
-            icon: Image.asset(
-              'assets/icons/поиск.png',
-              height: 24,
-              color: Colors.black,
+          if (_currentIndex == 2) ...[
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              margin: const EdgeInsets.only(right: 4),
+              decoration: BoxDecoration(
+                color: const Color(0xFFEDD6B0),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Row(
+                children: [
+                  const Text(
+                    '1000',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Image.asset(
+                    'assets/icons/деньги.png',
+                    height: 20,
+                    width: 20,
+                  ),
+                ],
+              ),
             ),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: Image.asset(
-              'assets/icons/уведомления.png',
-              height: 24,
-              color: Colors.black,
+            IconButton(
+              icon: Image.asset(
+                'assets/icons/поиск.png',
+                height: 24,
+                color: Colors.black,
+              ),
+              onPressed: () {},
             ),
-            onPressed: null,
-          ),
+          ] else ...[
+            IconButton(
+              icon: Image.asset(
+                'assets/icons/поиск.png',
+                height: 24,
+                color: Colors.black,
+              ),
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: Image.asset(
+                'assets/icons/уведомления.png',
+                height: 24,
+                color: Colors.black,
+              ),
+              onPressed: null,
+            ),
+          ],
         ],
       ),
       body: _getScreenByIndex(_currentIndex),
