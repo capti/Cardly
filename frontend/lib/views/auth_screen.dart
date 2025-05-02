@@ -66,7 +66,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
       } catch (e) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Ошибка входа: ${e.toString()}')),
+          SnackBar(content: Text('${e.toString()}')),
         );
       }
     }
@@ -77,7 +77,9 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
       try {
         await Provider.of<AuthController>(context, listen: false).register(
           _registerEmailController.text.trim(),
+          _nicknameController.text.trim(),
           _registerPasswordController.text,
+          context: context,
         );
         
         if (!mounted) return;

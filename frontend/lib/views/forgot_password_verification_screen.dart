@@ -55,7 +55,7 @@ class _ForgotPasswordVerificationScreenState extends State<ForgotPasswordVerific
   Future<void> _verifyCode() async {
     if (_formKey.currentState!.validate()) {
       try {
-
+        // Пока оставляем задержку для имитации запроса
         await Future.delayed(const Duration(seconds: 1));
         
         if (!mounted) return;
@@ -63,13 +63,28 @@ class _ForgotPasswordVerificationScreenState extends State<ForgotPasswordVerific
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const ChangePasswordScreen(),
+            builder: (context) => ChangePasswordScreen(
+              resetToken: _codeController.text,
+              email: widget.email,
+            ),
           ),
         );
       } catch (e) {
         if (!mounted) return;
+        
+        // Получаем текст ошибки без "Exception: "
+        final errorText = e.toString().replaceAll('', '');
+        
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Ошибка верификации: ${e.toString()}')),
+          SnackBar(
+            content: Text(errorText.isEmpty ? 'Неверный код подтверждения' : errorText),
+            backgroundColor: Colors.red.shade800,
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
         );
       }
     }
@@ -77,16 +92,38 @@ class _ForgotPasswordVerificationScreenState extends State<ForgotPasswordVerific
 
   void _resendCode() {
     if (_resendTimeLeft == 0) {
-      Provider.of<AuthController>(context, listen: false)
-          .forgotPassword(widget.email);
-      
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Код отправлен повторно'),
-        ),
-      );
-      
-      _startResendTimer();
+      try {
+        Provider.of<AuthController>(context, listen: false)
+            .forgotPassword(widget.email);
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Код отправлен повторно'),
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        );
+        
+        _startResendTimer();
+      } catch (e) {
+        // Получаем текст ошибки без "Exception: "
+        final errorText = e.toString().replaceAll('', '');
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorText),
+            backgroundColor: Colors.red.shade800,
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        );
+      }
     }
   }
 

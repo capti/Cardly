@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
+import 'exchange_details_screen.dart';
+import 'create_exchange_screen.dart';
 import 'home_screen.dart';
 import 'shop_screen.dart';
-import 'exchanges_screen.dart';
+import 'inventory_screen.dart';
 import 'profile_screen.dart';
 
-class InventoryScreen extends StatefulWidget {
-  const InventoryScreen({super.key});
+class ExchangesScreen extends StatefulWidget {
+  const ExchangesScreen({super.key});
 
   @override
-  State<InventoryScreen> createState() => _InventoryScreenState();
+  State<ExchangesScreen> createState() => _ExchangesScreenState();
 }
 
-class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProviderStateMixin {
-  int _currentIndex = 1;
+class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProviderStateMixin {
+  int _currentIndex = 3;
   late TabController _tabController;
-  String _sortOption = 'По редкости';
+  String _sortOption = 'По дате';
   bool _showSortOptions = false;
   
   @override
@@ -43,7 +45,7 @@ class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProv
             borderRadius: BorderRadius.circular(12.0),
           ),
           child: const Text(
-            'Инвентарь',
+            'Обменник',
             style: TextStyle(
               color: Colors.black,
               fontSize: 16.0,
@@ -70,10 +72,10 @@ class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProv
                     MaterialPageRoute(builder: (context) => const ProfileScreen()),
                   );
                 },
-                child: Image.asset(
-                  'assets/icons/профиль.png', 
+                child: const Icon(
+                  Icons.person_outline, 
                   color: Colors.black,
-                  height: 22.0,
+                  size: 22.0,
                 ),
               ),
             ),
@@ -103,8 +105,8 @@ class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProv
               ),
               indicatorSize: TabBarIndicatorSize.tab,
               tabs: const [
-                Tab(text: 'Моя коллекция'),
-                Tab(text: 'Дубликаты'),
+                Tab(text: 'Обмен'),
+                Tab(text: 'Мои обмены'),
               ],
             ),
           ),
@@ -116,45 +118,36 @@ class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProv
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  child: InkWell(
-                    onTap: () {
-                      setState(() {
-                        _showSortOptions = !_showSortOptions;
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFDEB37D),
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Flexible(
-                            child: Text(
-                              'Сортировка: $_sortOption',
-                              style: const TextStyle(
-                                fontSize: 14.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const CreateExchangeScreen()),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFDEB37D),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: Row(
+                      children: const [
+                        Text(
+                          'Создать обмен',
+                          style: TextStyle(
+                            fontSize: 14.0,
+                            fontWeight: FontWeight.bold,
                           ),
-                          const SizedBox(width: 6.0),
-                          Icon(
-                            _showSortOptions ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                            color: Colors.black,
-                          ),
-                        ],
-                      ),
+                        ),
+                        SizedBox(width: 6.0),
+                        Icon(Icons.add, size: 18.0),
+                      ],
                     ),
                   ),
                 ),
-                
-                const SizedBox(width: 16.0),
                 
                 Container(
                   decoration: BoxDecoration(
@@ -163,11 +156,7 @@ class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProv
                     border: Border.all(color: Colors.black, width: 2),
                   ),
                   child: IconButton(
-                    icon: Image.asset(
-                      'assets/icons/поиск.png',
-                      height: 24,
-                      color: Colors.black,
-                    ),
+                    icon: const Icon(Icons.search, color: Colors.black),
                     onPressed: () {
                     },
                   ),
@@ -176,67 +165,98 @@ class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProv
             ),
           ),
           
-          if (_showSortOptions)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Container(
-                margin: const EdgeInsets.only(bottom: 12.0),
-                padding: const EdgeInsets.all(12.0),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEDD6B0),
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        setState(() {
-                          _sortOption = 'По редкости';
-                          _showSortOptions = false;
-                        });
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Text(
-                          'По редкости',
-                          style: TextStyle(
-                            fontSize: 14.0,
-                            fontWeight: _sortOption == 'По редкости' ? FontWeight.bold : FontWeight.normal,
-                          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      _showSortOptions = !_showSortOptions;
+                    });
+                  },
+                  child: Row(
+                    children: [
+                      const Text(
+                        'Сортировка',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
+                      const SizedBox(width: 4.0),
+                      Icon(
+                        _showSortOptions ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                        color: Colors.black,
+                      ),
+                    ],
+                  ),
+                ),
+                
+                if (_showSortOptions)
+                  Container(
+                    margin: const EdgeInsets.only(top: 8.0),
+                    padding: const EdgeInsets.all(12.0),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEDD6B0),
+                      borderRadius: BorderRadius.circular(8.0),
                     ),
-                    const Divider(),
-                    InkWell(
-                      onTap: () {
-                        setState(() {
-                          _sortOption = 'По коллекциям';
-                          _showSortOptions = false;
-                        });
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Text(
-                          'По коллекциям',
-                          style: TextStyle(
-                            fontSize: 14.0,
-                            fontWeight: _sortOption == 'По коллекциям' ? FontWeight.bold : FontWeight.normal,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              _sortOption = 'По дате';
+                              _showSortOptions = false;
+                            });
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Text(
+                              'По дате',
+                              style: TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: _sortOption == 'По дате' ? FontWeight.bold : FontWeight.normal,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                        const Divider(),
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              _sortOption = 'По редкости';
+                              _showSortOptions = false;
+                            });
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Text(
+                              'По редкости',
+                              style: TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: _sortOption == 'По редкости' ? FontWeight.bold : FontWeight.normal,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
+                  ),
+              ],
             ),
+          ),
+          
+          const SizedBox(height: 8.0),
           
           Expanded(
             child: TabBarView(
               controller: _tabController,
               children: [
-                _buildCardCollectionGrid(),
-                _buildDuplicatesGrid(),
+                _buildExchangesTab(),
+                _buildMyExchangesTab(),
               ],
             ),
           ),
@@ -259,7 +279,7 @@ class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProv
             ),
           ),
           Positioned(
-            bottom: 8,
+            bottom: 8, 
             left: 0,
             right: 0,
             child: BottomNavigationBar(
@@ -271,24 +291,24 @@ class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProv
                   });
                   
                   switch (index) {
-                    case 0:
+                    case 0: 
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(builder: (context) => const HomeScreen()),
                         (route) => false,
                       );
                       break;
-                    case 2:
+                    case 1:
                       Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(builder: (context) => const ShopScreen()),
+                        MaterialPageRoute(builder: (context) => const InventoryScreen()),
                         (route) => false,
                       );
                       break;
-                    case 3:
+                    case 2: 
                       Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(builder: (context) => const ExchangesScreen()),
+                        MaterialPageRoute(builder: (context) => const ShopScreen()),
                         (route) => false,
                       );
                       break;
@@ -313,7 +333,7 @@ class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProv
                 fontWeight: FontWeight.bold, 
               ),
               unselectedLabelStyle: const TextStyle(
-                fontSize: 11,
+                fontSize: 11, 
               ),
               items: [
                 BottomNavigationBarItem(
@@ -372,100 +392,111 @@ class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProv
     );
   }
   
-  Widget _buildCardCollectionGrid() {
-    return GridView.builder(
-      padding: const EdgeInsets.all(12.0),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4,
-        childAspectRatio: 0.7,
-        crossAxisSpacing: 8.0,
-        mainAxisSpacing: 12.0,
-      ),
-      itemCount: 20,
+  Widget _buildExchangesTab() {
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      itemCount: 5, 
       itemBuilder: (context, index) {
-        return _buildCardItem();
+        return _buildCardExchangeItem();
       },
     );
   }
   
-  Widget _buildDuplicatesGrid() {
-    return GridView.builder(
-      padding: const EdgeInsets.all(12.0),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4,
-        childAspectRatio: 0.7,
-        crossAxisSpacing: 8.0,
-        mainAxisSpacing: 12.0,
-      ),
-      itemCount: 12,
+  Widget _buildMyExchangesTab() {
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      itemCount: 3,
       itemBuilder: (context, index) {
-        return _buildCardItemWithCounter();
+        return _buildCardExchangeItem();
       },
     );
   }
   
-  Widget _buildCardItem() {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFFDEB37D),
-        borderRadius: BorderRadius.circular(8.0),
-        border: Border.all(color: Colors.black, width: 2),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Expanded(
-            child: Container(
-              margin: const EdgeInsets.all(4.0),
-              decoration: const BoxDecoration(
-                color: Color(0xFFEDD6B0),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(4.0),
-                  topRight: Radius.circular(4.0),
-                ),
-              ),
-            ),
-          ),
-          Container(
-            height: 24.0,
-            margin: const EdgeInsets.only(left: 4.0, right: 4.0, bottom: 4.0),
-            decoration: const BoxDecoration(
-              color: Color(0xFFEDD6B0),
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(4.0),
-                bottomRight: Radius.circular(4.0),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-  
-  Widget _buildCardItemWithCounter() {
-    return Stack(
-      children: [
-        _buildCardItem(),
-        Positioned(
-          top: 0,
-          right: 0,
-          child: Container(
-            padding: const EdgeInsets.all(4.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.black, width: 1.5),
-            ),
-            child: Text(
-              '${2 + (5 * 0.5).toInt()}',
-              style: const TextStyle(
-                fontSize: 10.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
+  Widget _buildCardExchangeItem() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const ExchangeDetailsScreen()),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16.0),
+        padding: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: const Color(0xFFEDD6B0),
+          borderRadius: BorderRadius.circular(8.0),
         ),
-      ],
+        child: Row(
+          children: [
+            Container(
+              width: 60.0,
+              height: 80.0,
+              decoration: BoxDecoration(
+                color: const Color(0xFFDEB37D),
+                borderRadius: BorderRadius.circular(8.0),
+                border: Border.all(color: Colors.black, width: 1),
+              ),
+            ),
+            
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Icon(Icons.sync_alt, size: 24.0),
+                ],
+              ),
+            ),
+            
+            Stack(
+              children: [
+                Container(
+                  width: 60.0,
+                  height: 80.0,
+                  margin: const EdgeInsets.only(top: 4.0, left: 4.0),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFDEB37D),
+                    borderRadius: BorderRadius.circular(8.0),
+                    border: Border.all(color: Colors.black, width: 1),
+                  ),
+                ),
+                Container(
+                  width: 60.0,
+                  height: 80.0,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFDEB37D),
+                    borderRadius: BorderRadius.circular(8.0),
+                    border: Border.all(color: Colors.black, width: 1),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
+}
+
+enum ExchangeStatus {
+  pending,
+  waiting,
+  approved,
+  rejected,
+}
+
+class ExchangeItem {
+  final String date;
+  final ExchangeStatus status;
+  final int fromCards;
+  final int toCards;
+  final String nickname;
+  
+  ExchangeItem({
+    required this.date,
+    required this.status,
+    required this.fromCards,
+    required this.toCards,
+    required this.nickname,
+  });
 } 

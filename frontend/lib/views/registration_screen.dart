@@ -46,7 +46,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> with SingleTick
       try {
         await Provider.of<AuthController>(context, listen: false).register(
           _emailController.text.trim(),
+          _nicknameController.text.trim(),
           _passwordController.text,
+          context: context,
         );
         
         if (!mounted) return;
@@ -61,8 +63,20 @@ class _RegistrationScreenState extends State<RegistrationScreen> with SingleTick
         );
       } catch (e) {
         if (!mounted) return;
+        
+        // Получаем текст ошибки без "Exception: "
+        final errorText = e.toString().replaceAll('', '');
+        
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Ошибка регистрации: ${e.toString()}')),
+          SnackBar(
+            content: Text(errorText),
+            backgroundColor: Colors.red.shade800,
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
         );
       }
     }

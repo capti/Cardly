@@ -1,30 +1,30 @@
 class UserModel {
-  final String id;
   final String email;
-  final String? name;
+  final String? username;
+  final String? token;
   final bool isEmailVerified;
 
   UserModel({
-    required this.id,
     required this.email,
-    this.name,
+    this.username,
+    this.token,
     this.isEmailVerified = false,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['id'] ?? '',
       email: json['email'] ?? '',
-      name: json['name'],
-      isEmailVerified: json['isEmailVerified'] ?? false,
+      username: json['username'],
+      token: json['token'],
+      isEmailVerified: true, // Если пользователь успешно вошел, считаем, что почта подтверждена
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
       'email': email,
-      'name': name,
+      'username': username,
+      'token': token,
       'isEmailVerified': isEmailVerified,
     };
   }

@@ -45,8 +45,20 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
         );
       } catch (e) {
         if (!mounted) return;
+        
+        // Получаем текст ошибки без "Exception: "
+        final errorText = e.toString().replaceAll('', '');
+        
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Ошибка входа: ${e.toString()}')),
+          SnackBar(
+            content: Text(errorText),
+            backgroundColor: Colors.red.shade800,
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
         );
       }
     }

@@ -55,36 +55,54 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     if (_formKey.currentState!.validate()) {
       try {
         await Provider.of<AuthController>(context, listen: false)
-            .verifyEmail(_codeController.text.trim());
-        
-        if (!mounted) return;
+            .verifyEmail(widget.email, _codeController.text.trim(), context: context);
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Email успешно подтвержден!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-
-        Navigator.of(context).popUntil((route) => route.isFirst);
       } catch (e) {
         if (!mounted) return;
+
+        final errorText = e.toString().replaceAll('', '');
+        
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Ошибка верификации: ${e.toString()}')),
+          SnackBar(
+            content: Text(errorText),
+            backgroundColor: Colors.red.shade800,
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
         );
       }
     }
   }
 
-  void _resendCode() {
+  void _resendCode() async {
     if (_resendTimeLeft == 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Код отправлен повторно'),
-        ),
-      );
-      
-      _startResendTimer();
+      try {
+        await Provider.of<AuthController>(context, listen: false)
+            .resendActivationCode(widget.email, context: context);
+        
+        // Запускаем таймер заново после успешной отправки
+        _startResendTimer();
+      } catch (e) {
+        if (!mounted) return;
+        
+        // Получаем текст ошибки без "Exception: "
+        final errorText = e.toString().replaceAll('', '');
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorText),
+            backgroundColor: Colors.red.shade800,
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        );
+      }
     }
   }
 

@@ -25,7 +25,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     if (_formKey.currentState!.validate()) {
       try {
         await Provider.of<AuthController>(context, listen: false)
-            .forgotPassword(_emailController.text.trim());
+            .forgotPassword(_emailController.text.trim(), context: context);
         
         if (!mounted) return;
 
@@ -37,7 +37,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             ),
           ),
         );
-        
       } catch (e) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(

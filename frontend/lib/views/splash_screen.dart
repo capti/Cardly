@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
+import '../controllers/auth_controller.dart';
 import 'auth_screen.dart';
+import 'home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -14,11 +16,28 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 3), () {
+    
+    // Запускаем проверку авторизации с небольшой задержкой для отображения сплеш-скрина
+    Timer(const Duration(seconds: 2), () {
+      _checkAuth();
+    });
+  }
+  
+  Future<void> _checkAuth() async {
+    final authController = Provider.of<AuthController>(context, listen: false);
+    final isLoggedIn = await authController.tryAutoLogin();
+    
+    if (!mounted) return;
+    
+    if (isLoggedIn) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    } else {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const AuthScreen()),
       );
-    });
+    }
   }
 
   @override
@@ -45,7 +64,6 @@ class _SplashScreenState extends State<SplashScreen> {
                 ),
               ),
               const SizedBox(height: 100),
-
             ],
           ),
         ),

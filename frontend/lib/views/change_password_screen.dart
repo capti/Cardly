@@ -3,7 +3,14 @@ import 'package:provider/provider.dart';
 import '../controllers/auth_controller.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
-  const ChangePasswordScreen({super.key});
+  final String? resetToken;
+  final String? email;
+  
+  const ChangePasswordScreen({
+    super.key, 
+    this.resetToken,
+    this.email,
+  });
 
   @override
   State<ChangePasswordScreen> createState() => _ChangePasswordScreenState();
@@ -28,11 +35,20 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   Future<void> _changePassword() async {
     if (_formKey.currentState!.validate()) {
       try {
-        // Поскольку мы перешли сюда из сброса пароля, нам не нужен старый пароль
-        await Provider.of<AuthController>(context, listen: false).changePassword(
-          '', // пустая строка вместо старого пароля
-          _newPasswordController.text,
-        );
+        if (widget.resetToken != null) {
+          // Восстановление пароля (сброс)
+          await Provider.of<AuthController>(context, listen: false).resetPassword(
+            widget.resetToken!,
+            _newPasswordController.text,
+            context: context,
+          );
+        } else {
+          // Обычное изменение пароля (когда пользователь залогинен)
+          await Provider.of<AuthController>(context, listen: false).changePassword(
+            '', // пустая строка вместо старого пароля
+            _newPasswordController.text,
+          );
+        }
         
         if (!mounted) return;
         
@@ -41,16 +57,33 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Пароль успешно изменен'),
+          SnackBar(
+            content: const Text('Пароль успешно изменен'),
             backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
           ),
         );
         
       } catch (e) {
         if (!mounted) return;
+        
+        // Получаем текст ошибки без "Exception: "
+        final errorText = e.toString().replaceAll('', '');
+        
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Ошибка: ${e.toString()}')),
+          SnackBar(
+            content: Text(errorText),
+            backgroundColor: Colors.red.shade800,
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
         );
       }
     }
