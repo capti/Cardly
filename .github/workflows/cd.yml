@@ -22,15 +22,15 @@ jobs:
       run: |
         cd frontend && flutter pub get
     
-    - name: Build Flutter web
+    - name: Build Android APK
       run: |
-        cd frontend && flutter build web --release
+        cd frontend && flutter build apk --release
     
-    - name: Upload frontend artifacts
+    - name: Upload APK artifact
       uses: actions/upload-artifact@v3
       with:
-        name: frontend-build
-        path: frontend/build/web
+        name: android-apk
+        path: frontend/build/app/outputs/flutter-apk/app-release.apk
 
   backend:
     runs-on: ubuntu-latest
