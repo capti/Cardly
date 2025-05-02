@@ -1,0 +1,61 @@
+name: CD
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    environment: production
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.x'
+        channel: 'stable'
+    
+    - name: Install dependencies
+      run: |
+        cd frontend && flutter pub get
+    
+    - name: Build Flutter web
+      run: |
+        cd frontend && flutter build web --release
+    
+    - name: Upload frontend artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: frontend-build
+        path: frontend/build/web
+
+  backend:
+    runs-on: ubuntu-latest
+    environment: production
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: 'gradle'
+    
+    - name: Build with Gradle
+      run: |
+        cd backend && ./gradlew build
+    
+    - name: Build Docker image
+      run: |
+        cd backend && docker build -t cardly-backend .
+    
+    - name: Upload backend artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: backend-build
+        path: backend/build/libs 
