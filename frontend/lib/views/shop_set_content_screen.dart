@@ -116,7 +116,7 @@ class _ShopSetContentScreenState extends State<ShopSetContentScreen> {
               items: const [
                 BottomNavigationBarItem(
                   icon: Icon(Icons.home),
-                  label: 'Гл.меню',
+                  label: 'Главная',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.book),

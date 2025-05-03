@@ -307,7 +307,7 @@ class _ShopSetDetailsScreenState extends State<ShopSetDetailsScreen> {
               items: [
                 BottomNavigationBarItem(
                   icon: Image.asset('assets/icons/главная.png', height: 24),
-                  label: 'Гл.меню',
+                  label: 'Главная',
                 ),
                 BottomNavigationBarItem(
                   icon: Image.asset('assets/icons/Инвентарь.png', height: 24),

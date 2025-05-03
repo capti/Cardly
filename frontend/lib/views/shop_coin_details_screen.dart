@@ -289,7 +289,7 @@ class _ShopCoinDetailsScreenState extends State<ShopCoinDetailsScreen> {
               items: const [
                 BottomNavigationBarItem(
                   icon: Icon(Icons.home),
-                  label: 'Гл.меню',
+                  label: 'Главная',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.book),

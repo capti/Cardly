@@ -211,7 +211,7 @@ class _CreateCardScreenState extends State<CreateCardScreen> {
               items: const [
                 BottomNavigationBarItem(
                   icon: Icon(Icons.home),
-                  label: 'Гл.меню',
+                  label: 'Главная',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.book),

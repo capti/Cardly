@@ -282,10 +282,6 @@ class _QuestsScreenState extends State<QuestsScreen> with SingleTickerProviderSt
           Container(
             decoration: const BoxDecoration(
               color: Color(0xFFDEB37D),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(16.0),
-                topRight: Radius.circular(16.0),
-              ),
             ),
             child: BottomNavigationBar(
               currentIndex: _currentIndex,
@@ -294,24 +290,22 @@ class _QuestsScreenState extends State<QuestsScreen> with SingleTickerProviderSt
                   setState(() {
                     _currentIndex = index;
                   });
-                  
-                  // Навигация в зависимости от выбранного индекса
                   switch (index) {
-                    case 0: // Главное меню
+                    case 0:
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(builder: (context) => const HomeScreen()),
                         (route) => false,
                       );
                       break;
-                    case 2: // Магазин
+                    case 2:
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(builder: (context) => const ShopScreen()),
                         (route) => false,
                       );
                       break;
-                    case 3: // Обменчик
+                    case 3:
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(builder: (context) => const ExchangesScreen()),

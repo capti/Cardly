@@ -227,28 +227,28 @@ class ProfileScreen extends StatelessWidget {
               currentIndex: 0,
               onTap: (index) {
                 switch (index) {
-                  case 0: // Главное меню
+                  case 0:
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (context) => const HomeScreen()),
                       (route) => false,
                     );
                     break;
-                  case 1: // Инвентарь
+                  case 1:
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (context) => const InventoryScreen()),
                       (route) => false,
                     );
                     break;
-                  case 2: // Магазин
+                  case 2:
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (context) => const ShopScreen()),
                       (route) => false,
                     );
                     break;
-                  case 3: // Обменник
+                  case 3:
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (context) => const ExchangesScreen()),
