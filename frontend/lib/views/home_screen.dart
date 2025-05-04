@@ -121,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFDEB37D),
+                  backgroundColor: const Color(0xFFD6A067),
                   foregroundColor: Colors.black,
                   padding: const EdgeInsets.symmetric(vertical: 24.0),
                   shape: RoundedRectangleBorder(
@@ -156,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFDEB37D),
+                      backgroundColor: const Color(0xFFD6A067),
                       foregroundColor: Colors.black,
                       padding: const EdgeInsets.symmetric(vertical: 24.0),
                       shape: RoundedRectangleBorder(
@@ -197,7 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFDEB37D),
+                      backgroundColor: const Color(0xFFD6A067),
                       foregroundColor: Colors.black,
                       padding: const EdgeInsets.symmetric(vertical: 24.0),
                       shape: RoundedRectangleBorder(
@@ -232,7 +232,7 @@ class _HomeScreenState extends State<HomeScreen> {
       
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
-          color: Color(0xFFDEB37D),
+          color: Color(0xFFD6A067),
         ),
         child: BottomNavigationBar(
           currentIndex: _currentIndex,
