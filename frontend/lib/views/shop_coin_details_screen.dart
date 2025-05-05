@@ -115,7 +115,7 @@ class _ShopCoinDetailsScreenState extends State<ShopCoinDetailsScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 12.0),
                       alignment: Alignment.center,
                       decoration: const BoxDecoration(
-                        color: Color(0xFFDEB37D),
+                        color: Color(0xFFD6A067),
                         borderRadius: BorderRadius.only(
                           topRight: Radius.circular(8.0),
                           bottomRight: Radius.circular(8.0),
@@ -165,7 +165,7 @@ class _ShopCoinDetailsScreenState extends State<ShopCoinDetailsScreen> {
                             height: 150,
                             margin: const EdgeInsets.only(top: 40.0),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFDEB37D),
+                              color: const Color(0xFFD6A067),
                               borderRadius: BorderRadius.circular(8.0),
                             ),
                             child: Center(
@@ -190,7 +190,7 @@ class _ShopCoinDetailsScreenState extends State<ShopCoinDetailsScreen> {
                                 );
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFDEB37D),
+                                backgroundColor: const Color(0xFFD6A067),
                                 foregroundColor: Colors.black,
                                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                                 shape: RoundedRectangleBorder(
@@ -216,7 +216,7 @@ class _ShopCoinDetailsScreenState extends State<ShopCoinDetailsScreen> {
                       right: 8.0,
                       child: Container(
                         decoration: BoxDecoration(
-                          color: const Color(0xFFDEB37D),
+                          color: const Color(0xFFD6A067),
                           borderRadius: BorderRadius.circular(4.0),
                           border: Border.all(color: Colors.black, width: 1),
                         ),
@@ -241,7 +241,7 @@ class _ShopCoinDetailsScreenState extends State<ShopCoinDetailsScreen> {
           // Нижняя навигационная панель
           Container(
             decoration: const BoxDecoration(
-              color: Color(0xFFDEB37D),
+              color: Color(0xFFD6A067),
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(16.0),
                 topRight: Radius.circular(16.0),

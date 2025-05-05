@@ -78,7 +78,7 @@ class _SearchPlayersScreenState extends State<SearchPlayersScreen> {
               child: ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFDEB37D),
+                  backgroundColor: const Color(0xFFD6A067),
                   foregroundColor: Colors.black,
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   shape: RoundedRectangleBorder(
@@ -106,7 +106,7 @@ class _SearchPlayersScreenState extends State<SearchPlayersScreen> {
                   child: ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFDEB37D),
+                      backgroundColor: const Color(0xFFD6A067),
                       foregroundColor: Colors.black,
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
                       shape: RoundedRectangleBorder(
@@ -141,7 +141,7 @@ class _SearchPlayersScreenState extends State<SearchPlayersScreen> {
                   child: ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFDEB37D),
+                      backgroundColor: const Color(0xFFD6A067),
                       foregroundColor: Colors.black,
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
                       shape: RoundedRectangleBorder(
@@ -175,7 +175,7 @@ class _SearchPlayersScreenState extends State<SearchPlayersScreen> {
           // Нижняя навигационная панель
           Container(
             decoration: const BoxDecoration(
-              color: Color(0xFFDEB37D),
+              color: Color(0xFFD6A067),
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(16.0),
                 topRight: Radius.circular(16.0),
@@ -276,7 +276,7 @@ class PlayerListItem extends StatelessWidget {
                 width: 32,
                 height: 42,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFDEB37D),
+                  color: const Color(0xFFD6A067),
                   borderRadius: BorderRadius.circular(4.0),
                 ),
               ),

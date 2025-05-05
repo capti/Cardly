@@ -55,7 +55,7 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
               labelColor: Colors.black,
               unselectedLabelColor: Colors.black,
               indicator: const BoxDecoration(
-                color: Color(0xFFDEB37D),
+                color: Color(0xFFD6A067),
                 borderRadius: BorderRadius.all(Radius.circular(12.0)),
                 border: Border(
                   bottom: BorderSide(
@@ -91,7 +91,7 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 12.0),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFDEB37D),
+                      color: const Color(0xFFD6A067),
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                     child: Row(
@@ -229,7 +229,7 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
       ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
-          color: Color(0xFFDEB37D),
+          color: Color(0xFFD6A067),
         ),
         child: BottomNavigationBar(
           currentIndex: _currentIndex,
@@ -379,7 +379,7 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
               width: 60.0,
               height: 80.0,
               decoration: BoxDecoration(
-                color: const Color(0xFFDEB37D),
+                color: const Color(0xFFD6A067),
                 borderRadius: BorderRadius.circular(8.0),
                 border: Border.all(color: Colors.black, width: 1),
               ),
@@ -401,7 +401,7 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
                   height: 80.0,
                   margin: const EdgeInsets.only(top: 4.0, left: 4.0),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFDEB37D),
+                    color: const Color(0xFFD6A067),
                     borderRadius: BorderRadius.circular(8.0),
                     border: Border.all(color: Colors.black, width: 1),
                   ),
@@ -410,7 +410,7 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
                   width: 60.0,
                   height: 80.0,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFDEB37D),
+                    color: const Color(0xFFD6A067),
                     borderRadius: BorderRadius.circular(8.0),
                     border: Border.all(color: Colors.black, width: 1),
                   ),

@@ -3,6 +3,7 @@ import 'home_screen.dart';
 import 'shop_screen.dart';
 import 'exchanges_screen.dart';
 import 'profile_screen.dart';
+import 'card_detail_screen.dart';
 
 class InventoryScreen extends StatefulWidget {
   const InventoryScreen({super.key});
@@ -11,23 +12,10 @@ class InventoryScreen extends StatefulWidget {
   State<InventoryScreen> createState() => _InventoryScreenState();
 }
 
-class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProviderStateMixin {
+class _InventoryScreenState extends State<InventoryScreen> {
   int _currentIndex = 1;
-  late TabController _tabController;
   String _sortOption = 'По редкости';
   bool _showSortOptions = false;
-  
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-  }
-  
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
   
   @override
   Widget build(BuildContext context) {
@@ -83,95 +71,81 @@ class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProv
             onPressed: () {},
           ),
         ],
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(60.0),
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16.0),
-            decoration: BoxDecoration(
-              color: const Color(0xFFEDD6B0),
-              borderRadius: BorderRadius.circular(12.0),
-            ),
-            child: TabBar(
-              controller: _tabController,
-              labelColor: Colors.black,
-              unselectedLabelColor: Colors.black,
-              indicator: const BoxDecoration(
-                color: Color(0xFFDEB37D),
-                borderRadius: BorderRadius.all(Radius.circular(12.0)),
-                border: Border(
-                  bottom: BorderSide(
-                    color: Colors.black,
-                    width: 3.0,
-                  ),
-                ),
-              ),
-              indicatorSize: TabBarIndicatorSize.tab,
-              tabs: const [
-                Tab(text: 'Моя коллекция'),
-                Tab(text: 'Дубликаты'),
-              ],
-            ),
-          ),
-        ),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      body: Stack(
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: InkWell(
-                    onTap: () {
-                      setState(() {
-                        _showSortOptions = !_showSortOptions;
-                      });
-                    },
-                    child: Container(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                child: Row(
+                  children: [
+                    Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                      decoration: BoxDecoration(
-
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Flexible(
-                            child: Text(
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            _showSortOptions = !_showSortOptions;
+                          });
+                        },
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
                               'Сортировка:',
                               style: const TextStyle(
                                 fontSize: 14.0,
                                 fontWeight: FontWeight.bold,
                               ),
-                              overflow: TextOverflow.ellipsis,
                             ),
-                          ),
-                          const SizedBox(width: 6.0),
-                          Icon(
-                            _showSortOptions ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                            color: Colors.black,
-                          ),
-                        ],
+                            const SizedBox(width: 6.0),
+                            Icon(
+                              _showSortOptions ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                              color: Colors.black,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
-                
-                const SizedBox(width: 16.0),
-              ],
-            ),
+              ),
+              
+              Expanded(
+                child: GridView.builder(
+                  padding: const EdgeInsets.all(12.0),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 4,
+                    childAspectRatio: 0.7,
+                    crossAxisSpacing: 8.0,
+                    mainAxisSpacing: 12.0,
+                  ),
+                  itemCount: 20,
+                  itemBuilder: (context, index) {
+                    return _buildCardItem(index: index);
+                  },
+                ),
+              ),
+            ],
           ),
           
           if (_showSortOptions)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            Positioned(
+              top: 50,
+              left: 16,
               child: Container(
-                margin: const EdgeInsets.only(bottom: 12.0),
                 padding: const EdgeInsets.all(12.0),
                 decoration: BoxDecoration(
                   color: const Color(0xFFEDD6B0),
                   borderRadius: BorderRadius.circular(8.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -217,21 +191,11 @@ class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProv
                 ),
               ),
             ),
-          
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildCardCollectionGrid(),
-                _buildDuplicatesGrid(),
-              ],
-            ),
-          ),
         ],
       ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
-          color: Color(0xFFDEB37D),
+          color: Color(0xFFD6A067),
         ),
         child: BottomNavigationBar(
           currentIndex: _currentIndex,
@@ -340,100 +304,793 @@ class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProv
     );
   }
   
-  Widget _buildCardCollectionGrid() {
-    return GridView.builder(
-      padding: const EdgeInsets.all(12.0),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4,
-        childAspectRatio: 0.7,
-        crossAxisSpacing: 8.0,
-        mainAxisSpacing: 12.0,
-      ),
-      itemCount: 20,
-      itemBuilder: (context, index) {
-        return _buildCardItem();
-      },
-    );
-  }
-  
-  Widget _buildDuplicatesGrid() {
-    return GridView.builder(
-      padding: const EdgeInsets.all(12.0),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4,
-        childAspectRatio: 0.7,
-        crossAxisSpacing: 8.0,
-        mainAxisSpacing: 12.0,
-      ),
-      itemCount: 12,
-      itemBuilder: (context, index) {
-        return _buildCardItemWithCounter();
-      },
-    );
-  }
-  
-  Widget _buildCardItem() {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFFDEB37D),
-        borderRadius: BorderRadius.circular(8.0),
-        border: Border.all(color: Colors.black, width: 2),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Expanded(
-            child: Container(
-              margin: const EdgeInsets.all(4.0),
-              decoration: const BoxDecoration(
-                color: Color(0xFFEDD6B0),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(4.0),
-                  topRight: Radius.circular(4.0),
+  Widget _buildCardItem({int index = 0}) {
+    if (index == 0) {
+      return InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CardDetailScreen(cardIndex: index),
+            ),
+          );
+        },
+        child: AspectRatio(
+          aspectRatio: 3/4,
+          child: Stack(
+            children: [
+              // Внешняя тонкая черная рамка
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.black, width: 2),
                 ),
               ),
+              // Прослойка цвета карточки
+              Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD6A067),
+                    borderRadius: BorderRadius.circular(7),
+                  ),
+                ),
+              ),
+              // Внутренняя тонкая черная рамка
+              Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: Colors.black, width: 2),
+                  ),
+                ),
+              ),
+              // Основная карточка
+              Padding(
+                padding: const EdgeInsets.all(6.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD6A067),
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        flex: 8,
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(5.0),
+                            topRight: Radius.circular(5.0),
+                          ),
+                          child: Image.asset(
+                            'assets/images/chameleon.jpg',
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 3,
+                        color: Colors.black,
+                      ),
+                      Container(
+                        height: 32,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFD6A067),
+                          borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(5.0),
+                            bottomRight: Radius.circular(5.0),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: List.generate(4, (i) => Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 1.0),
+                            child: Image.asset(
+                              'assets/icons/редкость.png',
+                              height: 14,
+                            ),
+                          )),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else if (index == 1) {
+      return InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CardDetailScreen(cardIndex: index),
             ),
+          );
+        },
+        child: AspectRatio(
+          aspectRatio: 3/4,
+          child: Stack(
+            children: [
+              // Внешняя тонкая черная рамка
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.black, width: 2),
+                ),
+              ),
+              // Прослойка цвета карточки
+              Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD6A067),
+                    borderRadius: BorderRadius.circular(7),
+                  ),
+                ),
+              ),
+              // Внутренняя тонкая черная рамка
+              Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: Colors.black, width: 2),
+                  ),
+                ),
+              ),
+              // Основная карточка
+              Padding(
+                padding: const EdgeInsets.all(6.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD6A067),
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        flex: 8,
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(5.0),
+                            topRight: Radius.circular(5.0),
+                          ),
+                          child: Image.asset(
+                            'assets/images/kiwi.jpg',
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 3,
+                        color: Colors.black,
+                      ),
+                      Container(
+                        height: 32,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFD6A067),
+                          borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(5.0),
+                            bottomRight: Radius.circular(5.0),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: List.generate(4, (i) => Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 1.0),
+                            child: Image.asset(
+                              'assets/icons/редкость.png',
+                              height: 14,
+                            ),
+                          )),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else if (index == 2) {
+      return InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CardDetailScreen(cardIndex: index),
+            ),
+          );
+        },
+        child: AspectRatio(
+          aspectRatio: 3/4,
+          child: Stack(
+            children: [
+              // Внешняя тонкая черная рамка
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.black, width: 2),
+                ),
+              ),
+              // Прослойка цвета карточки
+              Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFD6A067),
+                    borderRadius: BorderRadius.circular(7),
+                  ),
+                ),
+              ),
+              // Внутренняя тонкая черная рамка
+              Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: Colors.black, width: 2),
+      ),
+                ),
+              ),
+              // Основная карточка
+              Padding(
+                padding: const EdgeInsets.all(6.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD6A067),
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+      child: Column(
+        children: [
+          Expanded(
+                        flex: 8,
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(5.0),
+                            topRight: Radius.circular(5.0),
+                          ),
+                          child: Image.asset(
+                            'assets/images/platypus.jpg',
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 3,
+                        color: Colors.black,
+                      ),
+                      Container(
+                        height: 32,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFD6A067),
+                          borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(5.0),
+                            bottomRight: Radius.circular(5.0),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: List.generate(4, (i) => Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 1.0),
+                            child: Image.asset(
+                              'assets/icons/редкость.png',
+                              height: 14,
+                            ),
+                          )),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else if (index == 3) {
+      return InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CardDetailScreen(cardIndex: index),
+            ),
+          );
+        },
+        child: AspectRatio(
+          aspectRatio: 3/4,
+          child: Stack(
+            children: [
+              // Внешняя тонкая черная рамка
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.black, width: 2),
+                ),
+              ),
+              // Прослойка цвета карточки
+              Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD6A067),
+                    borderRadius: BorderRadius.circular(7),
+                  ),
+                ),
+              ),
+              // Внутренняя тонкая черная рамка
+              Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: Colors.black, width: 2),
+                  ),
+                ),
+              ),
+              // Основная карточка
+              Padding(
+                padding: const EdgeInsets.all(6.0),
+            child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD6A067),
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        flex: 8,
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(5.0),
+                            topRight: Radius.circular(5.0),
+                          ),
+                          child: Image.asset(
+                            'assets/images/pantera.jpg',
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 3,
+                        color: Colors.black,
+                      ),
+                      Container(
+                        height: 32,
+              decoration: const BoxDecoration(
+                          color: Color(0xFFD6A067),
+                borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(5.0),
+                            bottomRight: Radius.circular(5.0),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: List.generate(4, (i) => Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 1.0),
+                            child: Image.asset(
+                              'assets/icons/редкость.png',
+                              height: 14,
+                            ),
+                          )),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+      
+    } else if (index == 4) {
+      return InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CardDetailScreen(cardIndex: index),
+            ),
+          );
+        },
+        child: AspectRatio(
+          aspectRatio: 3/4,
+          child: Stack(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.black, width: 2),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD6A067),
+                    borderRadius: BorderRadius.circular(7),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: Colors.black, width: 2),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(6.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD6A067),
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        flex: 8,
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(5.0),
+                            topRight: Radius.circular(5.0),
+                          ),
+                          child: Image.asset(
+                            'assets/images/white_bear.jpg',
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 3,
+                        color: Colors.black,
+                      ),
+                      Container(
+                        height: 32,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFD6A067),
+                          borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(5.0),
+                            bottomRight: Radius.circular(5.0),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: List.generate(3, (i) => Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 1.0),
+                            child: Image.asset(
+                              'assets/icons/редкость.png',
+                              height: 14,
+                            ),
+                          )),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }else if (index == 5) {
+      return InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CardDetailScreen(cardIndex: index),
+            ),
+          );
+        },
+        child: AspectRatio(
+          aspectRatio: 3/4,
+          child: Stack(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.black, width: 2),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD6A067),
+                    borderRadius: BorderRadius.circular(7),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: Colors.black, width: 2),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(6.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD6A067),
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        flex: 8,
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(5.0),
+                            topRight: Radius.circular(5.0),
+                          ),
+                          child: Image.asset(
+                            'assets/images/camel.jpg',
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 3,
+                        color: Colors.black,
           ),
           Container(
-            height: 24.0,
-            margin: const EdgeInsets.only(left: 4.0, right: 4.0, bottom: 4.0),
+                        height: 32,
             decoration: const BoxDecoration(
-              color: Color(0xFFEDD6B0),
+                          color: Color(0xFFD6A067),
               borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(4.0),
-                bottomRight: Radius.circular(4.0),
+                            bottomLeft: Radius.circular(5.0),
+                            bottomRight: Radius.circular(5.0),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: List.generate(3, (i) => Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 1.0),
+                            child: Image.asset(
+                              'assets/icons/редкость.png',
+                              height: 14,
+                            ),
+                          )),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
+            ],
+          ),
+        ),
+      );
+    } else if (index == 6) {
+      return InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CardDetailScreen(cardIndex: index),
+            ),
+          );
+        },
+        child: AspectRatio(
+          aspectRatio: 3/4,
+          child: Stack(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.black, width: 2),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD6A067),
+                    borderRadius: BorderRadius.circular(7),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: Colors.black, width: 2),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(6.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD6A067),
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        flex: 8,
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(5.0),
+                            topRight: Radius.circular(5.0),
+                          ),
+                          child: Image.asset(
+                            'assets/images/zebra.jpg',
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 3,
+                        color: Colors.black,
+                      ),
+                      Container(
+                        height: 32,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFD6A067),
+                          borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(5.0),
+                            bottomRight: Radius.circular(5.0),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: List.generate(3, (i) => Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 1.0),
+                            child: Image.asset(
+                              'assets/icons/редкость.png',
+                              height: 14,
+                            ),
+                          )),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else if (index == 7) {
+      return InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CardDetailScreen(cardIndex: index),
+            ),
+          );
+        },
+        child: AspectRatio(
+          aspectRatio: 3/4,
+          child: Stack(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.black, width: 2),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD6A067),
+                    borderRadius: BorderRadius.circular(7),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: Colors.black, width: 2),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(6.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD6A067),
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        flex: 8,
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(5.0),
+                            topRight: Radius.circular(5.0),
+                          ),
+                          child: Image.asset(
+                            'assets/images/elephant.jpg',
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 3,
+                        color: Colors.black,
+                      ),
+                      Container(
+                        height: 32,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFD6A067),
+                          borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(5.0),
+                            bottomRight: Radius.circular(5.0),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: List.generate(3, (i) => Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 1.0),
+                            child: Image.asset(
+                              'assets/icons/редкость.png',
+                              height: 14,
+                            ),
+                          )),
+                        ),
+                      ),
+                    ],
+                  ),
             ),
           ),
         ],
-      ),
-    );
-  }
-  
-  Widget _buildCardItemWithCounter() {
-    return Stack(
-      children: [
-        _buildCardItem(),
-        Positioned(
-          top: 0,
-          right: 0,
-          child: Container(
-            padding: const EdgeInsets.all(4.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.black, width: 1.5),
-            ),
-            child: Text(
-              '${2 + (5 * 0.5).toInt()}',
-              style: const TextStyle(
-                fontSize: 10.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
           ),
         ),
-      ],
-    );
+      );
+    //};// else {
+      //return Container(
+        //decoration: BoxDecoration(
+         // color: const Color(0xFFD6A067),
+        //  borderRadius: BorderRadius.circular(8.0),
+        //  border: Border.all(color: Colors.black, width: 2),
+      //),
+    //);
+    }
+    return const SizedBox.shrink();
   }
 } 

@@ -110,7 +110,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       // Логика выхода из аккаунта
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFDEB37D),
+                      backgroundColor: const Color(0xFFD6A067),
                       foregroundColor: Colors.black,
                       minimumSize: const Size(double.infinity, 50),
                       shape: RoundedRectangleBorder(
@@ -138,7 +138,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               width: 40.0,
               height: 40.0,
               decoration: BoxDecoration(
-                color: const Color(0xFFDEB37D),
+                color: const Color(0xFFD6A067),
                 borderRadius: BorderRadius.circular(8.0),
                 border: Border.all(color: Colors.black, width: 1),
               ),
@@ -163,7 +163,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             right: 0,
             child: Container(
               decoration: const BoxDecoration(
-                color: Color(0xFFDEB37D),
+                color: Color(0xFFD6A067),
               ),
               child: BottomNavigationBar(
                 currentIndex: 0,

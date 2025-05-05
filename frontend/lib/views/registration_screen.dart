@@ -118,7 +118,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> with SingleTick
                 controller: _tabController,
                 indicatorSize: TabBarIndicatorSize.tab,
                 indicator: BoxDecoration(
-                  color: const Color(0xFFDEB37D),
+                  color: const Color(0xFFD6A067),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 labelColor: Colors.black,
@@ -303,13 +303,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> with SingleTick
                         child: ElevatedButton(
                           onPressed: isLoading ? null : _register,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFDEB37D),
+                            backgroundColor: const Color(0xFFD6A067),
                             foregroundColor: Colors.black,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            disabledBackgroundColor: const Color(0xFFDEB37D).withOpacity(0.7),
+                            disabledBackgroundColor: const Color(0xFFD6A067).withOpacity(0.7),
                           ),
                           child: isLoading
                             ? const SizedBox(

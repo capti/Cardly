@@ -91,7 +91,7 @@ class _NewsScreenState extends State<NewsScreen> {
                 // Кнопка назад
                 Container(
                   decoration: const BoxDecoration(
-                    color: Color(0xFFDEB37D),
+                    color: Color(0xFFD6A067),
                     shape: BoxShape.circle,
                   ),
                   child: IconButton(
@@ -139,7 +139,7 @@ class _NewsScreenState extends State<NewsScreen> {
       ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
-          color: Color(0xFFDEB37D),
+          color: Color(0xFFD6A067),
         ),
         child: BottomNavigationBar(
           currentIndex: _currentIndex,
