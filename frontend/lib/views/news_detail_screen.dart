@@ -77,7 +77,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                 alignment: Alignment.centerLeft,
                 child: Container(
                   decoration: const BoxDecoration(
-                    color: Color(0xFFDEB37D),
+                    color: Color(0xFFD6A067),
                     shape: BoxShape.circle,
                   ),
                   child: IconButton(
@@ -123,7 +123,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                           height: 180,
                           width: double.infinity,
                           decoration: BoxDecoration(
-                            color: const Color(0xFFDEB37D),
+                            color: const Color(0xFFD6A067),
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                           alignment: Alignment.center,
@@ -169,7 +169,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                       right: 0,
                       child: Container(
                         decoration: BoxDecoration(
-                          color: const Color(0xFFDEB37D),
+                          color: const Color(0xFFD6A067),
                           borderRadius: BorderRadius.circular(4.0),
                         ),
                         child: IconButton(
@@ -195,7 +195,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
       ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
-          color: Color(0xFFDEB37D),
+          color: Color(0xFFD6A067),
         ),
         child: BottomNavigationBar(
           currentIndex: _currentIndex,

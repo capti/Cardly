@@ -86,7 +86,7 @@ class _QuestsScreenState extends State<QuestsScreen> with SingleTickerProviderSt
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                           decoration: const BoxDecoration(
-                            color: Color(0xFFDEB37D),
+                            color: Color(0xFFD6A067),
                             borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(7.0),
                               topRight: Radius.circular(7.0),
@@ -127,7 +127,7 @@ class _QuestsScreenState extends State<QuestsScreen> with SingleTickerProviderSt
                           unselectedLabelColor: Colors.black54,
                           indicatorColor: Colors.transparent,
                           indicator: const BoxDecoration(
-                            color: Color(0xFFDEB37D),
+                            color: Color(0xFFD6A067),
                             border: Border(
                               bottom: BorderSide(
                                 color: Colors.black,
@@ -168,7 +168,7 @@ class _QuestsScreenState extends State<QuestsScreen> with SingleTickerProviderSt
                       right: 12.0,
                       child: Container(
                         decoration: BoxDecoration(
-                          color: const Color(0xFFDEB37D),
+                          color: const Color(0xFFD6A067),
                           borderRadius: BorderRadius.circular(4.0),
                         ),
                         child: InkWell(
@@ -203,7 +203,7 @@ class _QuestsScreenState extends State<QuestsScreen> with SingleTickerProviderSt
                       // Уже на экране квестов
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFDEB37D),
+                      backgroundColor: const Color(0xFFD6A067),
                       foregroundColor: Colors.black,
                       padding: const EdgeInsets.symmetric(vertical: 12.0),
                       shape: RoundedRectangleBorder(
@@ -245,7 +245,7 @@ class _QuestsScreenState extends State<QuestsScreen> with SingleTickerProviderSt
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFDEB37D),
+                      backgroundColor: const Color(0xFFD6A067),
                       foregroundColor: Colors.black,
                       padding: const EdgeInsets.symmetric(vertical: 12.0),
                       shape: RoundedRectangleBorder(
@@ -281,7 +281,7 @@ class _QuestsScreenState extends State<QuestsScreen> with SingleTickerProviderSt
           // Нижняя навигационная панель
           Container(
             decoration: const BoxDecoration(
-              color: Color(0xFFDEB37D),
+              color: Color(0xFFD6A067),
             ),
             child: BottomNavigationBar(
               currentIndex: _currentIndex,
@@ -388,7 +388,7 @@ class _QuestsScreenState extends State<QuestsScreen> with SingleTickerProviderSt
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
             decoration: BoxDecoration(
-              color: const Color(0xFFDEB37D),
+              color: const Color(0xFFD6A067),
               borderRadius: BorderRadius.circular(16.0),
             ),
             child: Row(

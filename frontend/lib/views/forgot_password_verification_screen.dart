@@ -236,13 +236,13 @@ class _ForgotPasswordVerificationScreenState extends State<ForgotPasswordVerific
                       child: ElevatedButton(
                         onPressed: isLoading ? null : _verifyCode,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFDEB37D),
+                          backgroundColor: const Color(0xFFD6A067),
                           foregroundColor: Colors.black,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          disabledBackgroundColor: const Color(0xFFDEB37D).withOpacity(0.7),
+                          disabledBackgroundColor: const Color(0xFFD6A067).withOpacity(0.7),
                         ),
                         child: isLoading
                           ? const SizedBox(
@@ -270,7 +270,7 @@ class _ForgotPasswordVerificationScreenState extends State<ForgotPasswordVerific
                       child: ElevatedButton(
                         onPressed: () => Navigator.pop(context),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFDEB37D),
+                          backgroundColor: const Color(0xFFD6A067),
                           foregroundColor: Colors.black,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(

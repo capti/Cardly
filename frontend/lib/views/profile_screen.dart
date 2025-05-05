@@ -31,7 +31,7 @@ class ProfileScreen extends StatelessWidget {
             height: 40.0,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xFFDEB37D),
+              color: const Color(0xFFD6A067),
             ),
             child: InkWell(
               borderRadius: BorderRadius.circular(20.0),
@@ -139,7 +139,7 @@ class ProfileScreen extends StatelessWidget {
             margin: const EdgeInsets.symmetric(horizontal: 16.0),
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             decoration: BoxDecoration(
-              color: const Color(0xFFDEB37D),
+              color: const Color(0xFFD6A067),
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: Row(
@@ -221,7 +221,7 @@ class ProfileScreen extends StatelessWidget {
           // Нижняя навигационная панель
           Container(
             decoration: const BoxDecoration(
-              color: Color(0xFFDEB37D),
+              color: Color(0xFFD6A067),
             ),
             child: BottomNavigationBar(
               currentIndex: 0,
@@ -293,7 +293,7 @@ class ProfileScreen extends StatelessWidget {
       width: 60.0,
       height: 84.0,
       decoration: BoxDecoration(
-        color: const Color(0xFFDEB37D),
+        color: const Color(0xFFD6A067),
         borderRadius: BorderRadius.circular(8.0),
         border: Border.all(color: Colors.black, width: 2),
       ),

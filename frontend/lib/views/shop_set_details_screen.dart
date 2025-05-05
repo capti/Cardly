@@ -88,7 +88,7 @@ class _ShopSetDetailsScreenState extends State<ShopSetDetailsScreen> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                     decoration: const BoxDecoration(
-                      color: Color(0xFFDEB37D),
+                      color: Color(0xFFD6A067),
                       borderRadius: BorderRadius.all(Radius.circular(8.0)),
                       border: Border(
                         bottom: BorderSide(
@@ -141,7 +141,7 @@ class _ShopSetDetailsScreenState extends State<ShopSetDetailsScreen> {
                             height: 150,
                             width: double.infinity,
                             decoration: BoxDecoration(
-                              color: const Color(0xFFDEB37D),
+                              color: const Color(0xFFD6A067),
                               borderRadius: BorderRadius.circular(8.0),
                             ),
                           ),
@@ -184,7 +184,7 @@ class _ShopSetDetailsScreenState extends State<ShopSetDetailsScreen> {
                                 );
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFDEB37D),
+                                backgroundColor: const Color(0xFFD6A067),
                                 foregroundColor: Colors.black,
                                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                                 shape: RoundedRectangleBorder(
@@ -214,7 +214,7 @@ class _ShopSetDetailsScreenState extends State<ShopSetDetailsScreen> {
                                 );
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFDEB37D),
+                                backgroundColor: const Color(0xFFD6A067),
                                 foregroundColor: Colors.black,
                                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                                 shape: RoundedRectangleBorder(
@@ -263,7 +263,7 @@ class _ShopSetDetailsScreenState extends State<ShopSetDetailsScreen> {
           // Нижняя навигационная панель
           Container(
             decoration: const BoxDecoration(
-              color: Color(0xFFDEB37D),
+              color: Color(0xFFD6A067),
             ),
             child: BottomNavigationBar(
               currentIndex: _currentIndex,
