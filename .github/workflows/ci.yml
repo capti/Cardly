@@ -26,7 +26,11 @@ jobs:
     
     - name: Run Flutter analyze
       run: |
-        cd frontend && flutter analyze
+        cd frontend && flutter analyze --write=analyze_output.txt
+        if [ -s analyze_output.txt ]; then
+          cat analyze_output.txt
+          exit 1
+        fi
     
     - name: Run Flutter tests
       run: |
