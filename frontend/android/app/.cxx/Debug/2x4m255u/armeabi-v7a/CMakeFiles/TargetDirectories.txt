@@ -1,0 +1,2 @@
+C:/Users/C4PT1/Pictures/card-main/frontend/android/app/.cxx/Debug/2x4m255u/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/C4PT1/Pictures/card-main/frontend/android/app/.cxx/Debug/2x4m255u/armeabi-v7a/CMakeFiles/rebuild_cache.dir

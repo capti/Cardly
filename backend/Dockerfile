@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jdk-alpine as build
+FROM eclipse-temurin:17-jdk as build
 WORKDIR /app
 
 COPY gradlew .
@@ -11,7 +11,7 @@ COPY src src
 RUN chmod +x ./gradlew
 RUN ./gradlew build -x test
 
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:17-jre
 WORKDIR /app
 COPY --from=build /app/build/libs/*.jar app.jar
 

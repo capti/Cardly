@@ -3,7 +3,7 @@ package ru.vsu.app.controller
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
-import ru.vsu.app.dto.CardDto
+import ru.vsu.app.dto.CardResponse
 import ru.vsu.app.model.User
 import ru.vsu.app.service.CardService
 
@@ -16,7 +16,7 @@ class CardController(
     fun getUserInventory(
         @AuthenticationPrincipal user: User,
         @RequestParam(required = false, defaultValue = "rarity") sortBy: String
-    ): ResponseEntity<List<CardDto>> {
+    ): ResponseEntity<List<CardResponse>> {
         val cards = cardService.getUserCards(user, sortBy)
         return ResponseEntity.ok(cards)
     }
@@ -25,7 +25,7 @@ class CardController(
     fun getCardDetails(
         @PathVariable cardId: Long,
         @AuthenticationPrincipal user: User
-    ): ResponseEntity<CardDto> {
+    ): ResponseEntity<CardResponse> {
         val card = cardService.getCardDetails(cardId, user)
         return ResponseEntity.ok(card)
     }

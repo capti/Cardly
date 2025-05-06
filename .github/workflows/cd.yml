@@ -27,7 +27,7 @@ jobs:
         cd frontend && flutter build apk --release
     
     - name: Upload APK artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: android-apk
         path: frontend/build/app/outputs/flutter-apk/app-release.apk
@@ -45,7 +45,26 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: 'gradle'
-    
+
+    - name: Grant execute permission for gradlew
+      run: cd backend && chmod +x gradlew
+      
+    - name: Set up PostgreSQL
+      uses: harmon758/postgresql-action@v1
+      with:
+        postgresql version: '14'
+        postgresql db: ${{ secrets.POSTGRES_DB }}
+        postgresql user: ${{ secrets.POSTGRES_USER }}
+        postgresql password: ${{ secrets.POSTGRES_PASSWORD }}
+
+    - name: Export DB secrets to environment
+      run: |
+        echo "DB_HOST=localhost" >> $GITHUB_ENV
+        echo "DB_PORT=5432" >> $GITHUB_ENV
+        echo "DB_NAME=${{ secrets.POSTGRES_DB }}" >> $GITHUB_ENV
+        echo "DB_USER=${{ secrets.POSTGRES_USER }}" >> $GITHUB_ENV
+        echo "DB_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> $GITHUB_ENV
+
     - name: Build with Gradle
       run: |
         cd backend && ./gradlew build
@@ -55,7 +74,7 @@ jobs:
         cd backend && docker build -t cardly-backend .
     
     - name: Upload backend artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: backend-build
         path: backend/build/libs 

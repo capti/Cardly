@@ -2,7 +2,7 @@ package ru.vsu.app.service
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import ru.vsu.app.dto.CardDto
+import ru.vsu.app.dto.CardResponse
 import ru.vsu.app.model.Card
 import ru.vsu.app.model.User
 import ru.vsu.app.repository.CardRepository
@@ -14,17 +14,17 @@ class CardService(
     private val cardRepository: CardRepository,
     private val userRepository: UserRepository
 ) {
-    fun getUserCards(user: User, sortBy: String = "rarity"): List<CardDto> {
+    fun getUserCards(user: User, sortBy: String = "rarity"): List<CardResponse> {
         val cards = when (sortBy) {
             "rarity" -> cardRepository.findAllByOwnerOrderByRarityDesc(user)
             "collection" -> cardRepository.findAllByOwnerOrderByCollectionAsc(user)
             else -> cardRepository.findAllByOwner(user)
         }
         
-        return cards.map { card -> mapToCardDto(card) }
+        return cards.map { card -> mapToCardResponse(card) }
     }
 
-    fun getCardDetails(cardId: Long, user: User): CardDto {
+    fun getCardDetails(cardId: Long, user: User): CardResponse {
         val card = cardRepository.findById(cardId)
             .orElseThrow { EntityNotFoundException("Card not found with id: $cardId") }
         
@@ -32,7 +32,7 @@ class CardService(
             throw IllegalStateException("User does not own this card")
         }
         
-        return mapToCardDto(card)
+        return mapToCardResponse(card)
     }
 
     @Transactional
@@ -54,8 +54,8 @@ class CardService(
         return card.disassemblePrice
     }
 
-    private fun mapToCardDto(card: Card): CardDto {
-        return CardDto(
+    private fun mapToCardResponse(card: Card): CardResponse {
+        return CardResponse(
             id = card.id,
             name = card.name,
             imageUrl = card.imageUrl,
