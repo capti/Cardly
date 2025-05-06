@@ -3,6 +3,7 @@ import 'shop_set_content_screen.dart';
 import 'home_screen.dart';
 import 'shop_screen.dart';
 import 'exchanges_screen.dart';
+import 'pack_open_screen.dart';
 
 class ShopSetDetailsScreen extends StatefulWidget {
   final String setName;
@@ -208,9 +209,12 @@ class _ShopSetDetailsScreenState extends State<ShopSetDetailsScreen> {
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: () {
-                                // Логика покупки набора
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Набор "${widget.setName}" куплен')),
+                                // После покупки переходим на экран открытия пака
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PackOpenScreen(setName: widget.setName),
+                                  ),
                                 );
                               },
                               style: ElevatedButton.styleFrom(
