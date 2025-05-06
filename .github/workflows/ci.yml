@@ -37,6 +37,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+
+    - name: Set up PostgreSQL
+      uses: harmon758/postgresql-action@v1
+      with:
+        postgresql version: '14'
+        postgresql db: ${{ secrets.POSTGRES_DB }}
+        postgresql user: ${{ secrets.POSTGRES_USER }}
+        postgresql password: ${{ secrets.POSTGRES_PASSWORD }}
+
+    - name: Export DB secrets to environment
+      run: |
+          echo "DB_HOST=localhost" >> $GITHUB_ENV
+          echo "DB_PORT=5432" >> $GITHUB_ENV
+          echo "DB_NAME=${{ secrets.POSTGRES_DB }}" >> $GITHUB_ENV
+          echo "DB_USER=${{ secrets.POSTGRES_USER }}" >> $GITHUB_ENV
+          echo "DB_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> $GITHUB_ENV
     
     - name: Set up JDK
       uses: actions/setup-java@v3

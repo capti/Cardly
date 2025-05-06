@@ -51,7 +51,7 @@ class _CreateCardScreenState extends State<CreateCardScreen> {
                 // Кнопка назад
                 Container(
                   decoration: const BoxDecoration(
-                    color: Color(0xFFDEB37D),
+                    color: Color(0xFFD6A067),
                     shape: BoxShape.circle,
                   ),
                   child: IconButton(
@@ -142,7 +142,7 @@ class _CreateCardScreenState extends State<CreateCardScreen> {
                   // Логика создания карточки
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFDEB37D),
+                  backgroundColor: const Color(0xFFD6A067),
                   foregroundColor: Colors.black,
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   shape: RoundedRectangleBorder(
@@ -163,7 +163,7 @@ class _CreateCardScreenState extends State<CreateCardScreen> {
           // Нижняя навигационная панель
           Container(
             decoration: const BoxDecoration(
-              color: Color(0xFFDEB37D),
+              color: Color(0xFFD6A067),
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(16.0),
                 topRight: Radius.circular(16.0),
@@ -237,7 +237,7 @@ class _CreateCardScreenState extends State<CreateCardScreen> {
   Widget _buildCardTemplate() {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFDEB37D),
+        color: const Color(0xFFD6A067),
         borderRadius: BorderRadius.circular(8.0),
         border: Border.all(color: Colors.black, width: 2),
       ),
@@ -249,7 +249,7 @@ class _CreateCardScreenState extends State<CreateCardScreen> {
             child: Container(
               width: double.infinity,
               decoration: const BoxDecoration(
-                color: Color(0xFFDEB37D),
+                color: Color(0xFFD6A067),
                 border: Border(
                   bottom: BorderSide(color: Colors.black, width: 2),
                 ),
@@ -262,7 +262,7 @@ class _CreateCardScreenState extends State<CreateCardScreen> {
             flex: 1,
             child: Container(
               width: double.infinity,
-              color: const Color(0xFFDEB37D),
+              color: const Color(0xFFD6A067),
             ),
           ),
         ],
@@ -284,7 +284,7 @@ class _CreateCardScreenState extends State<CreateCardScreen> {
         margin: const EdgeInsets.only(bottom: 8.0),
         padding: const EdgeInsets.symmetric(vertical: 12.0),
         decoration: BoxDecoration(
-          color: const Color(0xFFDEB37D),
+          color: const Color(0xFFD6A067),
           borderRadius: BorderRadius.circular(4.0),
         ),
         alignment: Alignment.center,

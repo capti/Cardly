@@ -21,7 +21,7 @@ class _ShopCoinDetailsScreenState extends State<ShopCoinDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF4E3), // Бежевый фон
+      backgroundColor: const Color(0xFFFFF4E3),
       appBar: AppBar(
         backgroundColor: const Color(0xFFFFF4E3),
         elevation: 0,
@@ -80,59 +80,44 @@ class _ShopCoinDetailsScreenState extends State<ShopCoinDetailsScreen> {
                 color: const Color(0xFFEDD6B0),
                 borderRadius: BorderRadius.circular(8.0),
               ),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => const ShopScreen()),
-                        );
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 12.0),
-                        alignment: Alignment.center,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFEDD6B0),
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(8.0),
-                            bottomLeft: Radius.circular(8.0),
-                          ),
-                        ),
-                        child: const Text(
-                          'Наборы',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const ShopScreen()),
+                      );
+                    },
+                    child: Text(
+                      'Наборы',
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[600],
                       ),
                     ),
                   ),
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12.0),
-                      alignment: Alignment.center,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFDEB37D),
-                        borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(8.0),
-                          bottomRight: Radius.circular(8.0),
-                        ),
-                        border: Border(
-                          bottom: BorderSide(
-                            color: Colors.black,
-                            width: 3.0,
-                          ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFD6A067),
+                      borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                      border: Border(
+                        bottom: BorderSide(
+                          color: Colors.black,
+                          width: 3.0,
                         ),
                       ),
-                      child: const Text(
-                        'Монеты',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    ),
+                    child: const Text(
+                      'Монеты',
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
                       ),
                     ),
                   ),
@@ -140,13 +125,11 @@ class _ShopCoinDetailsScreenState extends State<ShopCoinDetailsScreen> {
               ),
             ),
           ),
-          
           // Основное содержимое - детали монеты
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.all(16.0),
               child: Container(
-                width: double.infinity,
                 decoration: BoxDecoration(
                   color: const Color(0xFFEDD6B0),
                   borderRadius: BorderRadius.circular(8.0),
@@ -157,40 +140,59 @@ class _ShopCoinDetailsScreenState extends State<ShopCoinDetailsScreen> {
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          // Пакет монет
+                          const SizedBox(height: 10.0),
+                          // Превью монеты
                           Container(
-                            width: 150,
                             height: 150,
-                            margin: const EdgeInsets.only(top: 40.0),
+                            width: double.infinity,
                             decoration: BoxDecoration(
-                              color: const Color(0xFFDEB37D),
+                              color: const Color(0xFFD6A067),
                               borderRadius: BorderRadius.circular(8.0),
                             ),
                             child: Center(
                               child: Text(
                                 widget.coinName,
                                 style: const TextStyle(
-                                  fontSize: 16.0,
+                                  fontSize: 18.0,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
                           ),
-                          
-                          // Кнопка "Купить"
+                          const SizedBox(height: 10.0),
+                          // Название и цена
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                widget.coinName,
+                                style: const TextStyle(
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const Text(
+                                'Цена',
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20.0),
+                          // Кнопка покупки
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: () {
-                                // Логика покупки монет
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(content: Text('Вы купили ${widget.coinName}')),
                                 );
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFDEB37D),
+                                backgroundColor: const Color(0xFFD6A067),
                                 foregroundColor: Colors.black,
                                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                                 shape: RoundedRectangleBorder(
@@ -209,26 +211,23 @@ class _ShopCoinDetailsScreenState extends State<ShopCoinDetailsScreen> {
                         ],
                       ),
                     ),
-                    
                     // Кнопка закрытия
                     Positioned(
                       top: 8.0,
                       right: 8.0,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFDEB37D),
-                          borderRadius: BorderRadius.circular(4.0),
-                          border: Border.all(color: Colors.black, width: 1),
-                        ),
-                        child: IconButton(
-                          icon: const Icon(Icons.close, color: Colors.black),
-                          onPressed: () => Navigator.pop(context),
-                          constraints: const BoxConstraints(
-                            minWidth: 36,
-                            minHeight: 36,
+                      child: GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: Container(
+                          padding: const EdgeInsets.all(4.0),
+                          decoration: BoxDecoration(
+                            color: Colors.amber,
+                            borderRadius: BorderRadius.circular(4.0),
                           ),
-                          iconSize: 20,
-                          padding: EdgeInsets.zero,
+                          child: const Icon(
+                            Icons.close,
+                            color: Colors.black,
+                            size: 18.0,
+                          ),
                         ),
                       ),
                     ),
@@ -237,15 +236,10 @@ class _ShopCoinDetailsScreenState extends State<ShopCoinDetailsScreen> {
               ),
             ),
           ),
-          
           // Нижняя навигационная панель
           Container(
             decoration: const BoxDecoration(
-              color: Color(0xFFDEB37D),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(16.0),
-                topRight: Radius.circular(16.0),
-              ),
+              color: Color(0xFFD6A067),
             ),
             child: BottomNavigationBar(
               currentIndex: _currentIndex,
@@ -254,24 +248,22 @@ class _ShopCoinDetailsScreenState extends State<ShopCoinDetailsScreen> {
                   setState(() {
                     _currentIndex = index;
                   });
-                  
-                  // Навигация в зависимости от выбранного индекса
                   switch (index) {
-                    case 0: // Главное меню
+                    case 0:
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(builder: (context) => const HomeScreen()),
                         (route) => false,
                       );
                       break;
-                    case 2: // Магазин
+                    case 2:
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(builder: (context) => const ShopScreen()),
                         (route) => false,
                       );
                       break;
-                    case 3: // Обменчик
+                    case 3:
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(builder: (context) => const ExchangesScreen()),
@@ -286,21 +278,21 @@ class _ShopCoinDetailsScreenState extends State<ShopCoinDetailsScreen> {
               type: BottomNavigationBarType.fixed,
               selectedItemColor: Colors.black,
               unselectedItemColor: Colors.black54,
-              items: const [
+              items: [
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.home),
+                  icon: Image.asset('assets/icons/главная.png', height: 24),
                   label: 'Главная',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.book),
+                  icon: Image.asset('assets/icons/Инвентарь.png', height: 24),
                   label: '',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.storefront),
-                  label: 'Магазин',
+                  icon: Image.asset('assets/icons/магазин.png', height: 24),
+                  label: '',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.people),
+                  icon: Image.asset('assets/icons/обменник.png', height: 24),
                   label: '',
                 ),
               ],

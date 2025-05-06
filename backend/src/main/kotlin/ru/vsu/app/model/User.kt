@@ -24,5 +24,8 @@ data class User(
     
     val passwordResetToken: String? = null,
     
-    val passwordResetTokenExpiry: Long? = null
+    val passwordResetTokenExpiry: Long? = null,
+    
+    @Column(nullable = false)
+    var coins: Int = 1000
 ) 

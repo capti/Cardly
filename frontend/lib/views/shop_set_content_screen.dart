@@ -29,7 +29,7 @@ class _ShopSetContentScreenState extends State<ShopSetContentScreen> {
           margin: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: const Color(0xFFDEB37D),
+            color: const Color(0xFFD6A067),
           ),
           child: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.black),
@@ -68,7 +68,7 @@ class _ShopSetContentScreenState extends State<ShopSetContentScreen> {
           // Нижняя навигационная панель
           Container(
             decoration: const BoxDecoration(
-              color: Color(0xFFDEB37D),
+              color: Color(0xFFD6A067),
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(16.0),
                 topRight: Radius.circular(16.0),
@@ -142,7 +142,7 @@ class _ShopSetContentScreenState extends State<ShopSetContentScreen> {
   Widget _buildCardItem() {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFDEB37D),
+        color: const Color(0xFFD6A067),
         borderRadius: BorderRadius.circular(6.0),
         border: Border.all(color: Colors.black, width: 1),
       ),
@@ -154,7 +154,7 @@ class _ShopSetContentScreenState extends State<ShopSetContentScreen> {
             child: Container(
               width: double.infinity,
               decoration: const BoxDecoration(
-                color: Color(0xFFDEB37D),
+                color: Color(0xFFD6A067),
                 border: Border(
                   bottom: BorderSide(color: Colors.black, width: 1),
                 ),
@@ -167,7 +167,7 @@ class _ShopSetContentScreenState extends State<ShopSetContentScreen> {
             flex: 1,
             child: Container(
               width: double.infinity,
-              color: const Color(0xFFDEB37D),
+              color: const Color(0xFFD6A067),
             ),
           ),
         ],

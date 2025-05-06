@@ -40,7 +40,7 @@ class _ExchangeDetailsScreenState extends State<ExchangeDetailsScreen> {
           children: [
             // Информация об обмене
             Card(
-              color: const Color(0xFFDEB37D),
+              color: const Color(0xFFD6A067),
               elevation: 2,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.0),
@@ -204,7 +204,7 @@ class _ExchangeDetailsScreenState extends State<ExchangeDetailsScreen> {
             // Кнопка отмены (для своих обменов)
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFDEB37D),
+                backgroundColor: const Color(0xFFD6A067),
                 foregroundColor: Colors.black,
                 padding: const EdgeInsets.symmetric(vertical: 12.0),
                 minimumSize: const Size(double.infinity, 48.0),
@@ -226,7 +226,7 @@ class _ExchangeDetailsScreenState extends State<ExchangeDetailsScreen> {
       ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
-          color: Color(0xFFDEB37D),
+          color: Color(0xFFD6A067),
         ),
         child: BottomNavigationBar(
           currentIndex: _currentIndex,
@@ -296,7 +296,7 @@ class _ExchangeDetailsScreenState extends State<ExchangeDetailsScreen> {
       width: 120.0,
       margin: const EdgeInsets.only(right: 12.0),
       decoration: BoxDecoration(
-        color: const Color(0xFFDEB37D),
+        color: const Color(0xFFD6A067),
         borderRadius: BorderRadius.circular(8.0),
         border: Border.all(color: Colors.black54, width: 1),
       ),

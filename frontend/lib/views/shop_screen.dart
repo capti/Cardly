@@ -109,7 +109,7 @@ class _ShopScreenState extends State<ShopScreen> with SingleTickerProviderStateM
               child: TabBar(
                 controller: _tabController,
                 indicator: const BoxDecoration(
-                  color: Color(0xFFDEB37D),
+                  color: Color(0xFFD6A067),
                   borderRadius: BorderRadius.all(Radius.circular(12.0)),
                   border: Border(
                     bottom: BorderSide(
@@ -148,7 +148,7 @@ class _ShopScreenState extends State<ShopScreen> with SingleTickerProviderStateM
       ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
-          color: Color(0xFFDEB37D),
+          color: Color(0xFFD6A067),
         ),
         child: BottomNavigationBar(
           currentIndex: _currentIndex,
@@ -279,7 +279,7 @@ class _ShopScreenState extends State<ShopScreen> with SingleTickerProviderStateM
           },
           child: Container(
             decoration: BoxDecoration(
-              color: const Color(0xFFDEB37D),
+              color: const Color(0xFFD6A067),
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: Column(
@@ -328,7 +328,7 @@ class _ShopScreenState extends State<ShopScreen> with SingleTickerProviderStateM
             },
             child: Container(
               decoration: BoxDecoration(
-                color: const Color(0xFFDEB37D),
+                color: const Color(0xFFD6A067),
                 borderRadius: BorderRadius.circular(8.0),
               ),
               child: Column(
