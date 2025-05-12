@@ -33,11 +33,13 @@
 - Ограничения проекта [PDF](https://github.com/capti/Cardly/blob/main/Documentation/%D0%9E%D0%B3%D1%80%D0%B0%D0%BD%D0%B8%D1%87%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B0.pdf) | [DOCX](https://github.com/capti/Cardly/blob/main/Documentation/%D0%9E%D0%B3%D1%80%D0%B0%D0%BD%D0%B8%D1%87%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B0.docx)
 - SWOT-анализ [PDF](https://github.com/capti/Cardly/blob/main/Documentation/SWOT-%D0%B0%D0%BD%D0%B0%D0%BB%D0%B8%D0%B7.pdf) | [DOCX](https://github.com/capti/Cardly/blob/main/Documentation/SWOT-%D0%B0%D0%BD%D0%B0%D0%BB%D0%B8%D0%B7.docx)
 - Технические риски [PDF](https://github.com/capti/Cardly/blob/main/Documentation/%D0%A2%D0%B5%D1%85%D0%BD%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5%20%D1%80%D0%B8%D1%81%D0%BA%D0%B8.pdf) | [DOCX](https://github.com/capti/Cardly/blob/main/Documentation/%D0%A2%D0%B5%D1%85%D0%BD%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5%20%D1%80%D0%B8%D1%81%D0%BA%D0%B8.docx)
+- Итоговый отчет ПМ за 2 этап [PDF](https://github.com/capti/Cardly/blob/main/Documentation/%D0%98%D1%82%D0%BE%D0%B3%D0%BE%D0%B2%D1%8B%D0%B9%20%D0%BE%D1%82%D1%87%D0%B5%D1%82%20%D0%9F%D0%9C%201%20%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B%205%20%D0%B3%D1%80%D1%83%D0%BF%D0%BF%D1%8B%20%D0%B7%D0%B0%202%20%D1%8D%D1%82%D0%B0%D0%BF.pdf) | [DOCX](https://github.com/capti/Cardly/blob/main/Documentation/%D0%98%D1%82%D0%BE%D0%B3%D0%BE%D0%B2%D1%8B%D0%B9%20%D0%BE%D1%82%D1%87%D0%B5%D1%82%20%D0%9F%D0%9C%201%20%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B%205%20%D0%B3%D1%80%D1%83%D0%BF%D0%BF%D1%8B%20%D0%B7%D0%B0%202%20%D1%8D%D1%82%D0%B0%D0%BF.docx)
 - BrandBook [PDF](https://github.com/capti/Cardly/blob/main/Documentation/brandbook.pdf)
 - [Финансовая модель](https://github.com/capti/Cardly/tree/main/Documentation/Financial%20model)
 - [Диаграммы](https://github.com/capti/Cardly/tree/main/Documentation/Diagrams)
 - [Пользовательские пути](https://www.figma.com/board/s0O3zvAPgI4DXJF2BDwrAS/user-scenario?node-id=0-1&t=WPJXqXWfhTH9b5QX-1)
 - [Swagger API](https://github.com/capti/Cardly/blob/main/Documentation/Swagger/cardly.yaml)
+- [Тестовая документация](https://github.com/capti/Cardly/tree/dev/Documentation/Testing)
 
 
 
@@ -63,7 +65,7 @@
   
 **Нас оценили**
 
-- [Команда 5-3. 1 аттестация](https://github.com/TrefflyTeam/documentation/blob/main/%D0%A0%D0%B5%D0%B7%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%82%D1%8B%20%D0%BE%D1%86%D0%B5%D0%BD%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F%20%D0%BE%D1%82%20%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B%205.3.pdf)
-- [Команда 5-4. 1 аттестация](https://github.com/TP-Jobsy/jobsy-docs/blob/main/%D0%A7%D0%B5%D0%BA%D0%BB%D0%B8%D1%81%D1%82%201%20%D1%8D%D1%82%D0%B0%D0%BF.pdf) |
+- [Команда 5-3. 1 аттестация](https://github.com/TrefflyTeam/documentation/blob/main/%D0%A0%D0%B5%D0%B7%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%82%D1%8B%20%D0%BE%D1%86%D0%B5%D0%BD%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F%20%D0%BE%D1%82%20%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B%205.3.pdf) | [Команда 5-3. 2 аттестация](https://github.com/TrefflyTeam/documentation/blob/main/2%20%D1%8D%D1%82%D0%B0%D0%BF%20%D0%BF%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%BA%D0%B8%20%D0%BE%D1%82%205.3.pdf)
+- [Команда 5-4. 1 аттестация](https://github.com/TP-Jobsy/jobsy-docs/blob/main/%D0%A7%D0%B5%D0%BA%D0%BB%D0%B8%D1%81%D1%82%201%20%D1%8D%D1%82%D0%B0%D0%BF.pdf) | [Команда 5-4. 2 аттестация](https://github.com/TP-Jobsy/jobsy-docs/blob/main/checklist/%D0%A7%D0%B5%D0%BA%D0%BB%D0%B8%D1%81%D1%82%202%20%D1%8D%D1%82%D0%B0%D0%BF.pdf)
 - [Команда 6-1. 1 аттестация](https://gitlab.usr0.ru/tailoredtastes/tailoredtastes-documentation/-/tree/master/%D0%9A%D1%80%D0%BE%D1%81%D1%81-%D0%BF%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%BA%D0%B0?ref_type=heads) | [Команда 6-1. 2 аттестация](https://gitlab.usr0.ru/tailoredtastes/tailoredtastes-documentation/-/blob/master/%D0%9A%D1%80%D0%BE%D1%81%D1%81-%D0%BF%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%BA%D0%B0/%D0%9A%D1%80%D0%BE%D1%81%D1%81-%D0%BF%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%BA%D0%B0%20%D0%A2%D0%9F%206.1%202%20%D1%8D%D1%82%D0%B0%D0%BF.pdf)
 - [Команда 6-2. 1 аттестация](https://github.com/AlexanderLaptev/Taskbench/blob/main/docs/%D0%A7%D0%B5%D0%BA%D0%BB%D0%B8%D1%81%D1%82%201%20%D1%8D%D1%82%D0%B0%D0%BF.pdf) | [Команда 6-2. 2 аттестация](https://github.com/AlexanderLaptev/Taskbench/blob/main/docs/%D0%A7%D0%B5%D0%BA%D0%BB%D0%B8%D1%81%D1%82%202%20%D1%8D%D1%82%D0%B0%D0%BF.pdf)
