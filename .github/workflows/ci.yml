@@ -5,11 +5,10 @@ on:
     branches: 
       - main
       - dev
-
   pull_request:
     branches: [ main ]
 
-jobs:     
+jobs:
   frontend:
     runs-on: ubuntu-latest
     steps:
@@ -72,4 +71,3 @@ jobs:
     - name: Run tests
       run: |
         cd backend && ./gradlew test 
-
