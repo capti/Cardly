@@ -5,6 +5,7 @@ import 'inventory_screen.dart';
 import 'shop_set_details_screen.dart';
 import 'shop_coin_details_screen.dart';
 import 'profile_screen.dart';
+import 'search_players_screen.dart';
 
 class ShopScreen extends StatefulWidget {
   const ShopScreen({super.key});
@@ -72,7 +73,7 @@ class _ShopScreenState extends State<ShopScreen> with SingleTickerProviderStateM
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
             decoration: BoxDecoration(
-              color: const Color(0xFFEDD6B0),
+              color: const Color(0xFFEAD7C3),
               borderRadius: BorderRadius.circular(10.0),
             ),
             child: Row(
@@ -93,7 +94,14 @@ class _ShopScreenState extends State<ShopScreen> with SingleTickerProviderStateM
           ),
           IconButton(
             icon: Image.asset('assets/icons/поиск.png', height: 32),
-            onPressed: () {},
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (context) => const SearchPlayersModal(),
+              );
+            },
           ),
         ],
       ),
@@ -103,7 +111,7 @@ class _ShopScreenState extends State<ShopScreen> with SingleTickerProviderStateM
             padding: const EdgeInsets.all(16.0),
             child: Container(
               decoration: BoxDecoration(
-                color: const Color(0xFFEDD6B0),
+                color: const Color(0xFFEAD7C3),
                 borderRadius: BorderRadius.circular(12.0),
               ),
               child: TabBar(

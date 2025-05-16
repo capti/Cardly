@@ -4,6 +4,7 @@ import 'shop_screen.dart';
 import 'exchanges_screen.dart';
 import 'profile_screen.dart';
 import 'card_detail_screen.dart';
+import 'search_players_screen.dart';
 
 class InventoryScreen extends StatefulWidget {
   const InventoryScreen({super.key});
@@ -47,7 +48,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
             decoration: BoxDecoration(
-              color: const Color(0xFFEDD6B0),
+              color: const Color(0xFFEAD7C3),
               borderRadius: BorderRadius.circular(10.0),
             ),
             child: Row(
@@ -68,7 +69,14 @@ class _InventoryScreenState extends State<InventoryScreen> {
           ),
           IconButton(
             icon: Image.asset('assets/icons/поиск.png', height: 32),
-            onPressed: () {},
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (context) => const SearchPlayersModal(),
+              );
+            },
           ),
         ],
       ),

@@ -50,11 +50,11 @@ class _HomeScreenState extends State<HomeScreen> {
               color: Colors.black,
             ),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SearchPlayersScreen(),
-                ),
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (context) => const SearchPlayersModal(),
               );
             },
           ),
@@ -97,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
               itemBuilder: (context, index) {
                 return Container(
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEDD6B0),
+                    color: const Color(0xFFEAD7C3),
                     borderRadius: BorderRadius.circular(12.0),
                   ),
                 );

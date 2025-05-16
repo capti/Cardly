@@ -5,6 +5,7 @@ import 'home_screen.dart';
 import 'shop_screen.dart';
 import 'inventory_screen.dart';
 import 'profile_screen.dart';
+import 'search_players_screen.dart';
 
 class ExchangesScreen extends StatefulWidget {
   const ExchangesScreen({super.key});
@@ -47,7 +48,7 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 16.0),
             decoration: BoxDecoration(
-              color: const Color(0xFFEDD6B0),
+              color: const Color(0xFFEAD7C3),
               borderRadius: BorderRadius.circular(12.0),
             ),
             child: TabBar(
@@ -119,10 +120,15 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
                 ),
                 
                 Container(
- 
                   child: IconButton(
                     icon: Image.asset('assets/icons/поиск.png', height: 32),
                     onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => const SearchPlayersModal(),
+                      );
                     },
                   ),
                 ),
