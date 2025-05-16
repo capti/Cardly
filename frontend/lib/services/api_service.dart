@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
+import '../models/card_model.dart';
+import '../models/shop_model.dart';
 
 class ApiService {
   static const String baseUrl = 'http://87.236.23.130:8080/api';
@@ -12,6 +14,9 @@ class ApiService {
   static const String forgotPasswordUrl = '$baseUrl/auth/forgot-password';
   static const String resetPasswordUrl = '$baseUrl/auth/reset-password';
   
+  // Карты
+  static const String cardsUrl = '$baseUrl/cards';
+  static const String shopUrl = '$baseUrl/shop';
 
   Future<Map<String, String>> getHeaders() async {
     final token = await getSavedToken();
@@ -302,6 +307,175 @@ class ApiService {
       print('=== КОНЕЦ ПРОЦЕССА СБРОСА ПАРОЛЯ (С КРИТИЧЕСКОЙ ОШИБКОЙ) ===\n');
       
       throw Exception('Ошибка сети: ${e.toString()}');
+    }
+  }
+
+  // Карты
+  Future<List<CardModel>> getUserInventory({String sortBy = 'rarity'}) async {
+    try {
+      final headers = await getHeaders();
+      final response = await http.get(
+        Uri.parse('$cardsUrl/inventory?sortBy=$sortBy'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonList = json.decode(response.body);
+        return jsonList.map((json) => CardModel.fromJson(json)).toList();
+      } else {
+        throw Exception('Ошибка при получении инвентаря: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  Future<CardModel> getCardDetails(int cardId) async {
+    try {
+      final headers = await getHeaders();
+      final response = await http.get(
+        Uri.parse('$cardsUrl/$cardId'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        return CardModel.fromJson(json.decode(response.body));
+      } else {
+        throw Exception('Ошибка при получении деталей карты: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  Future<int> disassembleCard(int cardId) async {
+    try {
+      final headers = await getHeaders();
+      final response = await http.post(
+        Uri.parse('$cardsUrl/$cardId/disassemble'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['coinsReceived'] as int;
+      } else {
+        throw Exception('Ошибка при разборе карты: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  // Магазин
+  Future<List<PackModel>> getAllPacks() async {
+    try {
+      final headers = await getHeaders();
+      final response = await http.get(
+        Uri.parse('$shopUrl/packs'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonList = json.decode(response.body);
+        return jsonList.map((json) => PackModel.fromJson(json)).toList();
+      } else {
+        throw Exception('Ошибка при получении списка наборов: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  Future<PackModel> getPackDetails(int packId) async {
+    try {
+      final headers = await getHeaders();
+      final response = await http.get(
+        Uri.parse('$shopUrl/packs/$packId'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        return PackModel.fromJson(json.decode(response.body));
+      } else {
+        throw Exception('Ошибка при получении деталей набора: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  Future<PurchasePackResponse> buyPack(int packId) async {
+    try {
+      final headers = await getHeaders();
+      final response = await http.post(
+        Uri.parse('$shopUrl/packs/$packId/buy'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        return PurchasePackResponse.fromJson(json.decode(response.body));
+      } else {
+        throw Exception('Ошибка при покупке набора: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  Future<List<CoinOfferModel>> getAllCoinOffers() async {
+    try {
+      final headers = await getHeaders();
+      final response = await http.get(
+        Uri.parse('$shopUrl/coins/offers'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonList = json.decode(response.body);
+        return jsonList.map((json) => CoinOfferModel.fromJson(json)).toList();
+      } else {
+        throw Exception('Ошибка при получении списка предложений монет: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  Future<CoinOfferModel> getCoinOfferDetails(int offerId) async {
+    try {
+      final headers = await getHeaders();
+      final response = await http.get(
+        Uri.parse('$shopUrl/coins/offers/$offerId'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        return CoinOfferModel.fromJson(json.decode(response.body));
+      } else {
+        throw Exception('Ошибка при получении деталей предложения монет: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  Future<PurchaseCoinsResponse> purchaseCoins(int offerId, String redirectUrl) async {
+    try {
+      final headers = await getHeaders();
+      final response = await http.post(
+        Uri.parse('$shopUrl/coins/offers/$offerId/purchase'),
+        headers: headers,
+        body: json.encode({'redirectUrl': redirectUrl}),
+      );
+
+      if (response.statusCode == 200) {
+        return PurchaseCoinsResponse.fromJson(json.decode(response.body));
+      } else {
+        throw Exception('Ошибка при покупке монет: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
     }
   }
 } 
