@@ -16,7 +16,7 @@ class ShopScreen extends StatefulWidget {
 class _ShopScreenState extends State<ShopScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   int _currentIndex = 2;
-  int _selectedTab = 1;
+  int _selectedTab = 0;
   
   final List<String> _sets = [
     'Ценник 1',
@@ -159,24 +159,21 @@ class _ShopScreenState extends State<ShopScreen> with SingleTickerProviderStateM
               });
               switch (index) {
                 case 0:
-                  Navigator.pushAndRemoveUntil(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => const HomeScreen()),
-                    (route) => false,
                   );
                   break;
                 case 1:
-                  Navigator.pushAndRemoveUntil(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => const InventoryScreen()),
-                    (route) => false,
                   );
                   break;
                 case 3:
-                  Navigator.pushAndRemoveUntil(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => const ExchangesScreen()),
-                    (route) => false,
                   );
                   break;
               }

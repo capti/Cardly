@@ -206,24 +206,21 @@ class _InventoryScreenState extends State<InventoryScreen> {
               });
               switch (index) {
                 case 0:
-                  Navigator.pushAndRemoveUntil(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => const HomeScreen()),
-                    (route) => false,
                   );
                   break;
                 case 2:
-                  Navigator.pushAndRemoveUntil(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => const ShopScreen()),
-                    (route) => false,
                   );
                   break;
                 case 3:
-                  Navigator.pushAndRemoveUntil(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => const ExchangesScreen()),
-                    (route) => false,
                   );
                   break;
               }

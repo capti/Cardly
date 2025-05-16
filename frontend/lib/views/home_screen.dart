@@ -243,24 +243,21 @@ class _HomeScreenState extends State<HomeScreen> {
               });
               switch (index) {
                 case 1:
-                  Navigator.pushAndRemoveUntil(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => const InventoryScreen()),
-                    (route) => false,
                   );
                   break;
                 case 2:
-                  Navigator.pushAndRemoveUntil(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => const ShopScreen()),
-                    (route) => false,
                   );
                   break;
                 case 3:
-                  Navigator.pushAndRemoveUntil(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => const ExchangesScreen()),
-                    (route) => false,
                   );
                   break;
               }

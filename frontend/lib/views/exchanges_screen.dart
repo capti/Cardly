@@ -240,24 +240,21 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
               });
               switch (index) {
                 case 0:
-                  Navigator.pushAndRemoveUntil(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => const HomeScreen()),
-                    (route) => false,
                   );
                   break;
                 case 1:
-                  Navigator.pushAndRemoveUntil(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => const InventoryScreen()),
-                    (route) => false,
                   );
                   break;
                 case 2:
-                  Navigator.pushAndRemoveUntil(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => const ShopScreen()),
-                    (route) => false,
                   );
                   break;
               }
