@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import 'shop_screen.dart';
 import 'exchanges_screen.dart';
+import 'news_detail_screen.dart';
 
 class NewsScreen extends StatefulWidget {
   const NewsScreen({super.key});
@@ -203,41 +204,51 @@ class _NewsScreenState extends State<NewsScreen> {
   
   // Метод для отображения элемента новости
   Widget _buildNewsItem(NewsItem news) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16.0),
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: const Color(0xFFEDD6B0),
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Левая часть - заголовок
-          Expanded(
-            flex: 1,
-            child: Text(
-              news.title,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14.0,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => NewsDetailScreen(news: news),
+          ),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16.0),
+        padding: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: const Color(0xFFEDD6B0),
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Левая часть - заголовок
+            Expanded(
+              flex: 1,
+              child: Text(
+                news.title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14.0,
+                ),
               ),
             ),
-          ),
-          
-          const SizedBox(width: 16.0),
-          
-          // Правая часть - текст
-          Expanded(
-            flex: 1,
-            child: Text(
-              news.content,
-              style: const TextStyle(
-                fontSize: 14.0,
+            
+            const SizedBox(width: 16.0),
+            
+            // Правая часть - текст
+            Expanded(
+              flex: 1,
+              child: Text(
+                news.content,
+                style: const TextStyle(
+                  fontSize: 14.0,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
