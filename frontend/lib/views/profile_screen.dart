@@ -5,6 +5,7 @@ import 'exchanges_screen.dart';
 import 'inventory_screen.dart';
 import 'settings_screen.dart' show SettingsDialog;
 import 'achievements_screen.dart';
+import 'profile_image_dialog.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -70,19 +71,28 @@ class ProfileScreen extends StatelessWidget {
           const SizedBox(height: 20.0),
           
           // Аватар пользователя
-          Container(
-            width: 140.0,
-            height: 140.0,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.black, width: 2),
-            ),
-            child: const CircleAvatar(
-              backgroundColor: const Color(0xFFFFF4E3),
-              child: Icon(
-                Icons.person_outline,
-                size: 90.0,
-                color: Colors.black,
+          GestureDetector(
+            onTap: () {
+              showDialog(
+                context: context,
+                barrierColor: Colors.black.withOpacity(0.2),
+                builder: (context) => const ProfileImageUploadDialog(),
+              );
+            },
+            child: Container(
+              width: 140.0,
+              height: 140.0,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.black, width: 2),
+              ),
+              child: const CircleAvatar(
+                backgroundColor: Color(0xFFFFF4E3),
+                child: Icon(
+                  Icons.person_outline,
+                  size: 90.0,
+                  color: Colors.black,
+                ),
               ),
             ),
           ),
