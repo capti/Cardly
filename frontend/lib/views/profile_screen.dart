@@ -4,6 +4,7 @@ import 'shop_screen.dart';
 import 'exchanges_screen.dart';
 import 'inventory_screen.dart';
 import 'settings_screen.dart' show SettingsDialog;
+import 'achievements_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -149,15 +150,25 @@ class ProfileScreen extends StatelessWidget {
                       )),
                     ),
                   ),
-                  const Positioned(
+                  Positioned(
                     right: 12,
                     bottom: 8,
-                    child: Text(
-                      'Все достижения →',
-                      style: TextStyle(
-                        fontSize: 13.0,
-                        fontWeight: FontWeight.normal,
-                        color: Colors.black,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const AchievementsScreen(),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        'Все достижения →',
+                        style: TextStyle(
+                          fontSize: 13.0,
+                          fontWeight: FontWeight.normal,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
                   ),
