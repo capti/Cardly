@@ -1,9 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:adminpanel/views/login_page.dart';
 import 'package:adminpanel/views/collections_page.dart';
+import 'package:provider/provider.dart';
+import 'package:adminpanel/controllers/quest_controller.dart';
+import 'package:adminpanel/controllers/collection_controller.dart';
+import 'package:adminpanel/controllers/card_controller.dart';
+import 'package:adminpanel/controllers/achievement_controller.dart';
+import 'package:adminpanel/controllers/news_controller.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => QuestController()),
+        ChangeNotifierProvider(create: (_) => CollectionController()),
+        ChangeNotifierProvider(create: (_) => CardController()),
+        ChangeNotifierProvider(create: (_) => AchievementController()),
+        ChangeNotifierProvider(create: (_) => NewsController()),
+        // другие провайдеры
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

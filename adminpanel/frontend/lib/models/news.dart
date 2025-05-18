@@ -1,6 +1,15 @@
 class News {
+  final int news_ID;
   final String title;
-  final String text;
+  final String content;
+  final List<String> pictures;
+  final DateTime datePosted;
 
-  News({required this.title, required this.text});
+  News({
+    required this.news_ID,
+    required this.title,
+    required this.content,
+    required this.pictures,
+    required this.datePosted,
+  });
 } 

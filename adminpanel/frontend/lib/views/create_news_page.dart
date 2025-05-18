@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:adminpanel/views/widgets/navbar.dart';
 import 'dart:typed_data';
 import 'dart:html' as html;
+import '../models/news.dart';
 
 class CreateNewsPage extends StatefulWidget {
   const CreateNewsPage({Key? key}) : super(key: key);
@@ -13,25 +14,28 @@ class CreateNewsPage extends StatefulWidget {
 class _CreateNewsPageState extends State<CreateNewsPage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descController = TextEditingController();
-  Uint8List? _imageBytes;
+  List<String> _pictures = [];
   bool _saving = false;
   final FocusNode _titleFocus = FocusNode();
   final FocusNode _descFocus = FocusNode();
 
-  Future<void> _pickImage() async {
+  Future<void> _pickImages() async {
     final uploadInput = html.FileUploadInputElement();
     uploadInput.accept = 'image/*';
+    uploadInput.multiple = true;
     uploadInput.click();
     uploadInput.onChange.listen((event) {
-      final file = uploadInput.files?.first;
-      if (file != null) {
-        final reader = html.FileReader();
-        reader.readAsArrayBuffer(file);
-        reader.onLoadEnd.listen((event) {
-          setState(() {
-            _imageBytes = reader.result as Uint8List;
+      final files = uploadInput.files;
+      if (files != null && files.isNotEmpty) {
+        for (final file in files) {
+          final reader = html.FileReader();
+          reader.readAsDataUrl(file);
+          reader.onLoadEnd.listen((event) {
+            setState(() {
+              _pictures.add(reader.result as String);
+            });
           });
-        });
+        }
       }
     });
   }
@@ -111,14 +115,14 @@ class _CreateNewsPageState extends State<CreateNewsPage> {
                       ),
                     ),
                     const SizedBox(height: 32),
-                    // Картинка
+                    // Картинки
                     Align(
                       alignment: Alignment.centerLeft,
-                      child: const Text('Картинка', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+                      child: const Text('Картинки', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
                     ),
                     const SizedBox(height: 8),
                     GestureDetector(
-                      onTap: _pickImage,
+                      onTap: _pickImages,
                       child: Container(
                         width: 450,
                         height: 180,
@@ -130,18 +134,23 @@ class _CreateNewsPageState extends State<CreateNewsPage> {
                             width: 2,
                           ),
                         ),
-                        child: _imageBytes == null
+                        child: _pictures.isEmpty
                             ? Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   const Icon(Icons.add, size: 36, color: Colors.black),
                                   const SizedBox(height: 8),
-                                  const Text('Добавить картинку', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+                                  const Text('Добавить картинки', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
                                 ],
                               )
-                            : ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Image.memory(_imageBytes!, fit: BoxFit.cover, width: 450, height: 180),
+                            : ListView.separated(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: _pictures.length,
+                                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                                itemBuilder: (context, i) => ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.network(_pictures[i], fit: BoxFit.cover, width: 120, height: 120),
+                                ),
                               ),
                       ),
                     ),
@@ -181,8 +190,13 @@ class _CreateNewsPageState extends State<CreateNewsPage> {
                         onPressed: canSave && !_saving
                             ? () {
                                 setState(() => _saving = true);
-                                // TODO: добавить сохранение новости
-                                Navigator.of(context).pop();
+                                Navigator.of(context).pop(News(
+                                  news_ID: DateTime.now().millisecondsSinceEpoch,
+                                  title: _titleController.text,
+                                  content: _descController.text,
+                                  pictures: _pictures,
+                                  datePosted: DateTime.now(),
+                                ));
                               }
                             : null,
                         style: ElevatedButton.styleFrom(

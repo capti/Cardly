@@ -3,12 +3,18 @@ import 'package:adminpanel/views/achievements_page.dart';
 import 'package:adminpanel/views/quests_page.dart';
 import 'package:adminpanel/views/news_page.dart';
 import 'package:adminpanel/views/widgets/navbar.dart';
+import 'package:adminpanel/views/create_collection_page.dart';
+import 'package:adminpanel/views/view_collection_page.dart';
+import 'package:provider/provider.dart';
+import 'package:adminpanel/controllers/collection_controller.dart';
+import 'package:adminpanel/models/collection.dart';
 
 class CollectionsPage extends StatelessWidget {
   const CollectionsPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final collectionController = Provider.of<CollectionController>(context);
     return Scaffold(
       backgroundColor: const Color(0xFFFAF8F7),
       appBar: const NavBar(active: 'Главная', showBack: false),
@@ -43,12 +49,17 @@ class CollectionsPage extends StatelessWidget {
                 crossAxisCount: 4,
                 mainAxisSpacing: 32,
                 crossAxisSpacing: 32,
-                children: List.generate(7, (index) {
-                  if (index == 6) {
-                    return _AddCollectionCard();
-                  }
-                  return _CollectionCard();
-                }),
+                children: [
+                  ...collectionController.collections.map((collection) => _CollectionCard(
+                    collection: collection,
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => ViewCollectionPage(collection: collection)),
+                      );
+                    },
+                  )),
+                  _AddCollectionCard(),
+                ],
               ),
             ),
           ],
@@ -108,12 +119,22 @@ class _TopButton extends StatelessWidget {
 }
 
 class _CollectionCard extends StatelessWidget {
+  final Collection collection;
+  final VoidCallback? onTap;
+  const _CollectionCard({required this.collection, this.onTap});
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFFF7E5CF),
-        borderRadius: BorderRadius.circular(14),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFFF7E5CF),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Center(
+          child: Text(collection.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+        ),
       ),
     );
   }
@@ -122,16 +143,23 @@ class _CollectionCard extends StatelessWidget {
 class _AddCollectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFFF7E5CF),
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: const Center(
-        child: Icon(
-          Icons.add,
-          size: 48,
-          color: Colors.black,
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const CreateCollectionPage()),
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFFF7E5CF),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: const Center(
+          child: Icon(
+            Icons.add,
+            size: 48,
+            color: Colors.black,
+          ),
         ),
       ),
     );

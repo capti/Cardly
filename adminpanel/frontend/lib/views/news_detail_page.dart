@@ -1,18 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:adminpanel/views/widgets/navbar.dart';
-import 'dart:typed_data';
+import '../models/news.dart';
 
 class NewsDetailPage extends StatelessWidget {
-  final String title;
-  final String description;
-  final Uint8List? imageBytes;
+  final News news;
 
-  const NewsDetailPage({
-    Key? key,
-    required this.title,
-    required this.description,
-    this.imageBytes,
-  }) : super(key: key);
+  const NewsDetailPage({Key? key, required this.news}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -52,15 +45,28 @@ class NewsDetailPage extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      title,
+                      news.title,
                       style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 32),
-                    if (imageBytes != null)
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.memory(imageBytes!, fit: BoxFit.cover, width: 450, height: 180),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Дата: ${news.datePosted.toLocal().toString().split(' ')[0]}',
+                      style: const TextStyle(fontSize: 13, color: Colors.black54),
+                    ),
+                    const SizedBox(height: 24),
+                    if (news.pictures.isNotEmpty)
+                      SizedBox(
+                        height: 180,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: news.pictures.length,
+                          separatorBuilder: (_, __) => const SizedBox(width: 12),
+                          itemBuilder: (context, i) => ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(news.pictures[i], fit: BoxFit.cover, width: 240, height: 180),
+                          ),
+                        ),
                       )
                     else
                       Container(
@@ -70,11 +76,11 @@ class NewsDetailPage extends StatelessWidget {
                           color: const Color(0xFFE2A86F),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Center(child: Text('Нет изображения', style: TextStyle(fontSize: 14))),
+                        child: const Center(child: Text('Нет изображений', style: TextStyle(fontSize: 14))),
                       ),
                     const SizedBox(height: 32),
                     Text(
-                      description,
+                      news.content,
                       style: const TextStyle(fontSize: 15),
                       textAlign: TextAlign.center,
                     ),

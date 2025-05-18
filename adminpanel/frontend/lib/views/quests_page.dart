@@ -2,12 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:adminpanel/views/news_page.dart';
 import 'package:adminpanel/views/collections_page.dart';
 import 'package:adminpanel/views/widgets/navbar.dart';
+import 'package:adminpanel/models/quest.dart';
+import 'package:adminpanel/views/create_quest_page.dart';
+import 'package:adminpanel/views/edit_quest_page.dart';
+import 'package:provider/provider.dart';
+import 'package:adminpanel/controllers/quest_controller.dart';
 
-class QuestsPage extends StatelessWidget {
+class QuestsPage extends StatefulWidget {
   const QuestsPage({Key? key}) : super(key: key);
 
   @override
+  State<QuestsPage> createState() => _QuestsPageState();
+}
+
+class _QuestsPageState extends State<QuestsPage> {
+  @override
   Widget build(BuildContext context) {
+    final questController = Provider.of<QuestController>(context);
     return Scaffold(
       backgroundColor: const Color(0xFFFAF8F7),
       appBar: const NavBar(active: 'Главная', showBack: false),
@@ -47,27 +58,53 @@ class QuestsPage extends StatelessWidget {
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Daily Quests
-                          const Text(
-                            'Ежедневные квесты',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
-                            textAlign: TextAlign.center,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'Квесты',
+                                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFFE2A86F),
+                                  foregroundColor: Colors.black,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                  elevation: 0,
+                                ),
+                                onPressed: () async {
+                                  final quest = await Navigator.of(context).push<Quest>(
+                                    MaterialPageRoute(builder: (context) => const CreateQuestPage()),
+                                  );
+                                  if (quest != null) {
+                                    questController.addQuest(quest);
+                                  }
+                                },
+                                child: const Text('Добавить квест', style: TextStyle(fontSize: 16)),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 16),
                           _QuestTable(
-                            quests: List.generate(6, (i) => _QuestData('Ежедневный квест', 200)),
-                          ),
-                          const Divider(thickness: 2),
-                          // Weekly Quests
-                          const Text(
-                            'Еженедельные квесты',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 8),
-                          _QuestTable(
-                            quests: List.generate(4, (i) => _QuestData('Недельный квест', 1000)),
+                            quests: questController.quests,
+                            onEdit: (index) async {
+                              final quest = questController.quests[index];
+                              final edited = await Navigator.of(context).push<Quest>(
+                                MaterialPageRoute(builder: (context) => EditQuestPage(quest: quest)),
+                              );
+                              if (edited != null) {
+                                questController.editQuest(edited);
+                              }
+                            },
+                            onDelete: (index) {
+                              final quest = questController.quests[index];
+                              questController.deleteQuest(quest.quest_ID);
+                            },
                           ),
                         ],
                       ),
@@ -108,47 +145,56 @@ class _NavBarItem extends StatelessWidget {
   }
 }
 
-class _QuestData {
-  final String name;
-  final int reward;
-  _QuestData(this.name, this.reward);
-}
-
 class _QuestTable extends StatelessWidget {
-  final List<_QuestData> quests;
-  const _QuestTable({required this.quests});
+  final List<Quest> quests;
+  final void Function(int) onEdit;
+  final void Function(int) onDelete;
+  const _QuestTable({required this.quests, required this.onEdit, required this.onDelete});
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: quests.map((q) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(q.name, style: const TextStyle(fontSize: 16)),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF3C690),
-                borderRadius: BorderRadius.circular(16),
+      children: quests.asMap().entries.map((entry) {
+        final i = entry.key;
+        final q = entry.value;
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: Text(q.name, style: const TextStyle(fontSize: 16)),
               ),
-              child: Row(
-                children: [
-                  Text(q.reward.toString(), style: const TextStyle(fontWeight: FontWeight.bold)),
-                  const SizedBox(width: 4),
-                  const Icon(Icons.monetization_on, color: Color(0xFFE2A86F), size: 20),
-                ],
+              Expanded(
+                flex: 3,
+                child: Text(q.description, style: const TextStyle(fontSize: 14, color: Colors.black54)),
               ),
-            ),
-            const SizedBox(width: 16),
-            _QuestActionButton('Удалить', onPressed: () {}),
-            const SizedBox(width: 8),
-            _QuestActionButton('Изменить', onPressed: () {}),
-          ],
-        ),
-      )).toList(),
+              Expanded(
+                child: Text('${q.progress}/${q.target}', style: const TextStyle(fontSize: 14)),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF3C690),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(q.rewardCoins.toString(), style: const TextStyle(fontWeight: FontWeight.bold)),
+                    const SizedBox(width: 4),
+                    const Icon(Icons.monetization_on, color: Color(0xFFE2A86F), size: 20),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 16),
+              _QuestActionButton('Удалить', onPressed: () => onDelete(i)),
+              const SizedBox(width: 8),
+              _QuestActionButton('Изменить', onPressed: () => onEdit(i)),
+            ],
+          ),
+        );
+      }).toList(),
     );
   }
 }

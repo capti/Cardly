@@ -12,23 +12,22 @@ class NewsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => NewsController(),
-      child: Scaffold(
-        backgroundColor: const Color(0xFFFAF8F7),
-        appBar: const NavBar(active: 'Новости', showBack: false),
-        body: _NewsPageBody(),
+    return Scaffold(
+      backgroundColor: const Color(0xFFFAF8F7),
+      appBar: const NavBar(active: 'Новости', showBack: false),
+      body: Consumer<NewsController>(
+        builder: (context, newsController, _) => _NewsPageBody(newsController: newsController),
       ),
     );
   }
 }
 
 class _NewsPageBody extends StatelessWidget {
-  const _NewsPageBody();
+  final NewsController newsController;
+  const _NewsPageBody({required this.newsController});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<NewsController>(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       child: Column(
@@ -58,18 +57,14 @@ class _NewsPageBody extends StatelessWidget {
           const SizedBox(height: 16),
           Expanded(
             child: ListView.builder(
-              itemCount: controller.newsList.length,
+              itemCount: newsController.newsList.length,
               itemBuilder: (context, index) {
-                final news = controller.newsList[index];
+                final news = newsController.newsList[index];
                 return GestureDetector(
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => NewsDetailPage(
-                          title: news.title,
-                          description: news.text,
-                          imageBytes: null, // пока нет интеграции с картинками
-                        ),
+                        builder: (context) => NewsDetailPage(news: news),
                       ),
                     );
                   },
@@ -83,6 +78,17 @@ class _NewsPageBody extends StatelessWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        if (news.pictures.isNotEmpty)
+                          Container(
+                            width: 80,
+                            height: 80,
+                            margin: const EdgeInsets.only(right: 16),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              color: Colors.grey[300],
+                            ),
+                            child: Image.network(news.pictures.first, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Icon(Icons.image)),
+                          ),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,13 +101,18 @@ class _NewsPageBody extends StatelessWidget {
                                   fontFamily: 'Roboto',
                                 ),
                               ),
-                              const SizedBox(height: 16),
+                              const SizedBox(height: 8),
                               Text(
-                                news.text,
+                                news.content,
                                 style: const TextStyle(
                                   fontSize: 13,
                                   fontFamily: 'Roboto',
                                 ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Дата: 	${news.datePosted.toLocal().toString().split(' ')[0]}',
+                                style: const TextStyle(fontSize: 11, color: Colors.black54),
                               ),
                             ],
                           ),
@@ -132,16 +143,17 @@ class _NewsPageBody extends StatelessWidget {
                             ),
                             const SizedBox(height: 8),
                             ElevatedButton(
-                              onPressed: () => controller.removeNews(index),
+                              onPressed: () => newsController.deleteNews(news.news_ID),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFFE2A86F),
+                                foregroundColor: Colors.black,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
+                                  borderRadius: BorderRadius.circular(24),
                                 ),
-                                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                                 elevation: 0,
                               ),
-                              child: const Text('Удалить', style: TextStyle(color: Colors.black)),
+                              child: const Text('Удалить', style: TextStyle(fontSize: 16)),
                             ),
                           ],
                         ),
@@ -187,7 +199,11 @@ class _NewsPageBody extends StatelessWidget {
           ElevatedButton(
             onPressed: () {
               if (titleController.text.isNotEmpty && textController.text.isNotEmpty) {
-                controller.addNews(News(title: titleController.text, text: textController.text));
+                controller.publishNews(
+                  title: titleController.text,
+                  content: textController.text,
+                  pictures: [],
+                );
                 Navigator.of(context).pop();
               }
             },
