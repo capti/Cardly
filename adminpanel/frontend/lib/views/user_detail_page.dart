@@ -40,115 +40,117 @@ class UserDetailPage extends StatelessWidget {
             Expanded(
               child: Center(
                 child: Container(
-                  width: 700,
+                  constraints: BoxConstraints(maxWidth: 700),
                   decoration: BoxDecoration(
                     color: const Color(0xFFEAD7C3),
                     borderRadius: BorderRadius.circular(14),
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Аватар, ник, id
-                      Column(
-                        children: [
-                          Container(
-                            width: 120,
-                            height: 120,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.black, width: 2),
-                            ),
-                            child: const CircleAvatar(
-                              backgroundColor: Color(0xFFEAD7C3),
-                              child: Icon(
-                                Icons.person_outline,
-                                size: 80.0,
-                                color: Colors.black,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Аватар, ник, id
+                        Column(
+                          children: [
+                            Container(
+                              width: 120,
+                              height: 120,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(color: Colors.black, width: 2),
+                              ),
+                              child: const CircleAvatar(
+                                backgroundColor: Color(0xFFEAD7C3),
+                                child: Icon(
+                                  Icons.person_outline,
+                                  size: 80.0,
+                                  color: Colors.black,
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            user['username'],
-                            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
-                          ),
-                          Text(
-                            user['id'],
-                            style: const TextStyle(fontSize: 20, color: Colors.black54, fontWeight: FontWeight.w400),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      // Карточки
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(user['cards'].length, (i) => Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: _UserCard(),
-                        )),
-                      ),
-                      const SizedBox(height: 20),
-                      // Достижения
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
+                            const SizedBox(height: 8),
+                            Text(
+                              user['username'],
+                              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
+                            ),
+                            Text(
+                              user['id'],
+                              style: const TextStyle(fontSize: 20, color: Colors.black54, fontWeight: FontWeight.w400),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        // Карточки
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: List.generate(user['cards'].length, (i) => Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: _UserCard(),
+                          )),
+                        ),
+                        const SizedBox(height: 20),
+                        // Достижения
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => UserAchievementsPage(user: user),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                width: 400,
+                                padding: const EdgeInsets.fromLTRB(40, 10, 20, 12),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFD6A067),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      children: List.generate(4, (i) => Image.asset(
+                                        'assets/icons/достижение.png',
+                                        width: 59,
+                                        height: 59,
+                                      )),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: Text(
+                                        'Достижения',
+                                        style: TextStyle(fontSize: 15, color: Colors.black),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 50),
+                        // Ссылка на инвентарь
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (context) => UserAchievementsPage(user: user),
+                                  builder: (context) => UserInventoryPage(user: user),
                                 ),
                               );
                             },
-                            child: Container(
-                              width: 400,
-                              padding: const EdgeInsets.fromLTRB(40, 10, 20, 12),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFD6A067),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                    children: List.generate(4, (i) => Image.asset(
-                                      'assets/icons/достижение.png',
-                                      width: 59,
-                                      height: 59,
-                                    )),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Text(
-                                      'Достижения',
-                                      style: TextStyle(fontSize: 15, color: Colors.black),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                            child: const Text('Посмотреть инвентарь>', style: TextStyle(color: Colors.black, fontSize: 16)),
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 50),
-                      // Ссылка на инвентарь
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => UserInventoryPage(user: user),
-                              ),
-                            );
-                          },
-                          child: const Text('Посмотреть инвентарь>', style: TextStyle(color: Colors.black, fontSize: 16)),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
