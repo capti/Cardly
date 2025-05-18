@@ -282,7 +282,7 @@ class _ShopScreenState extends State<ShopScreen> with SingleTickerProviderStateM
               },
               child: Container(
                 width: 321.0,
-                height: 85.0,
+                height: 120.0,
                 decoration: BoxDecoration(
                   color: const Color(0xFFD6A067),
                   borderRadius: BorderRadius.circular(10.0),

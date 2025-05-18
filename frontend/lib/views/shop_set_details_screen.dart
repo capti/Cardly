@@ -159,7 +159,7 @@ class _ShopSetDetailsScreenState extends State<ShopSetDetailsScreen> with Single
                           children: [
                             // Превью набора
                             Container(
-                              height: 85.0,
+                              height: 120.0,
                               width: 321.0,
                               decoration: BoxDecoration(
                                 color: const Color(0xFFD6A067),
