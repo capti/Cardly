@@ -16,7 +16,7 @@ class PackOpenScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text('Открытие пака', style: const TextStyle(color: Colors.black)),
+        title: const Text('Открытие набора', style: TextStyle(color: Colors.black)),
         centerTitle: true,
       ),
       body: Center(
@@ -25,8 +25,8 @@ class PackOpenScreen extends StatelessWidget {
           children: [
             // Картинка пака (заглушка)
             Container(
-              width: 120,
-              height: 200,
+              width: 300,
+              height: 470,
               decoration: BoxDecoration(
                 color: Colors.black,
                 borderRadius: BorderRadius.circular(16),
@@ -34,7 +34,7 @@ class PackOpenScreen extends StatelessWidget {
               child: const Center(
                 child: Text(
                   '?',
-                  style: TextStyle(fontSize: 64, color: Colors.white),
+                  style: TextStyle(fontSize: 128, color: Colors.white),
                 ),
               ),
             ),
@@ -57,7 +57,7 @@ class PackOpenScreen extends StatelessWidget {
                 ),
               ),
               child: const Text(
-                'Открыть пак',
+                'Открыть набор',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),

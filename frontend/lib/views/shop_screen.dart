@@ -20,14 +20,15 @@ class _ShopScreenState extends State<ShopScreen> with SingleTickerProviderStateM
   int _selectedTab = 0;
   
   final List<String> _sets = [
-    'Ценник 1',
-    'Ценник 2',
-    'Ценник 3',
-    'Ценник 4',
+    'Название набора 1',
+    'Название набора 2',
+    'Название набора 3',
+    'Название набора 4',
   ];
   
   final List<String> _coins = [
     'Ценник 1',
+    'Ценник 2',
   ];
   
   @override
@@ -263,48 +264,42 @@ class _ShopScreenState extends State<ShopScreen> with SingleTickerProviderStateM
   }
   
   Widget _buildSetsTab() {
-    return GridView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 16.0,
-        mainAxisSpacing: 16.0,
-        childAspectRatio: 1.0,
-      ),
+    return ListView.separated(
+      padding: const EdgeInsets.fromLTRB(16.0, 60.0, 16.0, 16.0),
       itemCount: _sets.length,
+      separatorBuilder: (context, index) => const SizedBox(height: 30.0),
       itemBuilder: (context, index) {
-        return InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ShopSetDetailsScreen(setName: _sets[index]),
-              ),
-            );
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFFD6A067),
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    _sets[index],
-                    style: const TextStyle(
-                      fontSize: 14.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                    textAlign: TextAlign.center,
+        return Column(
+          children: [
+            InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ShopSetDetailsScreen(setName: _sets[index]),
                   ),
+                );
+              },
+              child: Container(
+                width: 321.0,
+                height: 85.0,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFD6A067),
+                  borderRadius: BorderRadius.circular(10.0),
                 ),
-              ],
+              ),
             ),
-          ),
+            const SizedBox(height: 7.0),
+            Text(
+              _sets[index],
+              style: const TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
         );
       },
     );
@@ -316,44 +311,43 @@ class _ShopScreenState extends State<ShopScreen> with SingleTickerProviderStateM
       child: GridView.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          crossAxisSpacing: 16.0,
-          mainAxisSpacing: 16.0,
-          childAspectRatio: 1.0,
+          crossAxisSpacing: 15.0,
+          mainAxisSpacing: 15.0,
+          childAspectRatio: 150 / 175,
         ),
         itemCount: _coins.length,
         itemBuilder: (context, index) {
-          return InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ShopCoinDetailsScreen(coinName: _coins[index]),
-                ),
-              );
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFFD6A067),
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      _coins[index],
-                      style: const TextStyle(
-                        fontSize: 14.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                      textAlign: TextAlign.center,
+          return Column(
+            children: [
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ShopCoinDetailsScreen(coinName: _coins[index]),
                     ),
+                  );
+                },
+                child: Container(
+                  width: 150.0,
+                  height: 150.0,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD6A067),
+                    borderRadius: BorderRadius.circular(8.0),
                   ),
-                ],
+                ),
               ),
-            ),
+              const SizedBox(height: 7.0),
+              Text(
+                _coins[index],
+                style: const TextStyle(
+                  fontSize: 14.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
           );
         },
       ),

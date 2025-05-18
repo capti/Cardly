@@ -377,9 +377,60 @@ class _ExchangeDetailsScreenState extends State<ExchangeDetailsScreen> {
                 foregroundColor: isDecline ? Colors.red : Colors.green,
               ),
               onPressed: () {
-                // Выполнить действие
-                Navigator.of(context).pop();
-                Navigator.of(context).pop(); // Вернуться на предыдущий экран
+                Navigator.of(context).pop(); // Закрыть диалог
+                
+                // Показать сообщение в зависимости от действия
+                String messageText;
+                if (message == 'Вы уверены, что хотите отменить свой обмен?') {
+                  messageText = 'Обмен отменен';
+                } else {
+                  messageText = isDecline ? 'Обмен отклонен' : 'Обмен успешно осуществлен';
+                }
+                
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Container(
+                      width: 367,
+                      height: 61,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEDD6B0),
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                      child: Center(
+                        child: Text(
+                          messageText,
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                    backgroundColor: Colors.transparent,
+                    duration: const Duration(seconds: 2),
+                    behavior: SnackBarBehavior.floating,
+                    margin: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).size.height - 200,
+                      left: 16,
+                      right: 16,
+                    ),
+                    elevation: 0,
+                  ),
+                );
+                
+                if (!isDecline && message != 'Вы уверены, что хотите отменить свой обмен?') {
+                  // Вернуться на экран обменов при принятии
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ExchangesScreen()),
+                    (route) => false,
+                  );
+                } else {
+                  Navigator.of(context).pop(); // Просто вернуться назад при отклонении или отмене
+                }
                 
                 // Здесь можно добавить вызов API для обработки обмена
               },

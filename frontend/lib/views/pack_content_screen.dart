@@ -24,17 +24,53 @@ class PackContentScreen extends StatelessWidget {
               child: GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 4,
+                  childAspectRatio: 80 / 120,
                   crossAxisSpacing: 10.0,
                   mainAxisSpacing: 10.0,
-                  childAspectRatio: 0.7,
                 ),
                 itemCount: 12,
                 itemBuilder: (context, index) {
                   return Container(
+                    width: 80.0,
+                    height: 120.0,
                     decoration: BoxDecoration(
                       color: const Color(0xFFD6A067),
                       borderRadius: BorderRadius.circular(6.0),
-                      border: Border.all(color: Colors.black, width: 1),
+                      border: Border.all(color: Colors.black, width: 2),
+                    ),
+                    child: Stack(
+                      children: [
+                        // Основная рамка карты
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black, width: 2),
+                            borderRadius: BorderRadius.circular(6.0),
+                          ),
+                        ),
+                        // Внутренняя рамка карты
+                        Positioned(
+                          top: 5,
+                          left: 5,
+                          right: 5,
+                          bottom: 5,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.black, width: 2),
+                              borderRadius: BorderRadius.circular(4.0),
+                            ),
+                          ),
+                        ),
+                        // Линия разделения карты
+                        Positioned(
+                          left: 5,
+                          right: 5,
+                          bottom: 40,
+                          child: Container(
+                            height: 1,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
                     ),
                   );
                 },

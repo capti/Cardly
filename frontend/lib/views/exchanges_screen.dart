@@ -373,19 +373,52 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
         margin: const EdgeInsets.only(bottom: 16.0),
         padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
-          color: const Color(0xFFEDD6B0),
+          color: const Color(0xFFEAD7C3),
           borderRadius: BorderRadius.circular(8.0),
         ),
         child: Row(
           children: [
-            Container(
-              width: 60.0,
-              height: 80.0,
-              decoration: BoxDecoration(
-                color: const Color(0xFFD6A067),
-                borderRadius: BorderRadius.circular(8.0),
-                border: Border.all(color: Colors.black, width: 1),
-              ),
+            Stack(
+              children: [
+                Container(
+                  width: 45.0,
+                  height: 60.0,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD9A76A),
+                    borderRadius: BorderRadius.circular(4.0),
+                    border: Border.all(
+                      color: Colors.black,
+                      width: 2.0,
+                    ),
+                  ),
+                  child: Container(
+                    margin: const EdgeInsets.all(2.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(2.0),
+                      border: Border.all(
+                        color: Colors.black,
+                        width: 2.0,
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Expanded(
+                          flex: 7,
+                          child: Container(),
+                        ),
+                        Container(
+                          height: 2.0,
+                          color: Colors.black,
+                        ),
+                        Expanded(
+                          flex: 3,
+                          child: Container(),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
             
             Expanded(
@@ -400,22 +433,80 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
             Stack(
               children: [
                 Container(
-                  width: 60.0,
-                  height: 80.0,
+                  width: 45.0,
+                  height: 60.0,
                   margin: const EdgeInsets.only(top: 4.0, left: 4.0),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFD6A067),
-                    borderRadius: BorderRadius.circular(8.0),
-                    border: Border.all(color: Colors.black, width: 1),
+                    color: const Color(0xFFD9A76A),
+                    borderRadius: BorderRadius.circular(4.0),
+                    border: Border.all(
+                      color: Colors.black,
+                      width: 2.0,
+                    ),
+                  ),
+                  child: Container(
+                    margin: const EdgeInsets.all(2.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(2.0),
+                      border: Border.all(
+                        color: Colors.black,
+                        width: 2.0,
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Expanded(
+                          flex: 7,
+                          child: Container(),
+                        ),
+                        Container(
+                          height: 2.0,
+                          color: Colors.black,
+                        ),
+                        Expanded(
+                          flex: 3,
+                          child: Container(),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 Container(
-                  width: 60.0,
-                  height: 80.0,
+                  width: 45.0,
+                  height: 60.0,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFD6A067),
-                    borderRadius: BorderRadius.circular(8.0),
-                    border: Border.all(color: Colors.black, width: 1),
+                    color: const Color(0xFFD9A76A),
+                    borderRadius: BorderRadius.circular(4.0),
+                    border: Border.all(
+                      color: Colors.black,
+                      width: 2.0,
+                    ),
+                  ),
+                  child: Container(
+                    margin: const EdgeInsets.all(2.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(2.0),
+                      border: Border.all(
+                        color: Colors.black,
+                        width: 2.0,
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Expanded(
+                          flex: 7,
+                          child: Container(),
+                        ),
+                        Container(
+                          height: 2.0,
+                          color: Colors.black,
+                        ),
+                        Expanded(
+                          flex: 3,
+                          child: Container(),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
