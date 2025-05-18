@@ -5,6 +5,7 @@ import '../models/news.dart';
 import 'package:adminpanel/views/collections_page.dart';
 import 'package:adminpanel/views/create_news_page.dart';
 import 'package:adminpanel/views/news_detail_page.dart';
+import 'package:adminpanel/views/widgets/navbar.dart';
 
 class NewsPage extends StatelessWidget {
   const NewsPage({Key? key}) : super(key: key);
@@ -13,7 +14,11 @@ class NewsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => NewsController(),
-      child: const _NewsPageBody(),
+      child: Scaffold(
+        backgroundColor: const Color(0xFFFAF8F7),
+        appBar: const NavBar(active: 'Новости', showBack: false),
+        body: _NewsPageBody(),
+      ),
     );
   }
 }
@@ -24,163 +29,130 @@ class _NewsPageBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<NewsController>(context);
-    return Scaffold(
-      backgroundColor: const Color(0xFFFAF8F7),
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(60),
-        child: AppBar(
-          backgroundColor: const Color(0xFFE2A86F),
-          elevation: 0,
-          title: Row(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              const SizedBox(width: 8),
-              _NavBarItem('Главная', onTap: () {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => const CollectionsPage()),
-                );
-              }),
-              _NavBarItem('Новости', selected: true),
-              _NavBarItem('Пользователи', onTap: () {/* TODO: переход */}),
-              _NavBarItem('Обмены', onTap: () {/* TODO: переход */}),
-              _NavBarItem('Жалобы', onTap: () {/* TODO: переход */}),
-              _NavBarItem('Магазин', onTap: () {/* TODO: переход */}),
-              const Spacer(),
-              TextButton(
-                onPressed: () {/* TODO: выход */},
-                child: const Text(
-                  'Выйти',
-                  style: TextStyle(color: Colors.black, fontSize: 16),
+              ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const CreateNewsPage()),
+                  );
+                },
+                icon: const Icon(Icons.add, color: Colors.black),
+                label: const Text('Добавить новость', style: TextStyle(color: Colors.black)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFEAD6C3),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  elevation: 0,
                 ),
               ),
             ],
           ),
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                ElevatedButton.icon(
-                  onPressed: () {
+          const SizedBox(height: 16),
+          Expanded(
+            child: ListView.builder(
+              itemCount: controller.newsList.length,
+              itemBuilder: (context, index) {
+                final news = controller.newsList[index];
+                return GestureDetector(
+                  onTap: () {
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => const CreateNewsPage()),
+                      MaterialPageRoute(
+                        builder: (context) => NewsDetailPage(
+                          title: news.title,
+                          description: news.text,
+                          imageBytes: null, // пока нет интеграции с картинками
+                        ),
+                      ),
                     );
                   },
-                  icon: const Icon(Icons.add, color: Colors.black),
-                  label: const Text('Добавить новость', style: TextStyle(color: Colors.black)),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFEAD6C3),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 16),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEAD6C3),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                    elevation: 0,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: ListView.builder(
-                itemCount: controller.newsList.length,
-                itemBuilder: (context, index) {
-                  final news = controller.newsList[index];
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => NewsDetailPage(
-                            title: news.title,
-                            description: news.text,
-                            imageBytes: null, // пока нет интеграции с картинками
-                          ),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: 16),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFEAD6C3),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  news.title,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                    fontFamily: 'Roboto',
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  news.text,
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    fontFamily: 'Roboto',
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Column(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              ElevatedButton(
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => CreateNewsPage(
-                                        // Для редактирования: передать title, text, imageBytes (если будет)
-                                        // Пока только title и text
-                                      ),
-                                    ),
-                                  );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFFE2A86F),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                                  elevation: 0,
+                              Text(
+                                news.title,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                  fontFamily: 'Roboto',
                                 ),
-                                child: const Text('Редактировать', style: TextStyle(color: Colors.black)),
                               ),
-                              const SizedBox(height: 8),
-                              ElevatedButton(
-                                onPressed: () => controller.removeNews(index),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFFE2A86F),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                                  elevation: 0,
+                              const SizedBox(height: 16),
+                              Text(
+                                news.text,
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontFamily: 'Roboto',
                                 ),
-                                child: const Text('Удалить', style: TextStyle(color: Colors.black)),
                               ),
                             ],
                           ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(width: 16),
+                        Column(
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => CreateNewsPage(
+                                      // Для редактирования: передать title, text, imageBytes (если будет)
+                                      // Пока только title и text
+                                    ),
+                                  ),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFE2A86F),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                                elevation: 0,
+                              ),
+                              child: const Text('Редактировать', style: TextStyle(color: Colors.black)),
+                            ),
+                            const SizedBox(height: 8),
+                            ElevatedButton(
+                              onPressed: () => controller.removeNews(index),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFE2A86F),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                                elevation: 0,
+                              ),
+                              child: const Text('Удалить', style: TextStyle(color: Colors.black)),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -222,31 +194,6 @@ class _NewsPageBody extends StatelessWidget {
             child: const Text('Добавить'),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _NavBarItem extends StatelessWidget {
-  final String label;
-  final bool selected;
-  final VoidCallback? onTap;
-  const _NavBarItem(this.label, {this.selected = false, this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: selected ? Colors.white : Colors.black,
-            fontWeight: FontWeight.bold,
-            fontSize: 24,
-          ),
-        ),
       ),
     );
   }

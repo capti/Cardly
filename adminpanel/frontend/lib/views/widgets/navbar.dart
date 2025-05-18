@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:adminpanel/views/collections_page.dart';
 import 'package:adminpanel/views/news_page.dart';
+import 'package:adminpanel/views/users_page.dart';
 
 class NavBar extends StatelessWidget implements PreferredSizeWidget {
   final String active;
@@ -50,7 +51,7 @@ class NavBar extends StatelessWidget implements PreferredSizeWidget {
             const SizedBox(width: 8),
           navItem('Главная', const CollectionsPage()),
           navItem('Новости', const NewsPage()),
-          navItem('Пользователи', const CollectionsPage()), // TODO: заменить на UsersPage
+          navItem('Пользователи', const UsersPage()),
           navItem('Обмены', const CollectionsPage()), // TODO: заменить на ExchangesPage
           navItem('Жалобы', const CollectionsPage()), // TODO: заменить на ComplaintsPage
           navItem('Магазин', const CollectionsPage()), // TODO: заменить на ShopPage

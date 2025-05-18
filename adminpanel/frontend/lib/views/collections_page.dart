@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:adminpanel/views/achievements_page.dart';
 import 'package:adminpanel/views/quests_page.dart';
 import 'package:adminpanel/views/news_page.dart';
+import 'package:adminpanel/views/widgets/navbar.dart';
 
 class CollectionsPage extends StatelessWidget {
   const CollectionsPage({Key? key}) : super(key: key);
@@ -10,36 +11,7 @@ class CollectionsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFAF8F7),
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(60),
-        child: AppBar(
-          backgroundColor: const Color(0xFFE2A86F),
-          elevation: 0,
-          title: Row(
-            children: [
-              const SizedBox(width: 8),
-              _NavBarItem('Главная', selected: true, onTap: () {}),
-              _NavBarItem('Новости', onTap: () {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => const NewsPage()),
-                );
-              }),
-              _NavBarItem('Пользователи'),
-              _NavBarItem('Обмены'),
-              _NavBarItem('Жалобы'),
-              _NavBarItem('Магазин'),
-              const Spacer(),
-              TextButton(
-                onPressed: () {},
-                child: const Text(
-                  'Выйти',
-                  style: TextStyle(color: Colors.black, fontSize: 16),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+      appBar: const NavBar(active: 'Главная', showBack: false),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         child: Column(
