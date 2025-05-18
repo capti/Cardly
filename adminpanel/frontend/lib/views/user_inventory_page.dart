@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'user_card_detail_page.dart';
+import 'package:adminpanel/models/user.dart';
+import 'package:adminpanel/controllers/user_controller.dart';
 
 class UserInventoryPage extends StatelessWidget {
-  final Map user;
+  final User user;
   const UserInventoryPage({required this.user, Key? key}) : super(key: key);
 
   @override
@@ -57,7 +59,7 @@ class UserInventoryPage extends StatelessWidget {
                           mainAxisSpacing: 24,
                           childAspectRatio: 0.7,
                         ),
-                        itemCount: 40,
+                        itemCount: user.inventoryCards.length,
                         itemBuilder: (context, index) {
                           return GestureDetector(
                             onTap: () {

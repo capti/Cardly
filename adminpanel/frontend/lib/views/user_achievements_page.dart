@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:adminpanel/models/user.dart';
+import 'package:adminpanel/controllers/user_controller.dart';
 
 class UserAchievementsPage extends StatelessWidget {
-  final Map user;
+  final User user;
   const UserAchievementsPage({required this.user, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // Пример достижений, замените на user['achievements'] при необходимости
-    final achievements = List.generate(10, (i) => {
-      'icon': 'assets/icons/достижение.png',
-      'title': 'достижения',
-    });
+    final achievements = user.achievements;
 
     return Scaffold(
       backgroundColor: const Color(0xFFFAF8F7),
@@ -67,11 +65,11 @@ class UserAchievementsPage extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
                         child: Row(
                           children: [
-                            Image.asset(ach['icon']!, width: 48, height: 48),
+                            Image.asset('assets/icons/достижение.png', width: 48, height: 48),
                             const SizedBox(width: 32),
                             Expanded(
                               child: Text(
-                                ach['title']!,
+                                ach.name,
                                 style: const TextStyle(fontSize: 18, color: Colors.black),
                               ),
                             ),

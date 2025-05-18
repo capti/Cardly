@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'user_inventory_page.dart';
 import 'user_achievements_page.dart';
+import 'package:adminpanel/models/user.dart';
+import 'package:adminpanel/controllers/user_controller.dart';
 
 class UserDetailPage extends StatelessWidget {
-  final Map user;
+  final User user;
   const UserDetailPage({required this.user, Key? key}) : super(key: key);
 
   @override
@@ -71,11 +73,11 @@ class UserDetailPage extends StatelessWidget {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              user['username'],
+                              user.username,
                               style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
                             ),
                             Text(
-                              user['id'],
+                              user.userId.toString(),
                               style: const TextStyle(fontSize: 20, color: Colors.black54, fontWeight: FontWeight.w400),
                             ),
                           ],
@@ -84,7 +86,7 @@ class UserDetailPage extends StatelessWidget {
                         // Карточки
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: List.generate(user['cards'].length, (i) => Padding(
+                          children: List.generate(user.inventoryCards.length, (i) => Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 8.0),
                             child: _UserCard(),
                           )),

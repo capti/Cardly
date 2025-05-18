@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'widgets/navbar.dart';
 import 'user_detail_page.dart';
+import 'package:adminpanel/models/user.dart';
+import 'package:adminpanel/controllers/user_controller.dart';
 
 class UsersPage extends StatelessWidget {
   const UsersPage({Key? key}) : super(key: key);
@@ -8,11 +10,21 @@ class UsersPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Пример данных пользователей
-    final users = List.generate(5, (userIdx) => {
-      'username': 'Ник',
-      'id': '######',
-      'cards': List.generate(5, (i) => i),
-    });
+    final users = List.generate(5, (userIdx) => User(
+      userId: userIdx,
+      username: 'Ник',
+      email: 'email@domain.com',
+      password: 'password',
+      favorites: const [],
+      inventoryCards: const [],
+      onChange: const [],
+      balance: 0,
+      avatarUrl: '',
+      achievements: const [],
+      favoritesAchievements: const [],
+      notifications: const [],
+      profileData: ProfileData(),
+    ));
 
     return Scaffold(
       backgroundColor: const Color(0xFFFAF8F7),
@@ -99,7 +111,7 @@ class UsersPage extends StatelessWidget {
 }
 
 class _UserRow extends StatelessWidget {
-  final Map user;
+  final User user;
   const _UserRow({required this.user});
 
   @override
@@ -133,11 +145,11 @@ class _UserRow extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                user['username'],
+                user.username,
                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               Text(
-                user['id'],
+                user.userId.toString(),
                 style: const TextStyle(fontSize: 14, color: Colors.black54),
               ),
             ],
@@ -147,7 +159,7 @@ class _UserRow extends StatelessWidget {
           Expanded(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
-              children: List.generate(user['cards'].length, (i) => Padding(
+              children: List.generate(user.inventoryCards.length, (i) => Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: _UserCard(),
               )),
