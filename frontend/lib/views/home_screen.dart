@@ -148,12 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const QuestsScreen(),
-                        ),
-                      );
+                      showQuestsDialog(context);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFD6A067),
