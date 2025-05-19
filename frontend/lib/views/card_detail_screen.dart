@@ -2,74 +2,25 @@ import 'package:flutter/material.dart';
 
 class CardDetailScreen extends StatelessWidget {
   final int cardIndex;
+  final bool showExchangeButton;
 
-  const CardDetailScreen({Key? key, required this.cardIndex}) : super(key: key);
+  const CardDetailScreen({Key? key, required this.cardIndex, this.showExchangeButton = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     // Данные для карточек
     final List<Map<String, String>> cardData = [
       {
-        'image': 'assets/images/chameleon.jpg',
-        'desc': 'Хамелеон — семейство ящериц, приспособленных к древесному образу жизни, способных менять окраску тела.',
-        'name': 'Хамелеон',
-        'type': 'Звери',
+        'name': 'Название',
+        'desc': 'Описание карточки',
+        'type': 'Тип',
         'rarity': '4',
       },
-      {
-        'image': 'assets/images/kiwi.jpg',
-        'desc': 'Киви — семейство нелетающих птиц отряда кивиобразных.',
-        'name': 'Киви',
-        'type': 'Птицы',
-        'rarity': '4',
-      },
-      {
-        'image': 'assets/images/platypus.jpg',
-        'desc': 'Утконос — водоплавающее млекопитающее отряда однопроходных, обитающее в Австралии.',
-        'name': 'Утконос',
-        'type': 'Звери',
-        'rarity': '4',
-      },
-      {
-        'image': 'assets/images/pantera.jpg',
-        'desc': 'Пантера — крупный хищник из семейства кошачьих. В некоторых культурах черная пантера считается священным животным.',
-        'name': 'Пантера',
-        'type': 'Звери',
-        'rarity': '4',
-      },
-      {
-        'image': 'assets/images/white_bear.jpg',
-        'desc': 'Белый медведь — хищное млекопитающее семейства медвежьих, близкий родственник бурого медведя.',
-        'name': 'Белый медведь',
-        'type': 'Звери',
-        'rarity': '3',
-      },
-      {
-        'image': 'assets/images/camel.jpg',
-        'desc': 'Верблюд — млекопитающие семейства верблюдовых.',
-        'name': 'Верблюд',
-        'type': 'Звери',
-        'rarity': '3',
-      },
-      {
-        'image': 'assets/images/zebra.jpg',
-        'desc': 'Зебра — африканская дикая лошадь, отличающаяся характерным полосатым окрасом шкуры.',
-        'name': 'Зебра',
-        'type': 'Звери',
-        'rarity': '3',
-      },
-      {
-        'image': 'assets/images/elephant.jpg',
-        'desc': 'Слон — самое крупное наземное животное на Земле. Хобот слона — это многофункциональный инструмент.',
-        'name': 'Слон',
-        'type': 'Звери',
-        'rarity': '3',
-      },
+      // ... можно добавить больше заглушек ...
     ];
     final data = (cardIndex < cardData.length) ? cardData[cardIndex] : cardData[0];
-    final String imagePath = data['image']!;
-    final String description = data['desc']!;
     final String name = data['name']!;
+    final String description = data['desc']!;
     final String type = data['type']!;
     final int rarity = int.tryParse(data['rarity'] ?? '0') ?? 0;
 
@@ -137,13 +88,14 @@ class CardDetailScreen extends StatelessWidget {
                             margin: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 4.0),
                             decoration: BoxDecoration(
                               border: Border.all(color: Colors.black, width: 3),
+                              color: const Color(0xFFEAD7C3),
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                            child: ClipRect(
-                              child: Image.asset(
-                                imagePath,
-                                fit: BoxFit.fill,
-                                width: double.infinity,
-                                height: double.infinity,
+                            // Здесь был Image.asset, теперь просто пустой контейнер-заглушка
+                            child: const Center(
+                              child: Text(
+                                'Нет изображения',
+                                style: TextStyle(color: Colors.black45, fontSize: 16),
                               ),
                             ),
                           ),
@@ -199,74 +151,90 @@ class CardDetailScreen extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 32.0, left: 16.0, right: 16.0, top: 8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFD6A067),
-                        foregroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16.0),
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              child: showExchangeButton
+                ? ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFD6A067),
+                      foregroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16.0),
                       ),
-                      onPressed: () {},
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Row(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    ),
+                    onPressed: () {},
+                    child: const Text(
+                      'Предложить обмен',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
+                    ),
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFD6A067),
+                            foregroundColor: Colors.black,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16.0),
+                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                          ),
+                          onPressed: () {},
+                          child: Column(
                             mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              const Text(
-                                'Разобрать',
-                                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                    'Разобрать',
+                                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
+                                  ),
+                                  SizedBox(width: 6),
+                                ],
                               ),
-                              SizedBox(width: 6),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                    '150',
+                                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  SizedBox(width: 4),
+                                  Image.asset(
+                                    'assets/icons/монеты.png',
+                                    height: 18,
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text(
-                                '150',
-                                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 4),
-                              Image.asset(
-                                'assets/icons/монеты.png',
-                                height: 18,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 16),
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFD6A067),
-                        foregroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16.0),
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                       ),
-                      onPressed: () {},
-                      child: const Text(
-                        'Обменять',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
+                      SizedBox(width: 16),
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFD6A067),
+                            foregroundColor: Colors.black,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16.0),
+                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                          ),
+                          onPressed: () {},
+                          child: const Text(
+                            'Обменять',
+                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
             ),
           ],
         ),
