@@ -157,7 +157,7 @@ class CardDetailScreen extends StatelessWidget {
                       backgroundColor: const Color(0xFFD6A067),
                       foregroundColor: Colors.black,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16.0),
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                     ),
