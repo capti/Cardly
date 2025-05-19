@@ -1,356 +1,217 @@
 import 'package:flutter/material.dart';
-import 'home_screen.dart';
-import 'shop_screen.dart';
 import 'exchanges_screen.dart';
 
-class ExchangeDetailsScreen extends StatefulWidget {
+class ExchangeDetailsScreen extends StatelessWidget {
   const ExchangeDetailsScreen({super.key});
 
   @override
-  State<ExchangeDetailsScreen> createState() => _ExchangeDetailsScreenState();
-}
-
-class _ExchangeDetailsScreenState extends State<ExchangeDetailsScreen> {
-  int _currentIndex = 3; // Индекс вкладки "Обмены" в нижней навигации
-  
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFFFF4E3), // Бежевый фон
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFFFF4E3),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Детали обмена',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 20.0,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+    return Dialog(
+      backgroundColor: const Color(0xFFFFF4E3),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16.0),
+        side: const BorderSide(color: Colors.black, width: 2),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Информация об обмене
-            Card(
-              color: const Color(0xFFD6A067),
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12.0),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
+      child: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minWidth: 346, maxWidth: 346, minHeight: 0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Дата и никнейм в одной строке
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4.0, left: 2.0, right: 54.0, bottom: 16.0),
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          'Обмен #12345',
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
+                          '12.05.2023',
+                          style: const TextStyle(
+                            fontSize: 14.0,
+                            fontWeight: FontWeight.w500,
+                            fontFamily: 'Jost',
+                            color: Colors.black,
                           ),
                         ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10.0,
-                            vertical: 4.0,
+                        Text(
+                          'CardMaster475',
+                          style: const TextStyle(
+                            fontSize: 15.0,
+                            fontWeight: FontWeight.w500,
+                            fontFamily: 'Jost',
+                            color: Colors.black87,
                           ),
-                          decoration: BoxDecoration(
-                            color: Colors.orange,
-                            borderRadius: BorderRadius.circular(20.0),
-                          ),
-                          child: const Text(
-                            'В ожидании',
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Карточки и статус как на скрине
+                  Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Stack из двух карточек (стопка)
+                        Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            Positioned(
+                              left: 6,
+                              top: -4,
+                              child: _buildCardItem('Карточка 2', 'Обычная', width: 48, height: 64),
+                            ),
+                            _buildCardItem('Карточка 1', 'Обычная', width: 48, height: 64),
+                          ],
+                        ),
+                        // Статус по центру
+                        Expanded(
+                          child: Center(
+                            child: Text(
+                              'В ожидании',
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                                fontFamily: 'Jost',
+                              ),
                             ),
                           ),
                         ),
+                        // Карточка пользователя
+                        _buildCardItem('Карточка пользователя', 'Редкая', width: 48, height: 64),
                       ],
                     ),
-                    const SizedBox(height: 12.0),
-                    const Text(
-                      'Дата создания: 12.05.2023',
-                      style: TextStyle(fontSize: 14.0),
-                    ),
-                    const SizedBox(height: 4.0),
-                    Row(
-                      children: const [
-                        Icon(Icons.person, size: 16.0),
-                        SizedBox(width: 4.0),
-                        Text(
-                          'Пользователь: CardMaster2000',
-                          style: TextStyle(fontSize: 14.0),
+                  ),
+                  const SizedBox(height: 12.0),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                          width: 729,
+                          height: 60,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFD6A067),
+                              foregroundColor: Colors.black,
+                              textStyle: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Jost',
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                            ),
+                            onPressed: () {
+                              _showConfirmationDialog(context, 'Принять обмен?', false);
+                            },
+                            child: const Text('Принять'),
+                          ),
+                        ),
+                        const SizedBox(height: 12.0),
+                        SizedBox(
+                          width: 729,
+                          height: 60,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFD6A067),
+                              foregroundColor: Colors.black,
+                              textStyle: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Jost',
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                            ),
+                            onPressed: () {
+                              _showConfirmationDialog(context, 'Отклонить обмен?', true);
+                            },
+                            child: const Text('Отклонить'),
+                          ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 4.0),
-                    Row(
-                      children: const [
-                        Icon(Icons.swap_horiz, size: 16.0),
-                        SizedBox(width: 4.0),
-                        Text(
-                          'Тип: 2 карточки на 1 карточку',
-                          style: TextStyle(fontSize: 14.0),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            
-            const SizedBox(height: 20.0),
-            
-            // Секция "Мои карточки"
-            const Text(
-              'Мои карточки для обмена:',
-              style: TextStyle(
-                fontSize: 16.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 12.0),
-            SizedBox(
-              height: 180,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: 2,
-                itemBuilder: (context, index) {
-                  return _buildCardItem('Карточка ${index + 1}', 'Редкость: Обычная');
-                },
-              ),
-            ),
-            
-            const SizedBox(height: 20.0),
-            
-            // Секция "Карточки пользователя"
-            const Text(
-              'Карточки пользователя для обмена:',
-              style: TextStyle(
-                fontSize: 16.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 12.0),
-            SizedBox(
-              height: 180,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: 1,
-                itemBuilder: (context, index) {
-                  return _buildCardItem('Карточка пользователя', 'Редкость: Редкая');
-                },
-              ),
-            ),
-            
-            const SizedBox(height: 24.0),
-            
-            // Кнопки действий
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                    ),
-                    onPressed: () {
-                      // Логика отклонения обмена
-                      _showConfirmationDialog('Отклонить обмен?', true);
-                    },
-                    child: const Text('Отклонить'),
                   ),
-                ),
-                const SizedBox(width: 12.0),
-                Expanded(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                    ),
-                    onPressed: () {
-                      // Логика принятия обмена
-                      _showConfirmationDialog('Принять обмен?', false);
-                    },
-                    child: const Text('Принять'),
-                  ),
-                ),
-              ],
-            ),
-            
-            const SizedBox(height: 16.0),
-            
-            // Кнопка отмены (для своих обменов)
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFD6A067),
-                foregroundColor: Colors.black,
-                padding: const EdgeInsets.symmetric(vertical: 12.0),
-                minimumSize: const Size(double.infinity, 48.0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
+                ],
               ),
-              onPressed: () {
-                // Логика отмены обмена
-                _showConfirmationDialog('Вы уверены, что хотите отменить свой обмен?', true);
-              },
-              child: const Text(
-                'Отменить обмен',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: Color(0xFFD6A067),
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            if (index != _currentIndex) {
-              setState(() {
-                _currentIndex = index;
-              });
-              
-              // Навигация в зависимости от выбранного индекса
-              switch (index) {
-                case 0: // Главное меню
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
-                    (route) => false,
-                  );
-                  break;
-                case 2: // Магазин
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ShopScreen()),
-                    (route) => false,
-                  );
-                  break;
-                case 3: // Обмены
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ExchangesScreen()),
-                    (route) => false,
-                  );
-                  break;
-              }
-            }
-          },
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          type: BottomNavigationBarType.fixed,
-          selectedItemColor: Colors.black,
-          unselectedItemColor: Colors.black54,
-          items: [
-            BottomNavigationBarItem(
-              icon: Image.asset('assets/icons/главная.png', height: 24),
-              label: 'Главная',
-            ),
-            BottomNavigationBarItem(
-              icon: Image.asset('assets/icons/Инвентарь.png', height: 24),
-              label: '',
-            ),
-            BottomNavigationBarItem(
-              icon: Image.asset('assets/icons/магазин.png', height: 24),
-              label: '',
-            ),
-            BottomNavigationBarItem(
-              icon: Image.asset('assets/icons/обменник.png', height: 24),
-              label: '',
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-  
-  // Метод для создания виджета карточки
-  Widget _buildCardItem(String title, String rarity) {
-    return Container(
-      width: 120.0,
-      margin: const EdgeInsets.only(right: 12.0),
-      decoration: BoxDecoration(
-        color: const Color(0xFFD6A067),
-        borderRadius: BorderRadius.circular(8.0),
-        border: Border.all(color: Colors.black54, width: 1),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Изображение карточки (заглушка)
-          Container(
-            height: 100.0,
-            decoration: BoxDecoration(
-              color: const Color(0xFFEDD6B0),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(8.0),
-                topRight: Radius.circular(8.0),
-              ),
-            ),
-            child: const Center(
-              child: Icon(Icons.image, size: 40.0, color: Colors.black54),
             ),
           ),
-          // Информация о карточке
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+          // Крестик в стиле магазина с внутренним отступом
+          Positioned(
+            top: 0,
+            right: 0,
+            child: GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: Color(0xFFD6A067),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.black, width: 3),
                 ),
-                const SizedBox(height: 4.0),
-                Text(
-                  rarity,
-                  style: const TextStyle(
-                    fontSize: 12.0,
+                child: const Center(
+                  child: Icon(
+                    Icons.close,
+                    color: Colors.black,
+                    size: 28,
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                 ),
-              ],
+              ),
             ),
           ),
         ],
       ),
     );
   }
-  
-  // Метод для отображения диалога подтверждения
-  void _showConfirmationDialog(String message, bool isDecline) {
+
+  Widget _buildCardItem(String title, String rarity, {double width = 80, double height = 120}) {
+    return Container(
+      width: width,
+      height: height,
+      margin: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: const Color(0xFFD9A76A),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.black, width: 2),
+      ),
+      child: Container(
+        margin: const EdgeInsets.all(2),
+        decoration: BoxDecoration(
+          color: const Color(0xFFD9A76A),
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: Colors.black, width: 1.5),
+        ),
+        child: Stack(
+          children: [
+            // Горизонтальная линия внизу
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: height * 0.2,
+              child: Container(
+                height: 2,
+                color: Colors.black.withOpacity(0.5),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showConfirmationDialog(BuildContext context, String message, bool isDecline) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -377,62 +238,18 @@ class _ExchangeDetailsScreenState extends State<ExchangeDetailsScreen> {
                 foregroundColor: isDecline ? Colors.red : Colors.green,
               ),
               onPressed: () {
-                Navigator.of(context).pop(); // Закрыть диалог
-                
-                // Показать сообщение в зависимости от действия
-                String messageText;
-                if (message == 'Вы уверены, что хотите отменить свой обмен?') {
-                  messageText = 'Обмен отменен';
-                } else {
-                  messageText = isDecline ? 'Обмен отклонен' : 'Обмен успешно осуществлен';
-                }
-                
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Container(
-                      width: 367,
-                      height: 61,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFEDD6B0),
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-                      child: Center(
-                        child: Text(
-                          messageText,
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+                // Передаю текст уведомления на ExchangesScreen
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ExchangesScreen(
+                      notification: isDecline ? 'Обмен отклонен' : 'Обмен принят',
                     ),
-                    backgroundColor: Colors.transparent,
-                    duration: const Duration(seconds: 2),
-                    behavior: SnackBarBehavior.floating,
-                    margin: EdgeInsets.only(
-                      bottom: MediaQuery.of(context).size.height - 200,
-                      left: 16,
-                      right: 16,
-                    ),
-                    elevation: 0,
                   ),
+                  (route) => false,
                 );
-                
-                if (!isDecline && message != 'Вы уверены, что хотите отменить свой обмен?') {
-                  // Вернуться на экран обменов при принятии
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ExchangesScreen()),
-                    (route) => false,
-                  );
-                } else {
-                  Navigator.of(context).pop(); // Просто вернуться назад при отклонении или отмене
-                }
-                
-                // Здесь можно добавить вызов API для обработки обмена
               },
               child: Text(isDecline ? 'Отклонить' : 'Принять'),
             ),

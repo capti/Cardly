@@ -8,7 +8,8 @@ import 'profile_screen.dart';
 import 'search_players_screen.dart';
 
 class ExchangesScreen extends StatefulWidget {
-  const ExchangesScreen({super.key});
+  final String? notification;
+  const ExchangesScreen({super.key, this.notification});
 
   @override
   State<ExchangesScreen> createState() => _ExchangesScreenState();
@@ -24,6 +25,44 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    // Показываем Snackbar, если notification не null
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.notification != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Container(
+              width: 367,
+              height: 61,
+              decoration: BoxDecoration(
+                color: const Color(0xFFEDD6B0),
+                borderRadius: BorderRadius.circular(15.0),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+              child: Center(
+                child: Text(
+                  widget.notification!,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+            backgroundColor: Colors.transparent,
+            duration: const Duration(seconds: 5),
+            behavior: SnackBarBehavior.floating,
+            margin: EdgeInsets.only(
+              bottom: MediaQuery.of(context).size.height - 200,
+              left: 16,
+              right: 16,
+            ),
+            elevation: 0,
+          ),
+        );
+      }
+    });
   }
   
   @override
@@ -364,9 +403,16 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
   Widget _buildCardExchangeItem() {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const ExchangeDetailsScreen()),
+        showDialog(
+          context: context,
+          barrierDismissible: true,
+          builder: (BuildContext context) {
+            return Dialog(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              child: ExchangeDetailsScreen(),
+            );
+          },
         );
       },
       child: Container(
