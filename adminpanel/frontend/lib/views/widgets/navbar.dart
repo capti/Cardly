@@ -3,6 +3,7 @@ import 'package:adminpanel/views/collections_page.dart';
 import 'package:adminpanel/views/news_page.dart';
 import 'package:adminpanel/views/users_page.dart';
 import 'package:adminpanel/views/complaints_page.dart';
+import 'package:adminpanel/views/shop_page.dart';
 
 class NavBar extends StatelessWidget implements PreferredSizeWidget {
   final String active;
@@ -55,7 +56,7 @@ class NavBar extends StatelessWidget implements PreferredSizeWidget {
           navItem('Пользователи', UsersPage()),
           navItem('Обмены', CollectionsPage()), // TODO: заменить на ExchangesPage
           navItem('Жалобы', ComplaintsPage()),
-          navItem('Магазин', CollectionsPage()), // TODO: заменить на ShopPage
+          navItem('Магазин', ShopPage()),
           const Spacer(),
           TextButton(
             onPressed: onLogout ?? () {},
