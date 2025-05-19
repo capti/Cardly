@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'profile_screen.dart';
 
 class SearchPlayersModal extends StatelessWidget {
   const SearchPlayersModal({super.key});
@@ -6,11 +7,11 @@ class SearchPlayersModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<PlayerItem> players = [
-      PlayerItem(name: 'Cardly', cards: 5),
-      PlayerItem(name: 'Cardly1', cards: 5),
-      PlayerItem(name: 'Cardly2', cards: 5),
-      PlayerItem(name: 'Cardly3', cards: 5),
-      PlayerItem(name: 'Cardly4', cards: 5),
+      PlayerItem(name: 'Cardly', cards: 5, id: '123456'),
+      PlayerItem(name: 'Cardly1', cards: 5, id: '123457'),
+      PlayerItem(name: 'Cardly2', cards: 5, id: '123458'),
+      PlayerItem(name: 'Cardly3', cards: 5, id: '123459'),
+      PlayerItem(name: 'Cardly4', cards: 5, id: '123460'),
     ];
     final TextEditingController _searchController = TextEditingController();
     final double modalHeight = MediaQuery.of(context).size.height * 0.6;
@@ -92,8 +93,13 @@ class SearchPlayersModal extends StatelessWidget {
 class PlayerItem {
   final String name;
   final int cards;
+  final String id;
 
-  PlayerItem({required this.name, required this.cards});
+  PlayerItem({
+    required this.name,
+    required this.cards,
+    required this.id,
+  });
 }
 
 // Виджет элемента списка игроков
@@ -104,47 +110,64 @@ class PlayerListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 10.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Аватар пользователя как в profile_screen
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: const Color(0xFFEAD7C3),
-              border: Border.all(color: Colors.black, width: 2),
-            ),
-            child: const Center(
-              child: Icon(Icons.person_outline, size: 28, color: Colors.black),
+    return InkWell(
+      onTap: () {
+        Navigator.pop(context); // Закрываем модальное окно поиска
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProfileScreen(
+              isOtherUser: true,
+              playerName: player.name,
+              playerId: player.id,
+              cardsCollected: player.cards,
+              collectionsCollected: 2, // Примерное значение, в реальном приложении должно приходить с сервера
             ),
           ),
-          const SizedBox(width: 12.0),
-          // Имя пользователя
-          Text(
-            player.name,
-            style: const TextStyle(
-              fontFamily: 'Roboto',
-              fontSize: 18.0,
-              fontWeight: FontWeight.w400,
-              color: Colors.black,
-            ),
-          ),
-          const Spacer(),
-          // Карточки пользователя (макет из инвентаря, но без фото)
-          Row(
-            children: List.generate(
-              player.cards,
-              (index) => Padding(
-                padding: const EdgeInsets.only(left: 6.0),
-                child: CardMockup(),
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 10.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Аватар пользователя как в profile_screen
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: const Color(0xFFEAD7C3),
+                border: Border.all(color: Colors.black, width: 2),
+              ),
+              child: const Center(
+                child: Icon(Icons.person_outline, size: 28, color: Colors.black),
               ),
             ),
-          ),
-        ],
+            const SizedBox(width: 12.0),
+            // Имя пользователя
+            Text(
+              player.name,
+              style: const TextStyle(
+                fontFamily: 'Roboto',
+                fontSize: 18.0,
+                fontWeight: FontWeight.w400,
+                color: Colors.black,
+              ),
+            ),
+            const Spacer(),
+            // Карточки пользователя (макет из инвентаря, но без фото)
+            Row(
+              children: List.generate(
+                player.cards,
+                (index) => Padding(
+                  padding: const EdgeInsets.only(left: 6.0),
+                  child: CardMockup(),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -11,7 +11,7 @@ class ProfileImageUploadDialog extends StatelessWidget {
         width: 369,
         height: 559,
         decoration: BoxDecoration(
-          color: const Color(0xFFEDD6B0),
+          color: const Color(0xFFFBF6EF),
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: Colors.black, width: 2),
         ),
