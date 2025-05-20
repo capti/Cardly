@@ -36,41 +36,43 @@ class _InventoryScreenState extends State<InventoryScreen> {
         elevation: 0,
         automaticallyImplyLeading: false,
         titleSpacing: 0,
-        title: Row(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 16.0),
-              child: Container(
-                width: 40.0,
-                height: 40.0,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: const Color(0xFFD6A067),
-                ),
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(20.0),
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Icon(
-                    Icons.arrow_back,
-                    color: Colors.black,
-                    size: 29.0,
+        title: widget.isOtherUser
+            ? Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16.0),
+                    child: Container(
+                      width: 40.0,
+                      height: 40.0,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: const Color(0xFFD6A067),
+                      ),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(20.0),
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Icon(
+                          Icons.arrow_back,
+                          color: Colors.black,
+                          size: 29.0,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              widget.isOtherUser ? 'Инвентарь ${widget.playerName}' : 'Инвентарь',
-              style: const TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 18.0,
-              ),
-            ),
-          ],
-        ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Инвентарь ${widget.playerName}',
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18.0,
+                    ),
+                  ),
+                ],
+              )
+            : const SizedBox.shrink(),
         centerTitle: false,
         actions: widget.isOtherUser ? null : [
           Container(

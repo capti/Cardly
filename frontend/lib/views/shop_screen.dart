@@ -117,15 +117,10 @@ class _ShopScreenState extends State<ShopScreen> with SingleTickerProviderStateM
               ),
               child: TabBar(
                 controller: _tabController,
+                dividerColor: Colors.transparent,
                 indicator: const BoxDecoration(
                   color: Color(0xFFD6A067),
-                  borderRadius: BorderRadius.all(Radius.circular(12.0)),
-                  border: Border(
-                    bottom: BorderSide(
-                      color: Colors.black,
-                      width: 3.0,
-                    ),
-                  ),
+                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
                 ),
                 labelColor: Colors.black,
                 unselectedLabelColor: Colors.black,
