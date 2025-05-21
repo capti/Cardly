@@ -1,0 +1,29 @@
+# IntelliJ IDEA / VSCode
+.idea/
+.vscode/
+
+# Kotlin/Gradle
+.gradle/
+build/
+out/
+!gradle/wrapper/gradle-wrapper.jar
+
+# OS garbage
+.DS_Store
+Thumbs.db
+
+# Logs and temp
+*.log
+*.tmp
+*.swp
+
+# Git
+.git
+.gitignore
+
+# Docker-related
+docker-compose.override.yml
+
+# Test artifacts
+test-results/
+coverage/
