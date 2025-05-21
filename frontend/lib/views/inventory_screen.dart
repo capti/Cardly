@@ -175,7 +175,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
               child: Container(
                 padding: const EdgeInsets.all(12.0),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEDD6B0),
+                  color: const Color(0xFFEAD7C3),
                   borderRadius: BorderRadius.circular(8.0),
                   boxShadow: [
                     BoxShadow(

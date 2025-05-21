@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
-import 'home_screen.dart';
-import 'shop_screen.dart';
-import 'exchanges_screen.dart';
-import 'news_screen.dart';
+import 'news_screen.dart'; // Import NewsItem class
 
-class NewsDetailScreen extends StatefulWidget {
+// Remove unused imports
+// import 'home_screen.dart';
+// import 'shop_screen.dart';
+// import 'exchanges_screen.dart';
+// import 'profile_screen.dart';
+// import 'search_players_screen.dart';
+
+class NewsDetailScreen extends StatelessWidget {
   final NewsItem news;
   
   const NewsDetailScreen({
@@ -13,229 +17,113 @@ class NewsDetailScreen extends StatefulWidget {
   });
 
   @override
-  State<NewsDetailScreen> createState() => _NewsDetailScreenState();
-}
-
-class _NewsDetailScreenState extends State<NewsDetailScreen> {
-  int _currentIndex = 1; // Индекс вкладки "Новости" в нижней навигации
-  
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFFFF4E3), // Бежевый фон
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFFFF4E3),
-        elevation: 0,
-        leading: Container(
-          margin: const EdgeInsets.all(8.0),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: Colors.black, width: 2),
-          ),
-          child: Image.asset(
-            'assets/icons/профиль.png',
-            height: 24,
-            color: Colors.black,
-          ),
-        ),
-        title: const Text(
-          'Новости',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 24.0,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: Image.asset(
-              'assets/icons/поиск.png',
-              height: 24,
-              color: Colors.black,
+    return Dialog(
+      backgroundColor: const Color(0xFFEAD7C3), // Match dialog background color style
+      insetPadding: EdgeInsets.zero, // Remove default dialog padding
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0), // Match border radius style
+        side: const BorderSide(color: Colors.black, width: 2), // Match border style
+      ),
+      child: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0), // Adjust padding as needed
+            child: SingleChildScrollView( // Keep SingleChildScrollView for content that might overflow
+              child: Column(
+                mainAxisSize: MainAxisSize.min, // Use min size for column
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // News content - Title, Image, Full Content, Date
+                  Center( // Center the title
+                    child: Text(
+                      news.title, // Use news object directly in StatelessWidget
+                      style: const TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 24.0), // Keep spacing
+                  
+                  // Картинка
+                  Container(
+                    height: 180,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEAD7C3),
+                      borderRadius: BorderRadius.circular(8.0),
+                      border: Border.all(color: Colors.black, width: 1.0), // Added thin black border
+                    ),
+                    alignment: Alignment.center,
+                    child: const Center( // Use Center to center the text
+                      child: Text(
+                        'Нет изображения', // Use the placeholder text from inventory card
+                        style: TextStyle(
+                          color: Colors.black45, // Use the text color from inventory card
+                          fontSize: 16.0, // Adjust font size as needed for this larger area
+                          // fontWeight: FontWeight.bold, // Remove bold fontWeight
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 24.0), // Keep spacing
+                  
+                  // Расширенное описание
+                  Text(
+                    news.fullContent, // Use news object directly
+                    style: const TextStyle(
+                      fontSize: 16.0,
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 16.0), // Keep spacing
+                  
+                  // Дата
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      'Дата публикации: ${news.date}', // Use news object directly
+                      style: const TextStyle(
+                        fontSize: 14.0,
+                        fontStyle: FontStyle.italic,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            onPressed: () {},
           ),
-          IconButton(
-            icon: Image.asset(
-              'assets/icons/уведомления.png',
-              height: 24,
-              color: Colors.black,
+          // Close button in the top right corner
+          Positioned(
+            top: 0, // Adjust position as needed
+            right: 0, // Adjust position as needed
+            child: GestureDetector(
+              onTap: () => Navigator.pop(context), // Close the dialog
+              child: Container(
+                width: 48, // Match size from exchange_details_screen.dart
+                height: 48, // Match size from exchange_details_screen.dart
+                decoration: BoxDecoration(
+                  color: Color(0xFFD6A067), // Match color
+                  borderRadius: BorderRadius.circular(10), // Match border radius
+                  border: Border.all(color: Colors.black, width: 3), // Match border style
+                ),
+                child: const Center(
+                  child: Icon(
+                    Icons.close,
+                    color: Colors.black,
+                    size: 28, // Match icon size
+                  ),
+                ),
+              ),
             ),
-            onPressed: () {},
           ),
         ],
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Кнопка возврата
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFD6A067),
-                    shape: BoxShape.circle,
-                  ),
-                  child: IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.black),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                ),
-              ),
-              
-              const SizedBox(height: 16.0),
-              
-              // Карточка детальной новости
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEDD6B0),
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: Stack(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Заголовок
-                        Center(
-                          child: Text(
-                            widget.news.title,
-                            style: const TextStyle(
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        
-                        const SizedBox(height: 24.0),
-                        
-                        // Картинка
-                        Container(
-                          height: 180,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFD6A067),
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          alignment: Alignment.center,
-                          child: const Text(
-                            'Картинка к новости',
-                            style: TextStyle(
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        
-                        const SizedBox(height: 24.0),
-                        
-                        // Расширенное описание
-                        Text(
-                          widget.news.fullContent,
-                          style: const TextStyle(
-                            fontSize: 16.0,
-                          ),
-                        ),
-                        
-                        const SizedBox(height: 16.0),
-                        
-                        // Дата
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            'Дата публикации: ${widget.news.date}',
-                            style: const TextStyle(
-                              fontSize: 14.0,
-                              fontStyle: FontStyle.italic,
-                              color: Colors.black54,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: Color(0xFFD6A067),
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            if (index != _currentIndex) {
-              setState(() {
-                _currentIndex = index;
-              });
-              switch (index) {
-                case 0:
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
-                    (route) => false,
-                  );
-                  break;
-                case 1:
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const NewsScreen()),
-                    (route) => false,
-                  );
-                  break;
-                case 2:
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ShopScreen()),
-                    (route) => false,
-                  );
-                  break;
-                case 3:
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ExchangesScreen()),
-                    (route) => false,
-                  );
-                  break;
-              }
-            }
-          },
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          type: BottomNavigationBarType.fixed,
-          selectedItemColor: Colors.black,
-          unselectedItemColor: Colors.black54,
-          items: [
-            BottomNavigationBarItem(
-              icon: Image.asset('assets/icons/главная.png', height: 24),
-              label: 'Гл.меню',
-            ),
-            BottomNavigationBarItem(
-              icon: Image.asset('assets/icons/Инвентарь.png', height: 24),
-              label: '',
-            ),
-            BottomNavigationBarItem(
-              icon: Image.asset('assets/icons/магазин.png', height: 24),
-              label: '',
-            ),
-            BottomNavigationBarItem(
-              icon: Image.asset('assets/icons/обменник.png', height: 24),
-              label: '',
-            ),
-          ],
-        ),
       ),
     );
   }

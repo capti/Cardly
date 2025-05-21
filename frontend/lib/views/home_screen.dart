@@ -21,9 +21,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF4E3),
+      backgroundColor: const Color(0xFFFBF6EF),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFFF4E3),
+        backgroundColor: const Color(0xFFFBF6EF),
         elevation: 0,
         leading: Padding(
           padding: const EdgeInsets.only(left: 16.0),
@@ -78,6 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
+                fontFamily: 'Jost',
               ),
             ),
           ),
@@ -132,7 +133,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   'Создай свою уникальную карточку',
                   style: TextStyle(
                     fontSize: 20.0,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: 'Roboto',
                   ),
                 ),
               ),
@@ -171,7 +173,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           'Квесты',
                           style: TextStyle(
                             fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w400,
+                            fontFamily: 'Roboto',
                           ),
                         ),
                       ],
@@ -212,7 +215,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           'Новости',
                           style: TextStyle(
                             fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w400,
+                            fontFamily: 'Roboto',
                           ),
                         ),
                       ],

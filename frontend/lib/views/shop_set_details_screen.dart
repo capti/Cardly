@@ -38,9 +38,9 @@ class _ShopSetDetailsScreenState extends State<ShopSetDetailsScreen> with Single
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF4E3), // Бежевый фон
+      backgroundColor: const Color(0xFFFBF6EF), // Бежевый фон
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFFF4E3),
+        backgroundColor: const Color(0xFFFBF6EF),
         elevation: 0,
         leading: Padding(
           padding: const EdgeInsets.only(left: 16.0),
@@ -109,15 +109,10 @@ class _ShopSetDetailsScreenState extends State<ShopSetDetailsScreen> with Single
               ),
               child: TabBar(
                 controller: _tabController,
+                dividerColor: Colors.transparent,
                 indicator: const BoxDecoration(
                   color: Color(0xFFD6A067),
-                  borderRadius: BorderRadius.all(Radius.circular(12.0)),
-                  border: Border(
-                    bottom: BorderSide(
-                      color: Colors.black,
-                      width: 3.0,
-                    ),
-                  ),
+                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
                 ),
                 labelColor: Colors.black,
                 unselectedLabelColor: Colors.black,
@@ -146,7 +141,7 @@ class _ShopSetDetailsScreenState extends State<ShopSetDetailsScreen> with Single
                 height: 492.0,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEDD6B0),
+                    color: const Color(0xFFEAD7C3),
                     borderRadius: BorderRadius.circular(8.0),
                     border: Border.all(color: Colors.black, width: 3),
                   ),
@@ -188,7 +183,7 @@ class _ShopSetDetailsScreenState extends State<ShopSetDetailsScreen> with Single
                               ],
                             ),
                             
-                            const SizedBox(height: 20.0),
+                            const SizedBox(height: 70.0),
                             
                             // Кнопка просмотра содержимого
                             SizedBox(
@@ -211,7 +206,7 @@ class _ShopSetDetailsScreenState extends State<ShopSetDetailsScreen> with Single
                                   ),
                                 ),
                                 child: const Text(
-                                  'Посмотреть Содержимое',
+                                  'Посмотреть содержимое',
                                   style: TextStyle(
                                     fontSize: 16.0,
                                     fontWeight: FontWeight.bold,
@@ -337,22 +332,69 @@ class _ShopSetDetailsScreenState extends State<ShopSetDetailsScreen> with Single
               type: BottomNavigationBarType.fixed,
               selectedItemColor: Colors.black,
               unselectedItemColor: Colors.black54,
+              showSelectedLabels: true,
+              showUnselectedLabels: true,
+              selectedIconTheme: const IconThemeData(
+                size: 28,
+              ),
+              unselectedIconTheme: const IconThemeData(
+                size: 24,
+              ),
+              selectedLabelStyle: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+              unselectedLabelStyle: const TextStyle(
+                fontSize: 11,
+              ),
               items: [
                 BottomNavigationBarItem(
                   icon: Image.asset('assets/icons/главная.png', height: 24),
+                  activeIcon: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEDD6B0),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Image.asset('assets/icons/главная.png', height: 24),
+                  ),
                   label: 'Главная',
                 ),
                 BottomNavigationBarItem(
                   icon: Image.asset('assets/icons/Инвентарь.png', height: 24),
-                  label: '',
+                  activeIcon: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEDD6B0),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Image.asset('assets/icons/Инвентарь.png', height: 24),
+                  ),
+                  label: 'Инвентарь',
                 ),
                 BottomNavigationBarItem(
                   icon: Image.asset('assets/icons/магазин.png', height: 24),
-                  label: '',
+                  activeIcon: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEDD6B0),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Image.asset('assets/icons/магазин.png', height: 24),
+                  ),
+                  label: 'Магазин',
                 ),
                 BottomNavigationBarItem(
                   icon: Image.asset('assets/icons/обменник.png', height: 24),
-                  label: '',
+                  activeIcon: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEDD6B0),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Image.asset('assets/icons/обменник.png', height: 24),
+                  ),
+                  label: 'Обменник',
                 ),
               ],
             ),

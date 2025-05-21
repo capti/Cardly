@@ -2,13 +2,25 @@ import 'package:flutter/material.dart';
 import 'exchanges_screen.dart';
 
 class ExchangeDetailsScreen extends StatelessWidget {
-  const ExchangeDetailsScreen({super.key});
+  final ExchangeItem exchangeItem;
+
+  const ExchangeDetailsScreen({super.key, required this.exchangeItem});
 
   @override
   Widget build(BuildContext context) {
+    // Helper to get status text
+    String getStatusText(ExchangeStatus status) {
+      switch (status) {
+        case ExchangeStatus.pending: return 'Ожидает\nподтверждения';
+        case ExchangeStatus.waiting: return 'Ожидает\nдействий';
+        case ExchangeStatus.approved: return 'Завершен';
+        case ExchangeStatus.rejected: return 'Отклонен';
+      }
+    }
+
     return Dialog(
-      backgroundColor: const Color(0xFFFFF4E3),
-      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+      backgroundColor: const Color(0xFFEAD7C3),
+      insetPadding: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16.0),
         side: const BorderSide(color: Colors.black, width: 2),
@@ -17,8 +29,8 @@ class ExchangeDetailsScreen extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(minWidth: 346, maxWidth: 346, minHeight: 0),
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 1.6,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,7 +52,7 @@ class ExchangeDetailsScreen extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          'CardMaster475',
+                          exchangeItem.nickname,
                           style: const TextStyle(
                             fontSize: 15.0,
                             fontWeight: FontWeight.w500,
@@ -57,23 +69,35 @@ class ExchangeDetailsScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        // Stack из двух карточек (стопка)
-                        Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            Positioned(
-                              left: 6,
-                              top: -4,
-                              child: _buildCardItem('Карточка 2', 'Обычная', width: 48, height: 64),
-                            ),
-                            _buildCardItem('Карточка 1', 'Обычная', width: 48, height: 64),
-                          ],
-                        ),
+                        // Cards offered by the current user (stacked if more than one)
+                        exchangeItem.myOfferedCardIds.length > 1
+                            ? Stack(
+                                clipBehavior: Clip.none, // Allow cards to overlap
+                                children: [
+                                  // Show up to 3 cards in the stack (visual representation)
+                                  Positioned(
+                                    left: 12, // Adjust position for stacking
+                                    top: 0, // Adjust position for stacking
+                                    child: _buildCardItem('Card Name', 'Rarity', width: 48, height: 64), // TODO: Use actual card details from cardId
+                                  ),
+                                  Positioned(
+                                    left: 6, // Adjust position for stacking
+                                    top: 0, // Adjust position for stacking
+                                    child: _buildCardItem('Card Name', 'Rarity', width: 48, height: 64), // TODO: Use actual card details from cardId
+                                  ),
+                                  // Always show the front card if count is at least 1
+                                  _buildCardItem('Card Name', 'Rarity', width: 48, height: 64), // TODO: Use actual card details from cardId
+                                ],
+                              )
+                            : (exchangeItem.myOfferedCardIds.isNotEmpty
+                                ? _buildCardItem('Card Name', 'Rarity', width: 48, height: 64) // Single card
+                                : SizedBox.shrink()), // No cards
+
                         // Статус по центру
                         Expanded(
                           child: Center(
                             child: Text(
-                              'В ожидании',
+                              getStatusText(exchangeItem.status), // Use the exchange status
                               style: const TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold,
@@ -83,65 +107,141 @@ class ExchangeDetailsScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-                        // Карточка пользователя
-                        _buildCardItem('Карточка пользователя', 'Редкая', width: 48, height: 64),
+                        // Cards offered by the other user (stacked if more than one)
+                        exchangeItem.otherUserOfferedCardIds.length > 1
+                            ? Stack(
+                                clipBehavior: Clip.none, // Allow cards to overlap
+                                children: [
+                                  // Show up to 3 cards in the stack (visual representation)
+                                  Positioned(
+                                    left: 12, // Adjust position for stacking
+                                    top: 0, // Adjust position for stacking
+                                    child: _buildCardItem('Card Name', 'Rarity', width: 48, height: 64), // TODO: Use actual card details from cardId
+                                  ),
+                                  Positioned(
+                                    left: 6, // Adjust position for stacking
+                                    top: 0, // Adjust position for stacking
+                                    child: _buildCardItem('Card Name', 'Rarity', width: 48, height: 64), // TODO: Use actual card details from cardId
+                                  ),
+                                  // Always show the front card if count is at least 1
+                                  _buildCardItem('Card Name', 'Rarity', width: 48, height: 64), // TODO: Use actual card details from cardId
+                                ],
+                              )
+                            : (exchangeItem.otherUserOfferedCardIds.isNotEmpty
+                                ? _buildCardItem('Card Name', 'Rarity', width: 48, height: 64) // Single card
+                                : SizedBox.shrink()), // No cards
                       ],
                     ),
                   ),
                   const SizedBox(height: 12.0),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 12.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(
-                          width: 729,
-                          height: 60,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFD6A067),
-                              foregroundColor: Colors.black,
-                              textStyle: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                fontFamily: 'Jost',
+                  // Conditionally display buttons based on status
+                  if (exchangeItem.status == ExchangeStatus.waiting) // Show both buttons if waiting for actions
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(
+                            width: double.infinity,
+                            height: 60,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFD6A067),
+                                foregroundColor: Colors.black,
+                                textStyle: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: 'Jost',
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
                               ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ExchangesScreen(
+                                      notification: 'Обмен принят',
+                                    ),
+                                  ),
+                                  (route) => false,
+                                );
+                              },
+                              child: const Text('Принять'),
                             ),
-                            onPressed: () {
-                              _showConfirmationDialog(context, 'Принять обмен?', false);
-                            },
-                            child: const Text('Принять'),
                           ),
-                        ),
-                        const SizedBox(height: 12.0),
-                        SizedBox(
-                          width: 729,
-                          height: 60,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFD6A067),
-                              foregroundColor: Colors.black,
-                              textStyle: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                fontFamily: 'Jost',
+                          const SizedBox(height: 12.0),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 60,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFD6A067),
+                                foregroundColor: Colors.black,
+                                textStyle: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: 'Jost',
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
                               ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ExchangesScreen(
+                                      notification: 'Обмен отклонен',
+                                    ),
+                                  ),
+                                  (route) => false,
+                                );
+                              },
+                              child: const Text('Отклонить'),
                             ),
-                            onPressed: () {
-                              _showConfirmationDialog(context, 'Отклонить обмен?', true);
-                            },
-                            child: const Text('Отклонить'),
                           ),
+                        ],
+                      ),
+                    )
+                  else if (exchangeItem.status == ExchangeStatus.pending) // Show only Cancel button if pending
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12.0),
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 60,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFD6A067),
+                            foregroundColor: Colors.black,
+                            textStyle: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: 'Jost',
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ExchangesScreen(
+                                  notification: 'Обмен отклонен',
+                                ),
+                              ),
+                              (route) => false,
+                            );
+                          },
+                          child: const Text('Отменить'), // Text for cancelling pending exchange
                         ),
-                      ],
+                      ),
                     ),
-                  ),
                 ],
               ),
             ),
@@ -175,87 +275,106 @@ class ExchangeDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCardItem(String title, String rarity, {double width = 80, double height = 120}) {
+  Widget _buildCardItem(String title, String rarity, {double width = 48, double height = 64}) {
+    // Precise calculation of vertical space consumed by non-content elements:
+    // Outer border (top + bottom): 1.5 + 1.5 = 3
+    // Padding (top + bottom) within outer border: 1.5 + 1.5 = 3
+    // Inner border (top + bottom) after first padding: 1.5 + 1.5 = 3
+    // Padding (top + bottom) after inner border: 1.0 + 1.0 = 2
+    // Separator line: 1
+    double totalNonContentHeight = 3 + 3 + 3 + 2 + 1; // Total vertical space used by borders, padding, and line
+
+    double availableContentHeight = height - totalNonContentHeight; // Height remaining for image and rarity areas
+
+    // Distribute available height based on desired proportions (approx. 65/35 split)
+    double imageHeight = availableContentHeight * 0.65;
+    double rarityHeight = availableContentHeight * 0.2;
+
+    // Ensure calculated heights are non-negative
+    imageHeight = imageHeight > 0 ? imageHeight : 0;
+    rarityHeight = rarityHeight > 0 ? rarityHeight : 0;
+
     return Container(
       width: width,
       height: height,
-      margin: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: const Color(0xFFD9A76A),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.black, width: 2),
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: Colors.black, width: 1.5),
       ),
-      child: Container(
-        margin: const EdgeInsets.all(2),
-        decoration: BoxDecoration(
-          color: const Color(0xFFD9A76A),
-          borderRadius: BorderRadius.circular(6),
-          border: Border.all(color: Colors.black, width: 1.5),
-        ),
-        child: Stack(
-          children: [
-            // Горизонтальная линия внизу
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: height * 0.2,
-              child: Container(
-                height: 2,
-                color: Colors.black.withOpacity(0.5),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showConfirmationDialog(BuildContext context, String message, bool isDecline) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: const Color(0xFFFFF4E3),
-          title: Text(message),
-          content: Text(
-            isDecline
-                ? 'Это действие невозможно будет отменить.'
-                : 'Карточки будут переданы между участниками обмена.',
+      child: Padding(
+        padding: const EdgeInsets.all(0),
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFFD6A067),
+            borderRadius: BorderRadius.circular(3),
           ),
-          actions: [
-            TextButton(
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.black,
+          child: Padding(
+            padding: const EdgeInsets.all(1.5),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(2),
+                border: Border.all(color: Colors.black, width: 1.5),
               ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Отмена'),
-            ),
-            TextButton(
-              style: TextButton.styleFrom(
-                foregroundColor: isDecline ? Colors.red : Colors.green,
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-                // Передаю текст уведомления на ExchangesScreen
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ExchangesScreen(
-                      notification: isDecline ? 'Обмен отклонен' : 'Обмен принят',
-                    ),
+              child: Padding(
+                padding: EdgeInsets.zero,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD6A067),
+                    borderRadius: BorderRadius.circular(1.0),
                   ),
-                  (route) => false,
-                );
-              },
-              child: Text(isDecline ? 'Отклонить' : 'Принять'),
+                  child: Column(
+                    children: [
+                      // Image placeholder area
+                      Container(
+                        height: imageHeight, // Use precisely calculated height
+                        decoration: const BoxDecoration(
+                           color: Color(0xFFEAD7C3),
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(1.0),
+                              topRight: Radius.circular(1.0),
+                            ),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            'Нет \n изоб',
+                            style: TextStyle(color: Colors.black45, fontSize: 7),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 1,
+                        color: Colors.black,
+                      ),
+                      // Rarity icons area
+                      Container(
+                        height: rarityHeight, // Use precisely calculated height
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFD6A067),
+                          borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(1.0),
+                            bottomRight: Radius.circular(1.0),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: List.generate(4, (i) => Image.asset(
+                            'assets/icons/редкость.png',
+                            height: rarityHeight > 0 ? rarityHeight * 0.7 : 0, // Adjust icon size proportionally
+                          )),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
-          ],
-        );
-      },
+          ),
+        ),
+      ),
     );
   }
 } 

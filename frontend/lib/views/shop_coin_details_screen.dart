@@ -40,9 +40,9 @@ class _ShopCoinDetailsScreenState extends State<ShopCoinDetailsScreen> with Sing
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF4E3),
+      backgroundColor: const Color(0xFFFBF6EF),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFFF4E3),
+        backgroundColor: const Color(0xFFFBF6EF),
         elevation: 0,
         leading: Padding(
           padding: const EdgeInsets.only(left: 16.0),
@@ -111,15 +111,10 @@ class _ShopCoinDetailsScreenState extends State<ShopCoinDetailsScreen> with Sing
               ),
               child: TabBar(
                 controller: _tabController,
+                dividerColor: Colors.transparent,
                 indicator: const BoxDecoration(
                   color: Color(0xFFD6A067),
-                  borderRadius: BorderRadius.all(Radius.circular(12.0)),
-                  border: Border(
-                    bottom: BorderSide(
-                      color: Colors.black,
-                      width: 3.0,
-                    ),
-                  ),
+                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
                 ),
                 labelColor: Colors.black,
                 unselectedLabelColor: Colors.black,
@@ -147,7 +142,7 @@ class _ShopCoinDetailsScreenState extends State<ShopCoinDetailsScreen> with Sing
                 height: 492.0,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEDD6B0),
+                    color: const Color(0xFFEAD7C3),
                     borderRadius: BorderRadius.circular(8.0),
                     border: Border.all(color: Colors.black, width: 3),
                   ),
@@ -178,70 +173,55 @@ class _ShopCoinDetailsScreenState extends State<ShopCoinDetailsScreen> with Sing
                               ),
                               textAlign: TextAlign.center,
                             ),
-                            const SizedBox(height: 10.0),
-                            // Название и цена
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  widget.coinName,
-                                  style: const TextStyle(
-                                    fontSize: 18.0,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const Text(
-                                  'Цена',
-                                  style: TextStyle(
-                                    fontSize: 16.0,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 20.0),
+                            const SizedBox(height: 60.0),
                             // Кнопка покупки
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
                                 onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    barrierDismissible: false,
-                                    builder: (BuildContext context) {
-                                      Future.delayed(const Duration(seconds: 3), () {
-                                        Navigator.of(context).pop();
-                                        Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(builder: (context) => const ShopScreen()),
-                                        );
-                                      });
-                                      return Dialog(
-                                        backgroundColor: Colors.transparent,
-                                        elevation: 0,
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            const SizedBox(height: 50),
-                                            Container(
-                                              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-                                              decoration: BoxDecoration(
-                                                color: const Color(0xFFEDD6B0),
-                                                borderRadius: BorderRadius.circular(8),
+                                  final overlay = Overlay.of(context);
+                                  final overlayEntry = OverlayEntry(
+                                    builder: (context) => Positioned(
+                                      top: 40,
+                                      left: 16,
+                                      right: 16,
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFFEAD7C3),
+                                            borderRadius: BorderRadius.circular(10),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black.withOpacity(0.18),
+                                                blurRadius: 8,
+                                                offset: const Offset(0, 6),
                                               ),
-                                              child: const Text(
-                                                'Набор успешно приобретен',
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
+                                            ],
+                                          ),
+                                          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 5),
+                                          child: const Center(
+                                            child: Text(
+                                              'Монеты успешно приобретены',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600,
+                                                color: Colors.black,
                                               ),
                                             ),
-                                          ],
+                                          ),
                                         ),
-                                      );
-                                    },
+                                      ),
+                                    ),
+                                  );
+                                  overlay.insert(overlayEntry);
+                                  Future.delayed(const Duration(seconds: 3), () {
+                                    overlayEntry.remove();
+                                  });
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => const ShopScreen()),
                                   );
                                 },
                                 style: ElevatedButton.styleFrom(

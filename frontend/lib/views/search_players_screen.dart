@@ -47,7 +47,7 @@ class SearchPlayersModal extends StatelessWidget {
                         child: TextField(
                           controller: _searchController,
                           style: const TextStyle(
-                            fontFamily: 'Roboto',
+                            fontFamily: 'Jost',
                             fontSize: 16,
                             color: Colors.black,
                           ),
@@ -55,7 +55,7 @@ class SearchPlayersModal extends StatelessWidget {
                             border: InputBorder.none,
                             hintText: 'Введите ник пользователя',
                             hintStyle: TextStyle(
-                              fontFamily: 'Roboto',
+                              fontFamily: 'Jost',
                               fontSize: 16,
                               color: Colors.black,
                             ),
@@ -127,46 +127,46 @@ class PlayerListItem extends StatelessWidget {
         );
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 10.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Аватар пользователя как в profile_screen
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: const Color(0xFFEAD7C3),
-                border: Border.all(color: Colors.black, width: 2),
-              ),
-              child: const Center(
-                child: Icon(Icons.person_outline, size: 28, color: Colors.black),
+      padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 10.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Аватар пользователя как в profile_screen
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: const Color(0xFFEAD7C3),
+              border: Border.all(color: Colors.black, width: 2),
+            ),
+            child: const Center(
+              child: Icon(Icons.person_outline, size: 28, color: Colors.black),
+            ),
+          ),
+          const SizedBox(width: 12.0),
+          // Имя пользователя
+          Text(
+            player.name,
+            style: const TextStyle(
+              fontFamily: 'Jost',
+              fontSize: 18.0,
+              fontWeight: FontWeight.w400,
+              color: Colors.black,
+            ),
+          ),
+          const Spacer(),
+          // Карточки пользователя (макет из инвентаря, но без фото)
+          Row(
+            children: List.generate(
+              player.cards,
+              (index) => Padding(
+                padding: const EdgeInsets.only(left: 6.0),
+                child: CardMockup(),
               ),
             ),
-            const SizedBox(width: 12.0),
-            // Имя пользователя
-            Text(
-              player.name,
-              style: const TextStyle(
-                fontFamily: 'Roboto',
-                fontSize: 18.0,
-                fontWeight: FontWeight.w400,
-                color: Colors.black,
-              ),
-            ),
-            const Spacer(),
-            // Карточки пользователя (макет из инвентаря, но без фото)
-            Row(
-              children: List.generate(
-                player.cards,
-                (index) => Padding(
-                  padding: const EdgeInsets.only(left: 6.0),
-                  child: CardMockup(),
-                ),
-              ),
-            ),
-          ],
+          ),
+        ],
         ),
       ),
     );
@@ -179,51 +179,95 @@ class CardMockup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 32,
-      height: 44,
-      child: Stack(
-        children: [
-          // Внешняя черная рамка
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              borderRadius: BorderRadius.circular(4),
-              border: Border.all(color: Colors.black, width: 2),
-            ),
+    double width = 32;
+    double height = 44;
+    
+    // Precise calculation of vertical space consumed by non-content elements
+    double totalNonContentHeight = 3 + 3 + 3 + 2 + 1; // Total vertical space used by borders, padding, and line
+    double availableContentHeight = height - totalNonContentHeight;
+    double imageHeight = availableContentHeight * 0.65;
+    double rarityHeight = availableContentHeight * 0.2;
+
+    return Container(
+      width: width,
+      height: height,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: Colors.black, width: 1.5),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(0),
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFFD6A067),
+            borderRadius: BorderRadius.circular(3),
           ),
-          // Прослойка цвета карточки
-          Padding(
-            padding: const EdgeInsets.all(2.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFFD6A067),
-                borderRadius: BorderRadius.circular(3),
-              ),
-            ),
-          ),
-          // Внутренняя черная рамка
-          Padding(
-            padding: const EdgeInsets.all(4.0),
+          child: Padding(
+            padding: const EdgeInsets.all(1.5),
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.transparent,
                 borderRadius: BorderRadius.circular(2),
-                border: Border.all(color: Colors.black, width: 1),
+                border: Border.all(color: Colors.black, width: 1.5),
+              ),
+              child: Padding(
+                padding: EdgeInsets.zero,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD6A067),
+                    borderRadius: BorderRadius.circular(1.0),
+                  ),
+                  child: Column(
+                    children: [
+                      // Image placeholder area
+                      Container(
+                        height: imageHeight,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFEAD7C3),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(1.0),
+                            topRight: Radius.circular(1.0),
+                          ),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            'Нет \n изоб',
+                            style: TextStyle(color: Colors.black45, fontSize: 7),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 1,
+                        color: Colors.black,
+                      ),
+                      // Rarity icons area
+                      Container(
+                        height: rarityHeight,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFD6A067),
+                          borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(1.0),
+                            bottomRight: Radius.circular(1.0),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: List.generate(4, (i) => Image.asset(
+                            'assets/icons/редкость.png',
+                            height: rarityHeight > 0 ? rarityHeight * 0.7 : 0,
+                          )),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
-          // Разделительная линия
-          Positioned(
-            bottom: 12,
-            left: 3,
-            right: 3,
-            child: Container(
-              height: 2,
-              color: Colors.black,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

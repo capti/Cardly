@@ -13,6 +13,7 @@ class ProfileScreen extends StatelessWidget {
   final String? playerId;
   final int? cardsCollected;
   final int? collectionsCollected;
+  final List<int> favoriteCardIds;
 
   const ProfileScreen({
     super.key,
@@ -21,6 +22,7 @@ class ProfileScreen extends StatelessWidget {
     this.playerId,
     this.cardsCollected,
     this.collectionsCollected,
+    this.favoriteCardIds = const [],
   });
 
   @override
@@ -168,8 +170,8 @@ class ProfileScreen extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: List.generate(
-                5,
-                (index) => _buildCard(),
+                favoriteCardIds.length,
+                (index) => _buildCard(favoriteCardIds[index]),
               ),
             ),
           ),
@@ -424,7 +426,7 @@ class ProfileScreen extends StatelessWidget {
   }
   
   // Карточка в профиле
-  Widget _buildCard() {
+  Widget _buildCard(int cardId) {
     return SizedBox(
       width: 74,
       height: 112,
@@ -461,48 +463,60 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
             ),
-            // Основная карточка с отделением редкости
+            // Основная карточка
             Padding(
               padding: const EdgeInsets.all(6.0),
-              child: Column(
-                children: [
-                  Expanded(
-                    flex: 8,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFD6A067),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFFD6A067),
+                  borderRadius: BorderRadius.circular(5.0),
+                ),
+                child: Column(
+                  children: [
+                    Expanded(
+                      flex: 8,
+                      child: ClipRRect(
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(5.0),
                           topRight: Radius.circular(5.0),
                         ),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    height: 3,
-                    color: Colors.black,
-                  ),
-                  Container(
-                    height: 20,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFD6A067),
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(5.0),
-                        bottomRight: Radius.circular(5.0),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: List.generate(4, (i) => Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 1.0),
-                        child: Image.asset(
-                          'assets/icons/редкость.png',
-                          height: 10,
+                        child: Container(
+                          color: const Color(0xFFEAD7C3),
+                          child: const Center(
+                            child: Text(
+                              'Нет изображения',
+                              style: TextStyle(color: Colors.black45, fontSize: 12),
+                            ),
+                          ),
                         ),
-                      )),
+                      ),
                     ),
-                  ),
-                ],
+                    Container(
+                      height: 3,
+                      color: Colors.black,
+                    ),
+                    Container(
+                      height: 20,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFD6A067),
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(5.0),
+                          bottomRight: Radius.circular(5.0),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: List.generate(4, (i) => Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 1.0),
+                          child: Image.asset(
+                            'assets/icons/редкость.png',
+                            height: 10,
+                          ),
+                        )),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -533,94 +547,114 @@ class _ReportDialogState extends State<ReportDialog> {
   Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: const Color(0xFFEAD7C3),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: Container(
-        width: 350,
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color(0xFFD6A067),
-                  ),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(20.0),
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.arrow_back, color: Colors.black, size: 29),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'Подать жалобу на пользователя ${widget.playerName}',
-                    style: const TextStyle(fontSize: 17),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 18),
-            ...List.generate(_reasons.length, (i) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 6.0),
-              child: Row(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      insetPadding: EdgeInsets.zero,
+      child: Stack(
+        children: [
+          Container(
+            width: 360,
+            height: 600,
+            padding: const EdgeInsets.all(20),
+            child: Padding(
+              padding: const EdgeInsets.only(top: 50.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    _reasons[i],
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  Row(
+                    children: [
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Подать жалобу на пользователя\n${widget.playerName}',
+                          style: const TextStyle(fontSize: 17),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 12),
-                  Radio<int>(
-                    value: i,
-                    groupValue: _selectedReason,
-                    onChanged: (val) => setState(() => _selectedReason = val!),
-                    activeColor: Colors.black,
+                  const SizedBox(height: 18),
+                  ...List.generate(_reasons.length, (i) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 6.0),
+                    child: Row(
+                      children: [
+                        Text(
+                          _reasons[i],
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                        ),
+                        const SizedBox(width: 12),
+                        Radio<int>(
+                          value: i,
+                          groupValue: _selectedReason,
+                          onChanged: (val) => setState(() => _selectedReason = val!),
+                          activeColor: Colors.black,
+                        ),
+                      ],
+                    ),
+                  )),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _controller,
+                    maxLines: 5,
+                    decoration: InputDecoration(
+                      hintText: 'Комментарий',
+                      filled: true,
+                      fillColor: const Color(0xFFFBF6EF),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.all(16),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 54,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFD6A067),
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        showTopReportSuccess(context);
+                      },
+                      child: const Text('Отправить жалобу'),
+                    ),
                   ),
                 ],
               ),
-            )),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _controller,
-              maxLines: 5,
-              decoration: InputDecoration(
-                hintText: 'Комментарий',
-                filled: true,
-                fillColor: const Color(0xFFFBF6EF),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.all(16),
-              ),
             ),
-            const SizedBox(height: 18),
-            SizedBox(
-              width: double.infinity,
-              height: 54,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFD6A067),
-                  foregroundColor: Colors.black,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+          ),
+          Positioned(
+            top: 0,
+            right: 0,
+            child: GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFD6A067),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.black, width: 3),
+                ),
+                child: const Center(
+                  child: Icon(
+                    Icons.close,
+                    color: Colors.black,
+                    size: 28,
                   ),
-                  textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
                 ),
-                onPressed: () {
-                  Navigator.pop(context);
-                  showTopReportSuccess(context);
-                },
-                child: const Text('Отправить жалобу'),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -16,14 +16,14 @@ class _CreateCardScreenState extends State<CreateCardScreen> {
   bool _showCategories = false;
   int _currentIndex = 0;
   final List<String> _categories = ['Категория 1', 'Категория 2', 'Категория 3', 'Категория 4'];
-  String _selectedCategory = 'Пример категории';
+  String _selectedCategory = 'Выберите категорию';
   
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF4E3),
+      backgroundColor: const Color(0xFFFBF6EF),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFFF4E3),
+        backgroundColor: const Color(0xFFFBF6EF),
         elevation: 0,
         leading: Padding(
           padding: const EdgeInsets.only(left: 16.0),
@@ -96,6 +96,7 @@ class _CreateCardScreenState extends State<CreateCardScreen> {
                             style: const TextStyle(
                               color: Colors.black,
                               fontSize: 16.0,
+                              fontFamily: 'Jost',
                             ),
                           ),
                           Icon(
@@ -161,6 +162,7 @@ class _CreateCardScreenState extends State<CreateCardScreen> {
                   style: TextStyle(
                     fontSize: 16.0,
                     fontWeight: FontWeight.bold,
+                    fontFamily: 'Roboto',
                   ),
                 ),
               ),
@@ -171,12 +173,6 @@ class _CreateCardScreenState extends State<CreateCardScreen> {
           Container(
             decoration: const BoxDecoration(
               color: Color(0xFFD6A067),
-              border: Border(
-                top: BorderSide(
-                  color: Colors.black,
-                  width: 1.0,
-                ),
-              ),
             ),
             child: BottomNavigationBar(
               currentIndex: _currentIndex,
@@ -230,9 +226,11 @@ class _CreateCardScreenState extends State<CreateCardScreen> {
               selectedLabelStyle: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
+                fontFamily: 'Jost',
               ),
               unselectedLabelStyle: const TextStyle(
                 fontSize: 11,
+                fontFamily: 'Jost',
               ),
               items: [
                 BottomNavigationBarItem(
@@ -341,6 +339,7 @@ class _CreateCardScreenState extends State<CreateCardScreen> {
           style: const TextStyle(
             fontSize: 16.0,
             color: Colors.black,
+            fontFamily: 'Jost',
           ),
         ),
       ),

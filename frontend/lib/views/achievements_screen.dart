@@ -20,7 +20,7 @@ class AchievementsScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF4E3), // Бежевый фон
+      backgroundColor: const Color(0xFFFBF6EF), // Бежевый фон
       body: SafeArea(
         child: Column(
           children: [
@@ -37,7 +37,7 @@ class AchievementsScreen extends StatelessWidget {
                       color: const Color(0xFFD6A067),
                     ),
                     child: InkWell(
-                      borderRadius: BorderRadius.circular(20.0),
+                      borderRadius: BorderRadius.circular(10.0),
                       onTap: () {
                         Navigator.pop(context);
                       },
@@ -68,7 +68,7 @@ class AchievementsScreen extends StatelessWidget {
                   final achievement = achievements[index];
                   return Card(
                     margin: const EdgeInsets.only(bottom: 8),
-                    color: const Color(0xFFEDD6B0),
+                    color: const Color(0xFFEAD7C3),
                     elevation: 0,
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
