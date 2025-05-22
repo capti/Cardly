@@ -7,6 +7,7 @@ import 'exchanges_screen.dart';
 import 'news_screen.dart';
 import 'quests_screen.dart';
 import 'profile_screen.dart';
+import 'notifications_modal.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -64,7 +65,12 @@ class _HomeScreenState extends State<HomeScreen> {
               height: 36,
               color: Colors.black,
             ),
-            onPressed: null,
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => const NotificationsModal(),
+              );
+            },
           ),
         ],
       ),
@@ -96,10 +102,45 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               itemCount: 8,
               itemBuilder: (context, index) {
-                return Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFEAD7C3),
-                    borderRadius: BorderRadius.circular(12.0),
+                // Dummy collection names for demonstration
+                final List<String> collectionNames = [
+                  'Весна',
+                  'Лето',
+                  'Осень',
+                  'Зима',
+                  'Горы',
+                  'Море',
+                  'Лес',
+                  'Город'
+                ];
+                
+                return InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => InventoryScreen(
+                          collectionName: collectionNames[index],
+                        ),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEAD7C3),
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    child: Center(
+                      child: Text(
+                        collectionNames[index],
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          fontFamily: 'Jost',
+                        ),
+                      ),
+                    ),
                   ),
                 );
               },
@@ -277,10 +318,12 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           selectedLabelStyle: const TextStyle(
             fontSize: 12,
-            fontWeight: FontWeight.bold, 
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Jost',
           ),
           unselectedLabelStyle: const TextStyle(
             fontSize: 11,
+            fontFamily: 'Jost',
           ),
           items: [
             BottomNavigationBarItem(
