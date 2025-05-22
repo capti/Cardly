@@ -86,6 +86,7 @@ class _ShopScreenState extends State<ShopScreen> with SingleTickerProviderStateM
                     color: Colors.black,
                     fontSize: 16.0,
                     fontWeight: FontWeight.bold,
+                    fontFamily: 'Jost',
                   ),
                 ),
                 SizedBox(width: 6.0),
@@ -129,6 +130,8 @@ class _ShopScreenState extends State<ShopScreen> with SingleTickerProviderStateM
                   Tab(text: 'Наборы'),
                   Tab(text: 'Монеты'),
                 ],
+                labelStyle: TextStyle(fontFamily: 'Jost'),
+                unselectedLabelStyle: TextStyle(fontFamily: 'Jost'),
                 onTap: (index) {
                   setState(() {
                     _selectedTab = index;
@@ -198,10 +201,12 @@ class _ShopScreenState extends State<ShopScreen> with SingleTickerProviderStateM
           ),
           selectedLabelStyle: const TextStyle(
             fontSize: 12,
-            fontWeight: FontWeight.bold, 
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Jost',
           ),
           unselectedLabelStyle: const TextStyle(
             fontSize: 11,
+            fontFamily: 'Jost',
           ),
           items: [
             BottomNavigationBarItem(
@@ -291,6 +296,7 @@ class _ShopScreenState extends State<ShopScreen> with SingleTickerProviderStateM
                 fontSize: 16.0,
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
+                fontFamily: 'Jost',
               ),
               textAlign: TextAlign.center,
             ),
@@ -339,6 +345,7 @@ class _ShopScreenState extends State<ShopScreen> with SingleTickerProviderStateM
                   fontSize: 14.0,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
+                  fontFamily: 'Jost',
                 ),
                 textAlign: TextAlign.center,
               ),

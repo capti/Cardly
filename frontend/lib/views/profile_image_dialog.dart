@@ -71,6 +71,7 @@ class ProfileImageUploadDialog extends StatelessWidget {
                         color: Colors.black,
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
+                        fontFamily: 'Roboto',
                       ),
                     ),
                   ),

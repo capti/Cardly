@@ -150,6 +150,7 @@ class _ForgotPasswordVerificationScreenState extends State<ForgotPasswordVerific
               fontSize: 32,
               color: Color(0xFFD9A76A),
               fontWeight: FontWeight.bold,
+              fontFamily: 'Jost',
             ),
           ),
           const SizedBox(height: 30),
@@ -161,6 +162,7 @@ class _ForgotPasswordVerificationScreenState extends State<ForgotPasswordVerific
                 style: TextStyle(
                   fontSize: 24,
                   color: Color(0xFF000000),
+                  fontFamily: 'Jost',
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -181,6 +183,7 @@ class _ForgotPasswordVerificationScreenState extends State<ForgotPasswordVerific
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
+                        fontFamily: 'Jost',
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -195,6 +198,8 @@ class _ForgotPasswordVerificationScreenState extends State<ForgotPasswordVerific
                           borderRadius: BorderRadius.all(Radius.circular(8)),
                         ),
                         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        labelStyle: TextStyle(fontFamily: 'Jost'),
+                        hintStyle: TextStyle(fontFamily: 'Jost'),
                       ),
                       keyboardType: TextInputType.number,
                       validator: (value) {
@@ -224,6 +229,7 @@ class _ForgotPasswordVerificationScreenState extends State<ForgotPasswordVerific
                             decoration: TextDecoration.underline,
                             decorationColor: Colors.black,
                             decorationThickness: 1.5,
+                            fontFamily: 'Jost',
                           ),
                         ),
                       ),
@@ -258,6 +264,7 @@ class _ForgotPasswordVerificationScreenState extends State<ForgotPasswordVerific
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
+                                fontFamily: 'Roboto',
                               ),
                             ),
                       ),
@@ -282,6 +289,7 @@ class _ForgotPasswordVerificationScreenState extends State<ForgotPasswordVerific
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
+                            fontFamily: 'Roboto',
                           ),
                         ),
                       ),

@@ -130,6 +130,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               fontSize: 32,
               color: Color(0xFFD9A76A),
               fontWeight: FontWeight.bold,
+              fontFamily: 'Jost',
             ),
           ),
           const SizedBox(height: 30),
@@ -167,6 +168,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
+                fontFamily: 'Jost',
               ),
             ),
             const SizedBox(height: 20),
@@ -176,6 +178,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
+                fontFamily: 'Jost',
               ),
             ),
             const SizedBox(height: 8),
@@ -220,6 +223,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
+                fontFamily: 'Jost',
               ),
             ),
             const SizedBox(height: 8),
@@ -286,6 +290,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
+                        fontFamily: 'Roboto',
                       ),
                     ),
               ),
@@ -314,6 +319,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
+                fontFamily: 'Jost',
               ),
               textAlign: TextAlign.center,
             ),
@@ -337,6 +343,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
+                    fontFamily: 'Roboto',
                   ),
                 ),
               ),

@@ -30,6 +30,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -55,7 +56,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                       child: Text(
                         'Настройки',
                         style: TextStyle(
-                          fontFamily: 'Roboto',
+                          fontFamily: 'Jost',
                           fontSize: 28.0,
                           fontWeight: FontWeight.w400,
                         ),
@@ -104,7 +105,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                       child: SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed:(){},
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFD6A067),
                             foregroundColor: Colors.black,
@@ -116,7 +117,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                           child: const Text(
                             'Выйти из аккаунта',
                             style: TextStyle(
-                              fontFamily: 'Roboto',
+                              fontFamily: 'Jost',
                               fontSize: 18.0,
                               fontWeight: FontWeight.w500,
                             ),
@@ -167,7 +168,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                         _hintText!,
                         textAlign: TextAlign.center,
                         style: const TextStyle(
-                          fontFamily: 'Roboto',
+                          fontFamily: 'Jost',
                           fontSize: 12,
                           color: Colors.black,
                         ),
@@ -197,7 +198,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
           Text(
             title,
             style: const TextStyle(
-              fontFamily: 'Roboto',
+              fontFamily: 'Jost',
               fontSize: 18.0,
               fontWeight: FontWeight.w400,
             ),
@@ -218,7 +219,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                     '!',
                     style: TextStyle(
                       color: Colors.white,
-                      fontFamily: 'Roboto',
+                      fontFamily: 'Jost',
                       fontSize: 16.0,
                       fontWeight: FontWeight.w500,
                     ),

@@ -51,7 +51,7 @@ class AuthorizationDialog extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 18.0, // Match text style
                       fontWeight: FontWeight.bold,
-                      fontFamily: 'Jost',
+                      fontFamily: 'Roboto',
                     ),
                   ),
                 ),

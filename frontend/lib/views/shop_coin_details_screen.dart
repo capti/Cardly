@@ -61,7 +61,7 @@ class _ShopCoinDetailsScreenState extends State<ShopCoinDetailsScreen> with Sing
             ),
           ),
         ),
-        title: null,
+        title: Text('Монеты:', style: TextStyle(color: Colors.black, fontFamily: 'Jost')),
         centerTitle: true,
         actions: [
           Container(
@@ -79,6 +79,7 @@ class _ShopCoinDetailsScreenState extends State<ShopCoinDetailsScreen> with Sing
                     color: Colors.black,
                     fontSize: 16.0,
                     fontWeight: FontWeight.bold,
+                    fontFamily: 'Jost',
                   ),
                 ),
                 SizedBox(width: 6.0),
@@ -167,9 +168,9 @@ class _ShopCoinDetailsScreenState extends State<ShopCoinDetailsScreen> with Sing
                             Text(
                               widget.coinName,
                               style: const TextStyle(
-                                fontSize: 16.0,
+                                fontSize: 18.0,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.black,
+                                fontFamily: 'Jost',
                               ),
                               textAlign: TextAlign.center,
                             ),
@@ -237,6 +238,7 @@ class _ShopCoinDetailsScreenState extends State<ShopCoinDetailsScreen> with Sing
                                   style: TextStyle(
                                     fontSize: 16.0,
                                     fontWeight: FontWeight.bold,
+                                    fontFamily: 'Roboto',
                                   ),
                                 ),
                               ),
@@ -321,22 +323,69 @@ class _ShopCoinDetailsScreenState extends State<ShopCoinDetailsScreen> with Sing
               type: BottomNavigationBarType.fixed,
               selectedItemColor: Colors.black,
               unselectedItemColor: Colors.black54,
+              selectedIconTheme: const IconThemeData(
+                size: 28,
+              ),
+              unselectedIconTheme: const IconThemeData(
+                size: 24,
+              ),
+              selectedLabelStyle: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Jost',
+              ),
+              unselectedLabelStyle: const TextStyle(
+                fontSize: 11,
+                fontFamily: 'Jost',
+              ),
               items: [
                 BottomNavigationBarItem(
                   icon: Image.asset('assets/icons/главная.png', height: 24),
+                  activeIcon: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEDD6B0),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Image.asset('assets/icons/главная.png', height: 24),
+                  ),
                   label: 'Главная',
                 ),
                 BottomNavigationBarItem(
                   icon: Image.asset('assets/icons/Инвентарь.png', height: 24),
-                  label: '',
+                  activeIcon: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEDD6B0),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Image.asset('assets/icons/Инвентарь.png', height: 24),
+                  ),
+                  label: 'Инвентарь',
                 ),
                 BottomNavigationBarItem(
                   icon: Image.asset('assets/icons/магазин.png', height: 24),
-                  label: '',
+                  activeIcon: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEDD6B0),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Image.asset('assets/icons/магазин.png', height: 24),
+                  ),
+                  label: 'Магазин',
                 ),
                 BottomNavigationBarItem(
                   icon: Image.asset('assets/icons/обменник.png', height: 24),
-                  label: '',
+                  activeIcon: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEDD6B0),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Image.asset('assets/icons/обменник.png', height: 24),
+                  ),
+                  label: 'Обменник',
                 ),
               ],
             ),

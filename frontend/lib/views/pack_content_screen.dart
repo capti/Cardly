@@ -14,7 +14,7 @@ class PackContentScreen extends StatelessWidget {
         backgroundColor: const Color(0xFFFBF6EF),
         elevation: 0,
         automaticallyImplyLeading: false,
-        title: const Text('Выпавшие карты:', style: TextStyle(color: Colors.black)),
+        title: const Text('Выпавшие карты:', style: TextStyle(color: Colors.black, fontFamily: 'Jost')),
         centerTitle: true,
       ),
       body: Column(
@@ -87,7 +87,7 @@ class PackContentScreen extends StatelessWidget {
                                       child: const Center(
                                         child: Text(
                                           'Нет изображения',
-                                          style: TextStyle(color: Colors.black45, fontSize: 12),
+                                          style: TextStyle(color: Colors.black45, fontSize: 12, fontFamily: 'Jost'),
                                         ),
                                       ),
                                     ),
@@ -150,7 +150,7 @@ class PackContentScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
-                    child: const Text('Вернуться в магазин', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    child: const Text('Вернуться в магазин', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Roboto')),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -172,7 +172,7 @@ class PackContentScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
-                    child: const Text('Перейти в инвентарь', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    child: const Text('Перейти в инвентарь', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Roboto')),
                   ),
                 ),
                 const SizedBox(height: 120),

@@ -73,21 +73,21 @@ class ExchangeDetailsScreen extends StatelessWidget {
                         exchangeItem.myOfferedCardIds.length > 1
                             ? Stack(
                                 clipBehavior: Clip.none, // Allow cards to overlap
-                                children: [
+                          children: [
                                   // Show up to 3 cards in the stack (visual representation)
                                   Positioned(
                                     left: 12, // Adjust position for stacking
                                     top: 0, // Adjust position for stacking
                                     child: _buildCardItem('Card Name', 'Rarity', width: 48, height: 64), // TODO: Use actual card details from cardId
                                   ),
-                                  Positioned(
+                            Positioned(
                                     left: 6, // Adjust position for stacking
                                     top: 0, // Adjust position for stacking
                                     child: _buildCardItem('Card Name', 'Rarity', width: 48, height: 64), // TODO: Use actual card details from cardId
-                                  ),
+                            ),
                                   // Always show the front card if count is at least 1
                                   _buildCardItem('Card Name', 'Rarity', width: 48, height: 64), // TODO: Use actual card details from cardId
-                                ],
+                          ],
                               )
                             : (exchangeItem.myOfferedCardIds.isNotEmpty
                                 ? _buildCardItem('Card Name', 'Rarity', width: 48, height: 64) // Single card
@@ -136,28 +136,28 @@ class ExchangeDetailsScreen extends StatelessWidget {
                   const SizedBox(height: 12.0),
                   // Conditionally display buttons based on status
                   if (exchangeItem.status == ExchangeStatus.waiting) // Show both buttons if waiting for actions
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 12.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(
-                            width: double.infinity,
-                            height: 60,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFD6A067),
-                                foregroundColor: Colors.black,
-                                textStyle: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: 'Jost',
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                          width: double.infinity,
+                          height: 60,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFD6A067),
+                              foregroundColor: Colors.black,
+                              textStyle: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Roboto',
                               ),
-                              onPressed: () {
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                            ),
+                            onPressed: () {
                                 Navigator.of(context).pop();
                                 Navigator.pushAndRemoveUntil(
                                   context,
@@ -168,28 +168,28 @@ class ExchangeDetailsScreen extends StatelessWidget {
                                   ),
                                   (route) => false,
                                 );
-                              },
-                              child: const Text('Принять'),
-                            ),
+                            },
+                            child: const Text('Принять'),
                           ),
-                          const SizedBox(height: 12.0),
-                          SizedBox(
-                            width: double.infinity,
-                            height: 60,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFD6A067),
-                                foregroundColor: Colors.black,
-                                textStyle: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: 'Jost',
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
+                        ),
+                        const SizedBox(height: 12.0),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 60,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFD6A067),
+                              foregroundColor: Colors.black,
+                              textStyle: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Roboto',
                               ),
-                              onPressed: () {
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                            ),
+                            onPressed: () {
                                 Navigator.of(context).pop();
                                 Navigator.pushAndRemoveUntil(
                                   context,
@@ -200,12 +200,12 @@ class ExchangeDetailsScreen extends StatelessWidget {
                                   ),
                                   (route) => false,
                                 );
-                              },
-                              child: const Text('Отклонить'),
-                            ),
+                            },
+                            child: const Text('Отклонить'),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
+                    ),
                     )
                   else if (exchangeItem.status == ExchangeStatus.pending) // Show only Cancel button if pending
                     Padding(
@@ -220,7 +220,7 @@ class ExchangeDetailsScreen extends StatelessWidget {
                             textStyle: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
-                              fontFamily: 'Jost',
+                              fontFamily: 'Roboto',
                             ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10.0),
@@ -241,7 +241,7 @@ class ExchangeDetailsScreen extends StatelessWidget {
                           child: const Text('Отменить'), // Text for cancelling pending exchange
                         ),
                       ),
-                    ),
+                  ),
                 ],
               ),
             ),

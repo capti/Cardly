@@ -132,6 +132,7 @@ class _NewsScreenState extends State<NewsScreen> {
                       fontSize: 24.0,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
+                      fontFamily: 'Jost',
                     ),
                   ),
                 ),
@@ -205,9 +206,11 @@ class _NewsScreenState extends State<NewsScreen> {
           selectedLabelStyle: const TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.bold,
+            fontFamily: 'Jost',
           ),
           unselectedLabelStyle: const TextStyle(
             fontSize: 11,
+            fontFamily: 'Jost',
           ),
           items: [
             BottomNavigationBarItem(
@@ -270,7 +273,7 @@ class _NewsScreenState extends State<NewsScreen> {
       onTap: () {
         showDialog(
           context: context,
-          builder: (context) => NewsDetailScreen(news: news),
+            builder: (context) => NewsDetailScreen(news: news),
         );
       },
       child: Container(
@@ -285,21 +288,23 @@ class _NewsScreenState extends State<NewsScreen> {
           children: [
             // Заголовок
             Text(
-              news.title,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14.0,
-              ),
+                news.title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14.0,
+                  fontFamily: 'Jost',
+                ),
             ),
             
             const SizedBox(height: 8.0),
             
             // Текст
             Text(
-              news.content,
-              style: const TextStyle(
-                fontSize: 14.0,
-              ),
+                news.content,
+                style: const TextStyle(
+                  fontSize: 14.0,
+                  fontFamily: 'Jost',
+                ),
             ),
           ],
         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'create_exchange_screen.dart';
 
 class CardDetailScreen extends StatefulWidget {
   final int cardIndex;
@@ -38,7 +39,7 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
     final int rarity = int.tryParse(data['rarity'] ?? '0') ?? 0;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF4E3),
+      backgroundColor: const Color(0xFFFBF6EF),
       body: SafeArea(
         child: Stack(
           children: [
@@ -98,6 +99,7 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
                                     fontSize: 22,
                                     fontWeight: FontWeight.w500,
                                     color: Colors.black,
+                                    fontFamily: 'Jost',
                                   ),
                                 ),
                               ),
@@ -114,7 +116,7 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
                                 child: const Center(
                                   child: Text(
                                     'Нет изображения',
-                                    style: TextStyle(color: Colors.black45, fontSize: 16),
+                                    style: TextStyle(color: Colors.black45, fontSize: 16, fontFamily: 'Jost'),
                                   ),
                                 ),
                               ),
@@ -125,7 +127,7 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
                                 padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
                                 child: Text(
                                   description,
-                                  style: const TextStyle(fontSize: 17, color: Colors.black),
+                                  style: const TextStyle(fontSize: 17, color: Colors.black, fontFamily: 'Jost'),
                                   textAlign: TextAlign.left,
                                 ),
                               ),
@@ -156,6 +158,7 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
                                         fontSize: 20,
                                         fontWeight: FontWeight.w500,
                                         color: Colors.black,
+                                        fontFamily: 'Jost',
                                       ),
                                     ),
                                   ],
@@ -183,7 +186,7 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
                         onPressed: () {},
                         child: const Text(
                           'Предложить обмен',
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400, fontFamily: 'Roboto'),
                         ),
                       )
                     : widget.isFromShop
@@ -219,7 +222,7 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
                                       children: [
                                         const Text(
                                           'Разобрать',
-                                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
+                                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400, fontFamily: 'Roboto'),
                                         ),
                                         SizedBox(width: 6),
                                       ],
@@ -230,7 +233,11 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
                                       children: [
                                         const Text(
                                           '150',
-                                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w400,
+                                            fontFamily: 'Roboto',
+                                          ),
                                           textAlign: TextAlign.center,
                                         ),
                                         SizedBox(width: 4),
@@ -255,10 +262,19 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
                                   ),
                                   padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
                                 ),
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => CreateExchangeScreen(
+                                        cardId: widget.cardIndex,
+                                      ),
+                                    ),
+                                  );
+                                },
                                 child: const Text(
                                   'Обменять',
-                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
+                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400, fontFamily: 'Roboto'),
                                 ),
                               ),
                             ),

@@ -86,6 +86,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                 fontSize: 24,
                 color: Color(0xFFD9A76A),
                 fontWeight: FontWeight.bold,
+                fontFamily: 'Jost',
               ),
             ),
             const SizedBox(height: 30),
@@ -105,6 +106,12 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                 ),
                 labelColor: Colors.black,
                 unselectedLabelColor: Colors.black,
+                labelStyle: const TextStyle(
+                  fontFamily: 'Jost',
+                ),
+                unselectedLabelStyle: const TextStyle(
+                  fontFamily: 'Jost',
+                ),
                 tabs: const [
                   Tab(text: 'Войти'),
                   Tab(text: 'Создать'),
@@ -130,6 +137,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
+                              fontFamily: 'Jost',
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -163,6 +171,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
+                              fontFamily: 'Jost',
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -221,6 +230,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.black,
+                                  fontFamily: 'Jost',
                                 ),
                               ),
                             ),
@@ -255,6 +265,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
+                                      fontFamily: 'Jost',
                                     ),
                                   ),
                             ),

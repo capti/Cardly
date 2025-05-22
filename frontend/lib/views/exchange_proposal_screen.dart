@@ -107,7 +107,7 @@ class ExchangeProposalScreen extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 20.0,
                   fontWeight: FontWeight.bold,
-                  fontFamily: 'Jost',
+                  fontFamily: 'Roboto',
                 ),
               ),
             ),
@@ -136,7 +136,7 @@ class ExchangeProposalScreen extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 20.0,
                   fontWeight: FontWeight.bold,
-                  fontFamily: 'Jost',
+                  fontFamily: 'Roboto',
                 ),
               ),
             ),
@@ -217,7 +217,7 @@ Widget _buildExchangeCardVisual({Widget? content, double width = 80, double heig
                         child: content ?? const Center( // Use provided content or default placeholder
                           child: Text(
                             'Нет изображения',
-                            style: TextStyle(color: Colors.black45, fontSize: 10), // Adjusted font size
+                            style: TextStyle(color: Colors.black45, fontSize: 10, fontFamily: 'Jost'), // Adjusted font size
                             textAlign: TextAlign.center,
                           ),
                         ),

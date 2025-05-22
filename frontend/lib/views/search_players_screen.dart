@@ -234,7 +234,7 @@ class CardMockup extends StatelessWidget {
                         child: const Center(
                           child: Text(
                             'Нет \n изоб',
-                            style: TextStyle(color: Colors.black45, fontSize: 7),
+                            style: TextStyle(color: Colors.black45, fontSize: 7, fontFamily: 'Jost'),
                             textAlign: TextAlign.center,
                           ),
                         ),

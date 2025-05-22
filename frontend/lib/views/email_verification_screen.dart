@@ -129,6 +129,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
               fontSize: 32,
               color: Color(0xFFD9A76A),
               fontWeight: FontWeight.bold,
+              fontFamily: 'Jost',
             ),
           ),
           const SizedBox(height: 30),
@@ -140,6 +141,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                 style: TextStyle(
                   fontSize: 24,
                   color: Color(0xFF000000),
+                  fontFamily: 'Jost',
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -160,6 +162,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
+                        fontFamily: 'Jost',
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -174,6 +177,8 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                           borderRadius: BorderRadius.all(Radius.circular(8)),
                         ),
                         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        labelStyle: TextStyle(fontFamily: 'Jost'),
+                        hintStyle: TextStyle(fontFamily: 'Jost'),
                       ),
                       keyboardType: TextInputType.number,
                       validator: (value) {
@@ -200,6 +205,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                           style: TextStyle(
                             fontSize: 14,
                             color: _resendTimeLeft > 0 ? Colors.grey : Colors.black,
+                            fontFamily: 'Jost',
                           ),
                         ),
                       ),
@@ -234,6 +240,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
+                                fontFamily: 'Roboto',
                               ),
                             ),
                       ),
@@ -258,6 +265,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
+                            fontFamily: 'Roboto',
                           ),
                         ),
                       ),

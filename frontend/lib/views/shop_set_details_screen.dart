@@ -3,9 +3,9 @@ import 'shop_set_content_screen.dart';
 import 'home_screen.dart';
 import 'shop_screen.dart';
 import 'exchanges_screen.dart';
-import 'pack_open_screen.dart';
 import 'profile_screen.dart';
 import 'search_players_screen.dart';
+import 'pack_content_screen.dart';
 
 class ShopSetDetailsScreen extends StatefulWidget {
   final String setName;
@@ -77,6 +77,7 @@ class _ShopSetDetailsScreenState extends State<ShopSetDetailsScreen> with Single
                     color: Colors.black,
                     fontSize: 16.0,
                     fontWeight: FontWeight.bold,
+                    fontFamily: 'Jost',
                   ),
                 ),
                 SizedBox(width: 6.0),
@@ -121,6 +122,8 @@ class _ShopSetDetailsScreenState extends State<ShopSetDetailsScreen> with Single
                   Tab(text: 'Наборы'),
                   Tab(text: 'Монеты'),
                 ],
+                labelStyle: TextStyle(fontFamily: 'Roboto'),
+                unselectedLabelStyle: TextStyle(fontFamily: 'Roboto'),
                 onTap: (index) {
                   if (index == 1) {
                     Navigator.pushReplacement(
@@ -171,6 +174,7 @@ class _ShopSetDetailsScreenState extends State<ShopSetDetailsScreen> with Single
                                   style: const TextStyle(
                                     fontSize: 18.0,
                                     fontWeight: FontWeight.bold,
+                                    fontFamily: 'Jost',
                                   ),
                                 ),
                                 const Text(
@@ -178,6 +182,7 @@ class _ShopSetDetailsScreenState extends State<ShopSetDetailsScreen> with Single
                                   style: TextStyle(
                                     fontSize: 16.0,
                                     fontWeight: FontWeight.w500,
+                                    fontFamily: 'Jost',
                                   ),
                                 ),
                               ],
@@ -210,6 +215,7 @@ class _ShopSetDetailsScreenState extends State<ShopSetDetailsScreen> with Single
                                   style: TextStyle(
                                     fontSize: 16.0,
                                     fontWeight: FontWeight.bold,
+                                    fontFamily: 'Roboto',
                                   ),
                                 ),
                               ),
@@ -225,7 +231,7 @@ class _ShopSetDetailsScreenState extends State<ShopSetDetailsScreen> with Single
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => PackOpenScreen(
+                                      builder: (context) => PackContentScreen(
                                         setName: widget.setName,
                                       ),
                                     ),
@@ -244,6 +250,7 @@ class _ShopSetDetailsScreenState extends State<ShopSetDetailsScreen> with Single
                                   style: TextStyle(
                                     fontSize: 16.0,
                                     fontWeight: FontWeight.bold,
+                                    fontFamily: 'Roboto',
                                   ),
                                 ),
                               ),

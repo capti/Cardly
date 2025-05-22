@@ -6,6 +6,7 @@ import 'views/auth_screen.dart';
 import 'views/email_verification_screen.dart';
 import 'views/forgot_password_screen.dart';
 import 'views/change_password_screen.dart';
+import 'views/home_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -79,7 +80,7 @@ class MyApp extends StatelessWidget {
             elevation: 0,
           ),
         ),
-        home: const SplashScreen(),
+        home: const HomeScreen(),
         routes: {
           '/auth': (context) => const AuthScreen(),
           '/login': (context) => const AuthScreen(initialTabIndex: 0),

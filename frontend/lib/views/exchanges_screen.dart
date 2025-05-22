@@ -47,6 +47,7 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
                     color: Colors.black,
                     fontSize: 18.0,
                     fontWeight: FontWeight.w500,
+                    fontFamily: 'Jost',
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -106,6 +107,8 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
                 Tab(text: 'Обмен'),
                 Tab(text: 'Мои обмены'),
               ],
+              labelStyle: TextStyle(fontFamily: 'Jost'),
+              unselectedLabelStyle: TextStyle(fontFamily: 'Jost'),
             ),
           ),
         ),
@@ -113,95 +116,97 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
       body: Stack(
         children: [
           Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const CreateExchangeScreen()),
-                        );
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 12.0),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFD6A067),
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: Row(
-                          children: [
-                            Text(
-                              'Создать обмен',
-                              style: TextStyle(
-                                fontSize: 14.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(width: 6.0),
-                            Container(
-                              width: 20.0,
-                              height: 20.0,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(color: Colors.black, width: 1.0),
-                              ),
-                              child: const Icon(Icons.add, size: 18.0),
-                            ),
-                          ],
-                        ),
-                      ),
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const CreateExchangeScreen()),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 12.0),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFD6A067),
+                      borderRadius: BorderRadius.circular(8.0),
                     ),
-                    
-                    Container(
-                      child: IconButton(
-                        icon: Image.asset('assets/icons/поиск.png', height: 32),
-                        onPressed: () {
-                          showModalBottomSheet(
-                            context: context,
-                            isScrollControlled: true,
-                            backgroundColor: Colors.transparent,
-                            builder: (context) => const SearchPlayersModal(),
-                          );
-                        },
-                      ),
+                    child: Row(
+                      children: [
+                        Text(
+                          'Создать обмен',
+                          style: TextStyle(
+                            fontSize: 14.0,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Roboto',
+                          ),
+                        ),
+                        SizedBox(width: 6.0),
+                        Container(
+                          width: 20.0,
+                          height: 20.0,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.black, width: 1.0),
+                          ),
+                          child: const Icon(Icons.add, size: 18.0),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
-              
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        setState(() {
-                          _showSortOptions = !_showSortOptions;
-                        });
-                      },
-                      child: Row(
-                        children: [
-                          const Text(
-                            'Сортировка',
-                            style: TextStyle(
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(width: 4.0),
-                          Icon(
-                            _showSortOptions ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                            color: Colors.black,
-                          ),
-                        ],
+                
+                Container(
+                  child: IconButton(
+                    icon: Image.asset('assets/icons/поиск.png', height: 32),
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => const SearchPlayersModal(),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      _showSortOptions = !_showSortOptions;
+                    });
+                  },
+                  child: Row(
+                    children: [
+                      const Text(
+                        'Сортировка',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Jost',
+                        ),
                       ),
-                    ),
+                      const SizedBox(width: 4.0),
+                      Icon(
+                        _showSortOptions ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                        color: Colors.black,
+                      ),
+                    ],
+                  ),
+                ),
                   ],
                 ),
               ),
@@ -221,14 +226,14 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
           ),
           
           // Sorting options dropdown (Positioned overlay)
-          if (_showSortOptions)
+                if (_showSortOptions)
             Positioned(
               top: 110, // Approximate position below the Sorting text
               left: 16, // Align with the left padding
               child: Container(
                 width: 120.0, // Set a fixed width to match inventory_screen dropdown size
-                padding: const EdgeInsets.all(12.0),
-                decoration: BoxDecoration(
+                    padding: const EdgeInsets.all(12.0),
+                    decoration: BoxDecoration(
                   color: const Color(0xFFEAD7C3), // Background color from inventory_screen
                   borderRadius: BorderRadius.circular(10.0), // Border radius from inventory_screen
                   boxShadow: [ // Box shadow from inventory_screen
@@ -238,50 +243,52 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
                       offset: const Offset(0, 2),
                     ),
                   ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        setState(() {
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            setState(() {
                           _sortOption = 'По дате'; // Option 1
-                          _showSortOptions = false;
-                        });
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Text(
-                          'По дате',
-                          style: TextStyle(
-                            fontSize: 14.0,
-                            fontWeight: _sortOption == 'По дате' ? FontWeight.bold : FontWeight.normal,
+                              _showSortOptions = false;
+                            });
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Text(
+                              'По дате',
+                              style: TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: _sortOption == 'По дате' ? FontWeight.bold : FontWeight.normal,
+                                fontFamily: 'Jost',
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        setState(() {
+                        InkWell(
+                          onTap: () {
+                            setState(() {
                           _sortOption = 'По редкости'; // Option 2
-                          _showSortOptions = false;
-                        });
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Text(
-                          'По редкости',
-                          style: TextStyle(
-                            fontSize: 14.0,
-                            fontWeight: _sortOption == 'По редкости' ? FontWeight.bold : FontWeight.normal,
+                              _showSortOptions = false;
+                            });
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Text(
+                              'По редкости',
+                              style: TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: _sortOption == 'По редкости' ? FontWeight.bold : FontWeight.normal,
+                                fontFamily: 'Jost',
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
             ),
+          ),
         ],
       ),
       bottomNavigationBar: Container(
@@ -483,17 +490,17 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
             );
           }
         } else { // If in 'Мои обмены' tab, show ExchangeDetailsScreen dialog
-          showDialog(
-            context: context,
-            barrierDismissible: true,
-            builder: (BuildContext context) {
-              return Dialog(
-                backgroundColor: Colors.transparent,
-                elevation: 0,
+        showDialog(
+          context: context,
+          barrierDismissible: true,
+          builder: (BuildContext context) {
+            return Dialog(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
                 child: ExchangeDetailsScreen(exchangeItem: exchangeItem),
-              );
-            },
-          );
+            );
+          },
+        );
         }
       },
       child: Container(
@@ -539,10 +546,10 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
                                 ),
                               ),
                             ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.2,
-                              child: AspectRatio(
-                                aspectRatio: 0.7,
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.2,
+              child: AspectRatio(
+                aspectRatio: 0.7,
                                 child: _buildSingleCardVisual(showPlus: showLeftPlus),
                               ),
                             ),
@@ -602,47 +609,47 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
                     ],
                   ),
                   otherUserOfferedCount >= 2
-                      ? Stack(
+                  ? Stack(
                           clipBehavior: Clip.none,
-                          children: [
-                            Positioned(
-                              left: 16,
-                              child: SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.2,
-                                child: AspectRatio(
-                                  aspectRatio: 0.7,
+                      children: [
+                          Positioned(
+                            left: 16,
+                            child: SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.2,
+                              child: AspectRatio(
+                                aspectRatio: 0.7,
                                   child: _buildSingleCardVisual(showPlus: false), // Always false for right side
                                 ),
                               ),
                             ),
                             if (otherUserOfferedCount >= 2)
-                              Positioned(
-                                left: 8,
-                                child: SizedBox(
-                                  width: MediaQuery.of(context).size.width * 0.2,
-                                  child: AspectRatio(
-                                    aspectRatio: 0.7,
-                                    child: _buildSingleCardVisual(showPlus: false), // Always false for right side
-                                  ),
-                                ),
-                              ),
-                            SizedBox(
+                          Positioned(
+                            left: 8,
+                            child: SizedBox(
                               width: MediaQuery.of(context).size.width * 0.2,
                               child: AspectRatio(
                                 aspectRatio: 0.7,
-                                child: _buildSingleCardVisual(showPlus: false), // Always false for right side
+                                    child: _buildSingleCardVisual(showPlus: false), // Always false for right side
                               ),
                             ),
-                          ],
-                        )
+                          ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.2,
+                          child: AspectRatio(
+                            aspectRatio: 0.7,
+                                child: _buildSingleCardVisual(showPlus: false), // Always false for right side
+                          ),
+                        ),
+                      ],
+                    )
                       : (otherUserOfferedCount == 1
                           ? AspectRatio(
-                              aspectRatio: 0.7,
+                      aspectRatio: 0.7,
                               child: _buildSingleCardVisual(showPlus: false), // Always false for right side
                             )
                           : SizedBox.shrink()),
                 ],
-              ),
+                    ),
             ),
           ],
         ),
@@ -706,11 +713,11 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
                             ),
                           )
                         : const Center(
-                            child: Text(
+                        child: Text(
                               'Нет изображения',
-                              style: TextStyle(color: Colors.black45, fontSize: 12),
-                            ),
-                          ),
+                          style: TextStyle(color: Colors.black45, fontSize: 12),
+                        ),
+                      ),
                     ),
                   ),
                 ),

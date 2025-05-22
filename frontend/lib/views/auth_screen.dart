@@ -108,6 +108,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
     final isLoading = authController.isLoading;
 
     return Scaffold(
+      backgroundColor: const Color(0xFFFBF6EF),
       body: Column(
         children: [
           // Логотип и название
@@ -115,7 +116,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
           Image.asset(
             'assets/icons/карты.png',
             height: 80,
-            color: const Color(0xFFD9A76A),
+            color: const Color(0xFFDBAA76),
           ),
           const SizedBox(height: 10),
           const SizedBox(height: 10),
@@ -123,8 +124,9 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
             'Cardly',
             style: TextStyle(
               fontSize: 32,
-              color: Color(0xFFD9A76A),
+              color: Color(0xFFDBAA76),
               fontWeight: FontWeight.bold,
+              fontFamily: 'Jost',
             ),
           ),
           const SizedBox(height: 30),
@@ -133,11 +135,12 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
-              color: const Color(0xFFEDD6B0),
+              color: const Color(0xFFEAD7C3),
               borderRadius: BorderRadius.circular(8),
             ),
             child: TabBar(
               controller: _tabController,
+              dividerColor: Colors.transparent,
               indicatorSize: TabBarIndicatorSize.tab,
               indicator: BoxDecoration(
                 color: const Color(0xFFD6A067),
@@ -152,6 +155,12 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                 Tab(text: 'Войти'),
                 Tab(text: 'Создать'),
               ],
+              labelStyle: const TextStyle(
+                fontFamily: 'Jost',
+              ),
+              unselectedLabelStyle: const TextStyle(
+                fontFamily: 'Jost',
+              ),
             ),
           ),
           
@@ -173,6 +182,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
+                            fontFamily: 'Jost',
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -180,7 +190,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                           controller: _loginEmailController,
                           decoration: const InputDecoration(
                             filled: true,
-                            fillColor: Color(0xFFEDD6B0),
+                            fillColor: Color(0xFFEAD7C3),
                             border: OutlineInputBorder(
                               borderSide: BorderSide.none,
                               borderRadius: BorderRadius.all(Radius.circular(8)),
@@ -206,6 +216,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
+                            fontFamily: 'Jost',
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -213,7 +224,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                           controller: _loginPasswordController,
                           decoration: InputDecoration(
                             filled: true,
-                            fillColor: const Color(0xFFEDD6B0),
+                            fillColor: const Color(0xFFEAD7C3),
                             border: const OutlineInputBorder(
                               borderSide: BorderSide.none,
                               borderRadius: BorderRadius.all(Radius.circular(8)),
@@ -261,6 +272,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.black,
+                                fontFamily: 'Jost',
                               ),
                             ),
                           ),
@@ -273,13 +285,13 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                           child: ElevatedButton(
                             onPressed: isLoading ? null : _login,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFD6A067),
+                              backgroundColor: const Color(0xFFDBAA76),
                               foregroundColor: Colors.black,
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              disabledBackgroundColor: const Color(0xFFD6A067).withOpacity(0.7),
+                              disabledBackgroundColor: const Color(0xFFDBAA76).withOpacity(0.7),
                             ),
                             child: isLoading
                               ? const SizedBox(
@@ -295,6 +307,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
+                                    fontFamily: 'Roboto',
                                   ),
                                 ),
                           ),
@@ -316,6 +329,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
+                            fontFamily: 'Jost',
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -323,7 +337,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                           controller: _nicknameController,
                           decoration: const InputDecoration(
                             filled: true,
-                            fillColor: Color(0xFFEDD6B0),
+                            fillColor: Color(0xFFEAD7C3),
                             border: OutlineInputBorder(
                               borderSide: BorderSide.none,
                               borderRadius: BorderRadius.all(Radius.circular(8)),
@@ -345,6 +359,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
+                            fontFamily: 'Jost',
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -352,7 +367,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                           controller: _registerEmailController,
                           decoration: const InputDecoration(
                             filled: true,
-                            fillColor: Color(0xFFEDD6B0),
+                            fillColor: Color(0xFFEAD7C3),
                             border: OutlineInputBorder(
                               borderSide: BorderSide.none,
                               borderRadius: BorderRadius.all(Radius.circular(8)),
@@ -378,6 +393,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
+                            fontFamily: 'Jost',
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -385,7 +401,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                           controller: _registerPasswordController,
                           decoration: InputDecoration(
                             filled: true,
-                            fillColor: const Color(0xFFEDD6B0),
+                            fillColor: const Color(0xFFEAD7C3),
                             border: const OutlineInputBorder(
                               borderSide: BorderSide.none,
                               borderRadius: BorderRadius.all(Radius.circular(8)),
@@ -422,6 +438,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
+                            fontFamily: 'Jost',
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -429,7 +446,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                           controller: _confirmPasswordController,
                           decoration: InputDecoration(
                             filled: true,
-                            fillColor: const Color(0xFFEDD6B0),
+                            fillColor: const Color(0xFFEAD7C3),
                             border: const OutlineInputBorder(
                               borderSide: BorderSide.none,
                               borderRadius: BorderRadius.all(Radius.circular(8)),
@@ -466,13 +483,13 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                           child: ElevatedButton(
                             onPressed: isLoading ? null : _register,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFD6A067),
+                              backgroundColor: const Color(0xFFDBAA76),
                               foregroundColor: Colors.black,
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              disabledBackgroundColor: const Color(0xFFD6A067).withOpacity(0.7),
+                              disabledBackgroundColor: const Color(0xFFDBAA76).withOpacity(0.7),
                             ),
                             child: isLoading
                               ? const SizedBox(
@@ -488,6 +505,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
+                                    fontFamily: 'Roboto',
                                   ),
                                 ),
                           ),
@@ -500,15 +518,6 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
             ),
           ),
 
-          Container(
-            width: 100,
-            height: 4,
-            margin: const EdgeInsets.only(bottom: 16),
-            decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
         ],
       ),
     );

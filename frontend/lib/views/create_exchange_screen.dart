@@ -7,8 +7,13 @@ import 'profile_screen.dart';
 
 class CreateExchangeScreen extends StatefulWidget {
   final ExchangeItem? initialExchangeItem;
+  final int? cardId;
 
-  const CreateExchangeScreen({super.key, this.initialExchangeItem});
+  const CreateExchangeScreen({
+    super.key, 
+    this.initialExchangeItem,
+    this.cardId,
+  });
 
   @override
   State<CreateExchangeScreen> createState() => _CreateExchangeScreenState();
@@ -26,6 +31,11 @@ class _CreateExchangeScreenState extends State<CreateExchangeScreen> {
       selectedTopCard = {
         'id': widget.initialExchangeItem!.otherUserOfferedCardIds[0],
         'name': 'Карта ${widget.initialExchangeItem!.otherUserOfferedCardIds[0]}',
+      };
+    } else if (widget.cardId != null) {
+      selectedTopCard = {
+        'id': widget.cardId,
+        'name': 'Карта ${widget.cardId}',
       };
     }
   }
@@ -385,7 +395,7 @@ class _CreateExchangeScreenState extends State<CreateExchangeScreen> {
                 style: const TextStyle(
                   fontSize: 20.0,
                   fontWeight: FontWeight.bold,
-                  fontFamily: 'Jost',
+                  fontFamily: 'Roboto',
                 ),
               ),
             ),
@@ -581,7 +591,7 @@ class _CreateExchangeScreenState extends State<CreateExchangeScreen> {
                         child: content ?? const Center( // Use provided content or default placeholder
                           child: Text(
                             'Нет изображения',
-                            style: TextStyle(color: Colors.black45, fontSize: 10), // Adjusted font size
+                            style: TextStyle(color: Colors.black45, fontSize: 10, fontFamily: 'Jost'), // Adjusted font size
                             textAlign: TextAlign.center,
                           ),
                         ),

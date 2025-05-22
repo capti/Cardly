@@ -54,6 +54,7 @@ class AchievementsScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
+                      fontFamily: 'Jost',
                     ),
                   ),
                 ],
@@ -99,6 +100,7 @@ class AchievementsScreen extends StatelessWidget {
                                   style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
+                                    fontFamily: 'Jost',
                                   ),
                                 ),
                                 const SizedBox(height: 4),
@@ -107,6 +109,7 @@ class AchievementsScreen extends StatelessWidget {
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Colors.grey[600],
+                                    fontFamily: 'Jost',
                                   ),
                                 ),
                               ],

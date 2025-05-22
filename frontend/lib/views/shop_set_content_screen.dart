@@ -117,7 +117,7 @@ class _ShopSetContentScreenState extends State<ShopSetContentScreen> {
                           child: const Center(
                             child: Text(
                               'Нет изображения',
-                              style: TextStyle(color: Colors.black45, fontSize: 12),
+                              style: TextStyle(color: Colors.black45, fontSize: 12, fontFamily: 'Jost'),
                             ),
                           ),
                         ),
@@ -171,6 +171,8 @@ class _ShopSetContentScreenState extends State<ShopSetContentScreen> {
             onPressed: () => Navigator.of(context).pop(),
           ),
           systemOverlayStyle: SystemUiOverlayStyle.dark,
+          title: const Text('Выпавшие карты:', style: TextStyle(color: Colors.black, fontFamily: 'Jost')),
+          centerTitle: true,
         ),
       ),
       body: Column(
@@ -182,7 +184,7 @@ class _ShopSetContentScreenState extends State<ShopSetContentScreen> {
               color: Colors.black,
               fontSize: 24.0,
               fontWeight: FontWeight.bold,
-              fontFamily: 'Roboto',
+              fontFamily: 'Jost',
             ),
             textAlign: TextAlign.center,
           ),
@@ -236,9 +238,11 @@ class _ShopSetContentScreenState extends State<ShopSetContentScreen> {
               selectedLabelStyle: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
+                fontFamily: 'Jost',
               ),
               unselectedLabelStyle: const TextStyle(
                 fontSize: 11,
+                fontFamily: 'Jost',
               ),
               items: [
                 BottomNavigationBarItem(

@@ -148,6 +148,7 @@ class ProfileScreen extends StatelessWidget {
             style: const TextStyle(
               fontSize: 18.0,
               fontWeight: FontWeight.bold,
+              fontFamily: 'Jost',
             ),
           ),
           
@@ -159,6 +160,7 @@ class ProfileScreen extends StatelessWidget {
             style: const TextStyle(
               fontSize: 16.0,
               color: Colors.black54,
+              fontFamily: 'Jost',
             ),
           ),
           
@@ -221,6 +223,7 @@ class ProfileScreen extends StatelessWidget {
                           fontSize: 13.0,
                           fontWeight: FontWeight.normal,
                           color: Colors.black,
+                          fontFamily: 'Jost',
                         ),
                       ),
                     ),
@@ -245,6 +248,7 @@ class ProfileScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 16.0,
                         fontWeight: FontWeight.w500,
+                        fontFamily: 'Jost',
                       ),
                     ),
                     Text(
@@ -252,6 +256,7 @@ class ProfileScreen extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 16.0,
                         fontWeight: FontWeight.bold,
+                        fontFamily: 'Jost',
                       ),
                     ),
                   ],
@@ -267,6 +272,7 @@ class ProfileScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 16.0,
                         fontWeight: FontWeight.w500,
+                        fontFamily: 'Jost',
                       ),
                     ),
                     Text(
@@ -274,6 +280,7 @@ class ProfileScreen extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 16.0,
                         fontWeight: FontWeight.bold,
+                        fontFamily: 'Jost',
                       ),
                     ),
                   ],
@@ -302,6 +309,7 @@ class ProfileScreen extends StatelessWidget {
                           fontSize: 15.0,
                           fontWeight: FontWeight.w500,
                           color: Colors.black,
+                          fontFamily: 'Jost',
                         ),
                       ),
                     ),
@@ -363,10 +371,12 @@ class ProfileScreen extends StatelessWidget {
               ),
               selectedLabelStyle: const TextStyle(
                 fontSize: 12,
-                fontWeight: FontWeight.bold, 
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Jost',
               ),
               unselectedLabelStyle: const TextStyle(
                 fontSize: 11,
+                fontFamily: 'Jost',
               ),
               items: [
                 BottomNavigationBarItem(
