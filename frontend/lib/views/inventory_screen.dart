@@ -10,12 +10,14 @@ class InventoryScreen extends StatefulWidget {
   final bool isOtherUser;
   final String? playerName;
   final String? playerId;
+  final String? collectionName;
 
   const InventoryScreen({
     super.key,
     this.isOtherUser = false,
     this.playerName,
     this.playerId,
+    this.collectionName,
   });
 
   @override
@@ -30,9 +32,9 @@ class _InventoryScreenState extends State<InventoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF4E3),
+      backgroundColor: const Color(0xFFFBF6EF),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFFF4E3),
+        backgroundColor: const Color(0xFFFBF6EF),
         elevation: 0,
         automaticallyImplyLeading: false,
         titleSpacing: 0,
@@ -68,13 +70,67 @@ class _InventoryScreenState extends State<InventoryScreen> {
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
                       fontSize: 18.0,
+                      fontFamily: 'Jost',
                     ),
                   ),
                 ],
               )
-            : const SizedBox.shrink(),
+            : widget.collectionName != null
+                ? Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16.0),
+                        child: Container(
+                          width: 40.0,
+                          height: 40.0,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: const Color(0xFFD6A067),
+                          ),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(20.0),
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Icon(
+                              Icons.arrow_back,
+                              color: Colors.black,
+                              size: 29.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Коллекция ${widget.collectionName}',
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18.0,
+                          fontFamily: 'Jost',
+                        ),
+                      ),
+                    ],
+                  )
+                : Padding(
+                    padding: const EdgeInsets.only(left: 16.0),
+                    child: Container(
+                      width: 40.0,
+                      height: 40.0,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(20.0),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                          );
+                        },
+                        child: Image.asset('assets/icons/профиль.png', height: 22),
+                      ),
+                    ),
+                  ),
         centerTitle: false,
-        actions: widget.isOtherUser ? null : [
+        actions: widget.isOtherUser ? null : widget.collectionName != null ? null : [
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
             decoration: BoxDecoration(
@@ -90,6 +146,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                     color: Colors.black,
                     fontSize: 16.0,
                     fontWeight: FontWeight.bold,
+                    fontFamily: 'Jost',
                   ),
                 ),
                 SizedBox(width: 6.0),
@@ -115,40 +172,42 @@ class _InventoryScreenState extends State<InventoryScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                      child: InkWell(
-                        onTap: () {
-                          setState(() {
-                            _showSortOptions = !_showSortOptions;
-                          });
-                        },
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'Сортировка:',
-                              style: const TextStyle(
-                                fontSize: 14.0,
-                                fontWeight: FontWeight.bold,
+              if (widget.collectionName == null) // Only show sorting if not viewing a collection
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              _showSortOptions = !_showSortOptions;
+                            });
+                          },
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Сортировка:',
+                                style: const TextStyle(
+                                  fontSize: 14.0,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Jost',
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 6.0),
-                            Icon(
-                              _showSortOptions ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                              color: Colors.black,
-                            ),
-                          ],
+                              const SizedBox(width: 6.0),
+                              Icon(
+                                _showSortOptions ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                                color: Colors.black,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
               
               Expanded(
                 child: GridView.builder(
@@ -202,6 +261,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                           style: TextStyle(
                             fontSize: 14.0,
                             fontWeight: _sortOption == 'По редкости' ? FontWeight.bold : FontWeight.normal,
+                            fontFamily: 'Jost',
                           ),
                         ),
                       ),
@@ -221,6 +281,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                           style: TextStyle(
                             fontSize: 14.0,
                             fontWeight: _sortOption == 'По коллекциям' ? FontWeight.bold : FontWeight.normal,
+                            fontFamily: 'Jost',
                           ),
                         ),
                       ),
@@ -281,10 +342,12 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 ),
                 selectedLabelStyle: const TextStyle(
                   fontSize: 12,
-                  fontWeight: FontWeight.bold, 
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Jost',
                 ),
                 unselectedLabelStyle: const TextStyle(
                   fontSize: 11,
+                  fontFamily: 'Jost',
                 ),
                 items: [
                   BottomNavigationBarItem(
@@ -409,7 +472,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                           child: const Center(
                             child: Text(
                               'Нет изображения',
-                              style: TextStyle(color: Colors.black45, fontSize: 12),
+                              style: TextStyle(color: Colors.black45, fontSize: 12, fontFamily: 'Jost'),
                             ),
                           ),
                         ),
