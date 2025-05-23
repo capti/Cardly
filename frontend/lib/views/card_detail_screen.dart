@@ -5,12 +5,14 @@ class CardDetailScreen extends StatefulWidget {
   final int cardIndex;
   final bool showExchangeButton;
   final bool isFromShop;
+  final bool showFavoriteButton;
 
   const CardDetailScreen({
     Key? key, 
     required this.cardIndex, 
     this.showExchangeButton = false,
     this.isFromShop = false,
+    this.showFavoriteButton = true,
   }) : super(key: key);
 
   @override
@@ -284,13 +286,13 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
               ],
             ),
             Positioned(
-              top: 111, // Adjust this value to move the star vertically
-              right: -4, // Adjust this value to move the star horizontally
-              child: InkWell(
+              top: 111,
+              right: -4,
+              child: widget.showFavoriteButton ? InkWell(
                 onTap: () {
                   setState(() {
                     isFavorite = !isFavorite;
-                    print('isFavorite: $isFavorite'); // Added for debugging
+                    print('isFavorite: $isFavorite');
 
                     // TODO: Integrate your favorite state management here.
                     // If isFavorite is true, add widget.cardIndex to the user's favorite list.
@@ -304,17 +306,17 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
                   });
                 },
                 child: SizedBox(
-                  width: 60.0, // Increased tap area
-                  height: 60.0, // Increased tap area
+                  width: 60.0,
+                  height: 60.0,
                   child: Center(
                     child: Icon(
                       isFavorite ? Icons.star : Icons.star_border,
                       color: Colors.black,
-                      size: 46.0, // Keep original icon size
+                      size: 46.0,
                     ),
                   ),
                 ),
-              ),
+              ) : const SizedBox.shrink(),
             ),
           ],
         ),

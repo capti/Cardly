@@ -413,6 +413,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
             builder: (context) => CardDetailScreen(
               cardIndex: index,
               showExchangeButton: widget.isOtherUser,
+              showFavoriteButton: !widget.isOtherUser,
             ),
           ),
         );

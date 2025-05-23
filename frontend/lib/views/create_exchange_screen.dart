@@ -258,8 +258,12 @@ class _CreateExchangeScreenState extends State<CreateExchangeScreen> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: ElevatedButton(
-              onPressed: widget.initialExchangeItem != null
-                  ? () {
+              onPressed: selectedTopCard == null || ((widget.initialExchangeItem != null || widget.cardId == null) && selectedExchangeCards.isEmpty)
+                  ? null // Делаем кнопку неактивной
+                  : () {
+                      // Если мы дошли до сюда, значит, все необходимые проверки пройдены.
+                      // Показываем успешное сообщение и готовимся к переходу.
+
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Container(
@@ -270,10 +274,10 @@ class _CreateExchangeScreenState extends State<CreateExchangeScreen> {
                               borderRadius: BorderRadius.circular(15.0),
                             ),
                             padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-                            child: const Center(
+                            child: Center(
                               child: Text(
-                                'Обмен успешно отправлен',
-                                style: TextStyle(
+                                widget.initialExchangeItem != null ? 'Обмен успешно отправлен' : 'Обмен создан',
+                                style: const TextStyle(
                                   color: Colors.black,
                                   fontSize: 18.0,
                                   fontWeight: FontWeight.w500,
@@ -294,92 +298,22 @@ class _CreateExchangeScreenState extends State<CreateExchangeScreen> {
                           elevation: 0,
                         ),
                       );
-                      
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (context) => const ExchangesScreen(initialTabIndex: 1)),
-                        (route) => false,
-                      );
-                    }
-                  : (selectedTopCard == null || selectedExchangeCards.isEmpty)
-                      ? () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Container(
-                                width: 367,
-                                height: 61,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFEDD6B0),
-                                  borderRadius: BorderRadius.circular(15.0),
-                                ),
-                                padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-                                child: const Center(
-                                  child: Text(
-                                    'Добавьте карточки для обмена',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 18.0,
-                                      fontWeight: FontWeight.w500,
-                                      fontFamily: 'Jost',
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              ),
-                              backgroundColor: Colors.transparent,
-                              duration: const Duration(seconds: 2),
-                              behavior: SnackBarBehavior.floating,
-                              margin: EdgeInsets.only(
-                                bottom: MediaQuery.of(context).size.height - 120,
-                                left: 16,
-                                right: 16,
-                              ),
-                              elevation: 0,
-                            ),
-                          );
-                        }
-                      : () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Container(
-                                width: 367,
-                                height: 61,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFEAD7C3),
-                                  borderRadius: BorderRadius.circular(15.0),
-                                ),
-                                padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-                                child: const Center(
-                                  child: Text(
-                                    'Обмен создан',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 18.0,
-                                      fontWeight: FontWeight.w500,
-                                      fontFamily: 'Jost',
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              ),
-                              backgroundColor: Colors.transparent,
-                              duration: const Duration(seconds: 2),
-                              behavior: SnackBarBehavior.floating,
-                              margin: EdgeInsets.only(
-                                bottom: MediaQuery.of(context).size.height - 200,
-                                left: 16,
-                                right: 16,
-                              ),
-                              elevation: 0,
-                            ),
-                          );
 
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(builder: (context) => const ExchangesScreen()),
-                            (route) => false,
-                          );
-                        },
+                      // Переходим на экран обменов только после успешного показа уведомления
+                      Future.delayed(const Duration(milliseconds: 500), () {
+                         if (context.mounted) {
+                           Navigator.pushAndRemoveUntil(
+                             context,
+                             MaterialPageRoute(
+                               builder: (context) => ExchangesScreen(
+                                 initialTabIndex: widget.initialExchangeItem != null ? 1 : 0,
+                               ),
+                             ),
+                             (route) => false,
+                           );
+                         }
+                       });
+                    },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFD6A067),
                 foregroundColor: Colors.black,
