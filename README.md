@@ -45,7 +45,7 @@
 
 ---
 
-- [Тестовая документация](https://github.com/capti/Cardly/tree/dev/Documentation/Testing)
+- [Тестовая документация](https://github.com/capti/Cardly/tree/main/Documentation/Testing)
 
 ---
 
