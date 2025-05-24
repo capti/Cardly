@@ -130,7 +130,7 @@ class ProfileScreen extends StatelessWidget {
                 border: Border.all(color: Colors.black, width: 2),
               ),
               child: const CircleAvatar(
-                backgroundColor: Color(0xFFFFF4E3),
+                backgroundColor: Color(0xFFFBF6EF),
                 child: Icon(
                   Icons.person_outline,
                   size: 90.0,
@@ -172,8 +172,10 @@ class ProfileScreen extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: List.generate(
-                favoriteCardIds.length,
-                (index) => _buildCard(favoriteCardIds[index]),
+                5, // Always generate 5 cards
+                (index) => _buildCard(
+                  index < favoriteCardIds.length ? favoriteCardIds[index] : -1,
+                ),
               ),
             ),
           ),
@@ -320,118 +322,9 @@ class ProfileScreen extends StatelessWidget {
           ),
           
           const Spacer(),
-          
-          // Нижняя навигационная панель
-          Container(
-            decoration: const BoxDecoration(
-              color: Color(0xFFD6A067),
-            ),
-            child: BottomNavigationBar(
-              currentIndex: 0,
-              onTap: (index) {
-                switch (index) {
-                  case 0:
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const HomeScreen()),
-                    );
-                    break;
-                  case 1:
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const InventoryScreen()),
-                    );
-                    break;
-                  case 2:
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const ShopScreen()),
-                    );
-                    break;
-                  case 3:
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const ExchangesScreen()),
-                    );
-                    break;
-                }
-              },
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              type: BottomNavigationBarType.fixed,
-              selectedItemColor: Colors.black,
-              unselectedItemColor: Colors.black54,
-              showSelectedLabels: true,
-              showUnselectedLabels: true,
-              selectedIconTheme: const IconThemeData(
-                size: 28,
-              ),
-              unselectedIconTheme: const IconThemeData(
-                size: 24,
-              ),
-              selectedLabelStyle: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Jost',
-              ),
-              unselectedLabelStyle: const TextStyle(
-                fontSize: 11,
-                fontFamily: 'Jost',
-              ),
-              items: [
-                BottomNavigationBarItem(
-                  icon: Image.asset('assets/icons/главная.png', height: 24),
-                  activeIcon: Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFEDD6B0),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Image.asset('assets/icons/главная.png', height: 24),
-                  ),
-                  label: 'Главная',
-                ),
-                BottomNavigationBarItem(
-                  icon: Image.asset('assets/icons/Инвентарь.png', height: 24),
-                  activeIcon: Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFEDD6B0),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Image.asset('assets/icons/Инвентарь.png', height: 24),
-                  ),
-                  label: 'Инвентарь',
-                ),
-                BottomNavigationBarItem(
-                  icon: Image.asset('assets/icons/магазин.png', height: 24),
-                  activeIcon: Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFEDD6B0),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Image.asset('assets/icons/магазин.png', height: 24),
-                  ),
-                  label: 'Магазин',
-                ),
-                BottomNavigationBarItem(
-                  icon: Image.asset('assets/icons/обменник.png', height: 24),
-                  activeIcon: Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFEDD6B0),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Image.asset('assets/icons/обменник.png', height: 24),
-                  ),
-                  label: 'Обменник',
-                ),
-              ],
-            ),
-          ),
         ],
       ),
+      bottomNavigationBar: null,
     );
   }
   
@@ -496,6 +389,7 @@ class ProfileScreen extends StatelessWidget {
                             child: Text(
                               'Нет изображения',
                               style: TextStyle(color: Colors.black45, fontSize: 12),
+                              textAlign: TextAlign.center,
                             ),
                           ),
                         ),
