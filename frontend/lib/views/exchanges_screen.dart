@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'exchange_details_screen.dart';
 import 'create_exchange_screen.dart';
-import 'home_screen.dart';
-import 'shop_screen.dart';
-import 'inventory_screen.dart';
 import 'profile_screen.dart';
 import 'search_players_screen.dart';
 import 'exchange_proposal_screen.dart';
@@ -18,7 +15,6 @@ class ExchangesScreen extends StatefulWidget {
 }
 
 class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProviderStateMixin {
-  int _currentIndex = 3;
   late TabController _tabController;
   String _sortOption = 'По дате';
   bool _showSortOptions = false;
@@ -291,111 +287,7 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
           ),
         ],
       ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: Color(0xFFD6A067),
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            if (index != _currentIndex) {
-              setState(() {
-                _currentIndex = index;
-              });
-              switch (index) {
-                case 0:
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
-                  );
-                  break;
-                case 1:
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const InventoryScreen()),
-                  );
-                  break;
-                case 2:
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ShopScreen()),
-                  );
-                  break;
-              }
-            }
-          },
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          type: BottomNavigationBarType.fixed,
-          selectedItemColor: Colors.black,
-          unselectedItemColor: Colors.black54,
-          showSelectedLabels: true,
-          showUnselectedLabels: true,
-          selectedIconTheme: const IconThemeData(
-            size: 28,
-          ),
-          unselectedIconTheme: const IconThemeData(
-            size: 24,
-          ),
-          selectedLabelStyle: const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.bold, 
-          ),
-          unselectedLabelStyle: const TextStyle(
-            fontSize: 11,
-          ),
-          items: [
-            BottomNavigationBarItem(
-              icon: Image.asset('assets/icons/главная.png', height: 24),
-              activeIcon: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEDD6B0),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Image.asset('assets/icons/главная.png', height: 24),
-              ),
-              label: 'Главная',
-            ),
-            BottomNavigationBarItem(
-              icon: Image.asset('assets/icons/Инвентарь.png', height: 24),
-              activeIcon: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEDD6B0),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Image.asset('assets/icons/Инвентарь.png', height: 24),
-              ),
-              label: 'Инвентарь',
-            ),
-            BottomNavigationBarItem(
-              icon: Image.asset('assets/icons/магазин.png', height: 24),
-              activeIcon: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEDD6B0),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Image.asset('assets/icons/магазин.png', height: 24),
-              ),
-              label: 'Магазин',
-            ),
-            BottomNavigationBarItem(
-              icon: Image.asset('assets/icons/обменник.png', height: 24),
-              activeIcon: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEDD6B0),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Image.asset('assets/icons/обменник.png', height: 24),
-              ),
-              label: 'Обменник',
-            ),
-          ],
-        ),
-      ),
+      bottomNavigationBar: null,
     );
   }
   
