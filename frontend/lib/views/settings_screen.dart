@@ -21,162 +21,171 @@ class _SettingsDialogState extends State<SettingsDialog> {
       _hintText = text;
       _showHint = true;
     });
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        setState(() {
-          _showHint = false;
-        });
-      }
-    });
   }
-
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Material(
-        color: Colors.transparent,
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.88,
-          height: MediaQuery.of(context).size.height * 0.75,
-          decoration: BoxDecoration(
-            color: const Color(0xFFF6E6D0),
-            borderRadius: BorderRadius.circular(10.0),
-            border: Border.all(color: Colors.black, width: 2),
-          ),
-          child: Stack(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 8),
-                    const Center(
-                      child: Text(
-                        'Настройки',
-                        style: TextStyle(
-                          fontFamily: 'Jost',
-                          fontSize: 28.0,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24.0),
-                    _buildSettingItem(
-                      title: 'Уведомления',
-                      hasSwitch: true,
-                      switchValue: _notificationsEnabled,
-                      onChanged: (value) {
-                        setState(() {
-                          _notificationsEnabled = value;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 16.0),
-                    _buildSettingItem(
-                      title: 'Отклонение обменов',
-                      hasSwitch: true,
-                      switchValue: _exchangesDeclineEnabled,
-                      hasInfo: true,
-                      onInfoTap: () => _showHintMessage('Подсказка по отклонению обменов'),
-                      onChanged: (value) {
-                        setState(() {
-                          _exchangesDeclineEnabled = value;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 16.0),
-                    _buildSettingItem(
-                      title: 'Показ инвентаря',
-                      hasSwitch: true,
-                      switchValue: _inventoryDisplayEnabled,
-                      hasInfo: true,
-                      onInfoTap: () => _showHintMessage('Подсказка по показу инвентаря'),
-                      onChanged: (value) {
-                        setState(() {
-                          _inventoryDisplayEnabled = value;
-                        });
-                      },
-                    ),
-                    const Spacer(),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 26.0),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed:(){},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFD6A067),
-                            foregroundColor: Colors.black,
-                            padding: const EdgeInsets.symmetric(vertical: 18.0),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                          ),
-                          child: const Text(
-                            'Выйти из аккаунта',
-                            style: TextStyle(
-                              fontFamily: 'Jost',
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.w500,
-                            ),
+    return GestureDetector(
+      onTapDown: (_) {
+        if (_showHint) {
+          setState(() {
+            _showHint = false;
+          });
+        }
+      },
+      child: Center(
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.88,
+            height: MediaQuery.of(context).size.height * 0.75,
+            decoration: BoxDecoration(
+              color: const Color(0xFFEAD7C3),
+              borderRadius: BorderRadius.circular(10.0),
+              border: Border.all(color: Colors.black, width: 2),
+            ),
+            child: Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 8),
+                      const Center(
+                        child: Text(
+                          'Настройки',
+                          style: TextStyle(
+                            fontFamily: 'Jost',
+                            fontSize: 28.0,
+                            fontWeight: FontWeight.w400,
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              Positioned(
-                top: -1,
-                right: -1,
-                child: GestureDetector(
-                  onTap: () => Navigator.of(context).pop(),
-                  child: Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFD6A067),
-                      borderRadius: BorderRadius.circular(10.0),
-                      border: Border.all(color: Colors.black, width: 2),
-                    ),
-                    child: const Center(
-                      child: Icon(
-                        Icons.close_rounded,
-                        color: Colors.black,
-                        size: 48.0,
+                      const SizedBox(height: 24.0),
+                      _buildSettingItem(
+                        title: 'Уведомления',
+                        hasSwitch: true,
+                        switchValue: _notificationsEnabled,
+                        onChanged: (value) {
+                          setState(() {
+                            _notificationsEnabled = value;
+                          });
+                        },
                       ),
-                    ),
+                      const SizedBox(height: 16.0),
+                      _buildSettingItem(
+                        title: 'Отклонение обменов',
+                        hasSwitch: true,
+                        switchValue: _exchangesDeclineEnabled,
+                        hasInfo: true,
+                        onInfoTap: () => _showHintMessage('Подсказка по отклонению обменов'),
+                        onChanged: (value) {
+                          setState(() {
+                            _exchangesDeclineEnabled = value;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 16.0),
+                      _buildSettingItem(
+                        title: 'Показ инвентаря',
+                        hasSwitch: true,
+                        switchValue: _inventoryDisplayEnabled,
+                        hasInfo: true,
+                        onInfoTap: () => _showHintMessage('Подсказка по показу инвентаря'),
+                        onChanged: (value) {
+                          setState(() {
+                            _inventoryDisplayEnabled = value;
+                          });
+                        },
+                      ),
+                      const Spacer(),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 26.0),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed:(){},
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFD6A067),
+                              foregroundColor: Colors.black,
+                              padding: const EdgeInsets.symmetric(vertical: 18.0),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                            ),
+                            child: const Text(
+                              'Выйти из аккаунта',
+                              style: TextStyle(
+                                fontFamily: 'Jost',
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-              if (_showHint && _hintText != null)
                 Positioned(
-                  top: 0,
-                  right: 0,
-                  child: Material(
-                    color: Colors.transparent,
+                  top: -1,
+                  right: -1,
+                  child: GestureDetector(
+                    onTap: () => Navigator.of(context).pop(),
                     child: Container(
-                      width: 100,
-                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                      width: 48,
+                      height: 48,
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
+                        color: const Color(0xFFD6A067),
+                        borderRadius: BorderRadius.circular(10.0),
+                        border: Border.all(color: Colors.black, width: 2),
                       ),
-                      child: Text(
-                        _hintText!,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontFamily: 'Jost',
-                          fontSize: 12,
+                      child: const Center(
+                        child: Icon(
+                          Icons.close_rounded,
                           color: Colors.black,
+                          size: 44.0,
                         ),
                       ),
                     ),
                   ),
                 ),
-            ],
+                if (_showHint && _hintText != null)
+                  Positioned(
+                    left: MediaQuery.of(context).size.width * 0.35,
+                    top: _hintText!.contains('обменов') ? 195 : 255,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: Container(
+                        width: 160,
+                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.black, width: 1),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Text(
+                          _hintText!,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontFamily: 'Jost',
+                            fontSize: 14,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),
