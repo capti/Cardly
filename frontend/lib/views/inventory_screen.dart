@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'home_screen.dart';
-import 'shop_screen.dart';
-import 'exchanges_screen.dart';
 import 'profile_screen.dart';
 import 'card_detail_screen.dart';
 import 'search_players_screen.dart';
@@ -11,6 +8,7 @@ class InventoryScreen extends StatefulWidget {
   final String? playerName;
   final String? playerId;
   final String? collectionName;
+  final bool isFromShop;
 
   const InventoryScreen({
     super.key,
@@ -18,6 +16,7 @@ class InventoryScreen extends StatefulWidget {
     this.playerName,
     this.playerId,
     this.collectionName,
+    this.isFromShop = false,
   });
 
   @override
@@ -25,7 +24,6 @@ class InventoryScreen extends StatefulWidget {
 }
 
 class _InventoryScreenState extends State<InventoryScreen> {
-  int _currentIndex = 1;
   String _sortOption = 'По редкости';
   bool _showSortOptions = false;
   
@@ -102,7 +100,9 @@ class _InventoryScreenState extends State<InventoryScreen> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'Коллекция ${widget.collectionName}',
+                        widget.isFromShop 
+                            ? 'Содержимое ${widget.collectionName}'
+                            : 'Коллекция ${widget.collectionName}',
                         style: const TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
@@ -292,115 +292,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
             ),
         ],
       ),
-      bottomNavigationBar: widget.isOtherUser
-          ? null
-          : Container(
-              decoration: const BoxDecoration(
-                color: Color(0xFFD6A067),
-              ),
-              child: BottomNavigationBar(
-                currentIndex: _currentIndex,
-                onTap: (index) {
-                  if (index != _currentIndex) {
-                    setState(() {
-                      _currentIndex = index;
-                    });
-                    switch (index) {
-                      case 0:
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => const HomeScreen()),
-                        );
-                        break;
-                      case 2:
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => const ShopScreen()),
-                        );
-                        break;
-                      case 3:
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => const ExchangesScreen()),
-                        );
-                        break;
-                    }
-                  }
-                },
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                type: BottomNavigationBarType.fixed,
-                selectedItemColor: Colors.black,
-                unselectedItemColor: Colors.black54,
-                showSelectedLabels: true,
-                showUnselectedLabels: true,
-                selectedIconTheme: const IconThemeData(
-                  size: 28,
-                ),
-                unselectedIconTheme: const IconThemeData(
-                  size: 24,
-                ),
-                selectedLabelStyle: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Jost',
-                ),
-                unselectedLabelStyle: const TextStyle(
-                  fontSize: 11,
-                  fontFamily: 'Jost',
-                ),
-                items: [
-                  BottomNavigationBarItem(
-                    icon: Image.asset('assets/icons/главная.png', height: 24),
-                    activeIcon: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFEDD6B0),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Image.asset('assets/icons/главная.png', height: 24),
-                    ),
-                    label: 'Главная',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Image.asset('assets/icons/Инвентарь.png', height: 24),
-                    activeIcon: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFEDD6B0),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Image.asset('assets/icons/Инвентарь.png', height: 24),
-                    ),
-                    label: 'Инвентарь',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Image.asset('assets/icons/магазин.png', height: 24),
-                    activeIcon: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFEDD6B0),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Image.asset('assets/icons/магазин.png', height: 24),
-                    ),
-                    label: 'Магазин',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Image.asset('assets/icons/обменник.png', height: 24),
-                    activeIcon: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFEDD6B0),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Image.asset('assets/icons/обменник.png', height: 24),
-                    ),
-                    label: 'Обменник',
-                  ),
-                ],
-              ),
-            ),
+      bottomNavigationBar: null,
     );
   }
   
