@@ -10,7 +10,7 @@ class ExchangeProposalScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF4E3), // Match background color
+      backgroundColor: const Color(0xFFFBF6EF), // Match background color
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -263,7 +263,7 @@ Widget _buildExchangeCardVisual({Widget? content, double width = 80, double heig
                   width: 16, // Adjusted size
                   height: 16, // Adjusted size
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFF4E3),
+                    color: const Color(0xFFFBF6EF),
                     borderRadius: BorderRadius.circular(3), // Adjusted radius
                     border: Border.all(color: Colors.black, width: 1), // Match style
                   ),

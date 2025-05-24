@@ -104,6 +104,7 @@ class ExchangeDetailsScreen extends StatelessWidget {
                                 fontSize: 20,
                                 fontFamily: 'Jost',
                               ),
+                              textAlign: TextAlign.center,
                             ),
                           ),
                         ),
