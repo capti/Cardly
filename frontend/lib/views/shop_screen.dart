@@ -3,6 +3,10 @@ import 'profile_screen.dart';
 import 'search_players_screen.dart';
 import 'inventory_screen.dart';
 import 'pack_content_screen.dart';
+import '../services/api_service.dart';
+import '../models/shop_model.dart';
+import '../models/card_model.dart';
+import '../utils/error_formatter.dart';
 
 class ShopScreen extends StatefulWidget {
   const ShopScreen({super.key});
@@ -11,338 +15,83 @@ class ShopScreen extends StatefulWidget {
   State<ShopScreen> createState() => _ShopScreenState();
 }
 
-class _ShopScreenState extends State<ShopScreen> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-  int _selectedTab = 0;
-  
-  final List<String> _sets = [
-    'Название набора 1',
-    'Название набора 2',
-    'Название набора 3',
-    'Название набора 4',
-  ];
-  
-  final List<String> _coins = [
-    'Ценник 1',
-    'Ценник 2',
-  ];
+class _ShopScreenState extends State<ShopScreen> {
+  late bool _isLoading;
+  late List<Pack> _packs;
+  late List<CoinOffer> _coinOffers;
+  late String _error;
   
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this, initialIndex: _selectedTab);
-  }
-  
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
+    _isLoading = true;
+    _packs = [];
+    _coinOffers = [];
+    _error = '';
+    _loadShopData();
   }
 
-  void _showSetDetails(String setName) {
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
-        insetPadding: EdgeInsets.zero,
-        child: Center(
-          child: SizedBox(
-            width: 360.0,
-            height: 492.0,
-            child: Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFFEAD7C3),
-                borderRadius: BorderRadius.circular(8.0),
-                border: Border.all(color: Colors.black, width: 3),
-              ),
-              child: Stack(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 55.0, left: 16.0, right: 16.0, bottom: 16.0),
-                    child: Column(
-                      children: [
-                        Container(
-                          height: 120.0,
-                          width: 321.0,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFD6A067),
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                        ),
-                        const SizedBox(height: 10.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              setName,
-                              style: const TextStyle(
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'Jost',
-                              ),
-                            ),
-                            const Text(
-                              'Цена',
-                              style: TextStyle(
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.w500,
-                                fontFamily: 'Jost',
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 70.0),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => InventoryScreen(
-                                    collectionName: setName,
-                                    isFromShop: true,
-                                  ),
-                                ),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFD6A067),
-                              foregroundColor: Colors.black,
-                              padding: const EdgeInsets.symmetric(vertical: 16.0),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                            ),
-                            child: const Text(
-                              'Посмотреть содержимое',
-                              style: TextStyle(
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'Roboto',
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 12.0),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => PackContentScreen(
-                                    setName: setName,
-                                  ),
-                                ),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFD6A067),
-                              foregroundColor: Colors.black,
-                              padding: const EdgeInsets.symmetric(vertical: 16.0),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                            ),
-                            child: const Text(
-                              'Купить',
-                              style: TextStyle(
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'Roboto',
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Positioned(
-                    top: -1,
-                    right: -1,
-                    child: GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: Container(
-                        width: 48.0,
-                        height: 48.0,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFD9A76A),
-                          border: Border.all(
-                            color: Colors.black,
-                            width: 1.0,
-                          ),
-                          borderRadius: const BorderRadius.only(
-                            topRight: Radius.circular(8.0),
-                            bottomLeft: Radius.circular(8.0),
-                          ),
-                        ),
-                        child: const Icon(
-                          Icons.close,
-                          color: Colors.black,
-                          size: 32.0,
-                          weight: 900,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
+  Future<void> _loadShopData() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      final packs = await ApiService().getAllPacks();
+      final coinOffers = await ApiService().getCoinOffers();
+      
+      setState(() {
+        _packs = packs;
+        _coinOffers = coinOffers;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _error = ErrorFormatter.formatError(e);
+      });
+    }
   }
 
-  void _showCoinDetails(String coinName) {
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
-        insetPadding: EdgeInsets.zero,
-        child: Center(
-          child: SizedBox(
-            width: 360.0,
-            height: 492.0,
-            child: Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFFEAD7C3),
-                borderRadius: BorderRadius.circular(8.0),
-                border: Border.all(color: Colors.black, width: 3),
-              ),
-              child: Stack(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 96.0, left: 16.0, right: 16.0, bottom: 16.0),
-                    child: Column(
-                      children: [
-                        Center(
-                          child: Container(
-                            height: 150.0,
-                            width: 150.0,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFD6A067),
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 7.0),
-                        Text(
-                          coinName,
-                          style: const TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Jost',
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 60.0),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              final overlay = Overlay.of(context);
-                              final overlayEntry = OverlayEntry(
-                                builder: (context) => Positioned(
-                                  top: 40,
-                                  left: 16,
-                                  right: 16,
-                                  child: Material(
-                                    color: Colors.transparent,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFFEAD7C3),
-                                        borderRadius: BorderRadius.circular(10),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black.withOpacity(0.18),
-                                            blurRadius: 8,
-                                            offset: const Offset(0, 6),
-                                          ),
-                                        ],
-                                      ),
-                                      padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 5),
-                                      child: const Center(
-                                        child: Text(
-                                          'Монеты успешно приобретены',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                              overlay.insert(overlayEntry);
-                              Future.delayed(const Duration(seconds: 3), () {
-                                overlayEntry.remove();
-                              });
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFD6A067),
-                              foregroundColor: Colors.black,
-                              padding: const EdgeInsets.symmetric(vertical: 16.0),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                            ),
-                            child: const Text(
-                              'Купить',
-                              style: TextStyle(
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'Roboto',
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Positioned(
-                    top: -1,
-                    right: -1,
-                    child: GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: Container(
-                        width: 48.0,
-                        height: 48.0,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFD9A76A),
-                          border: Border.all(
-                            color: Colors.black,
-                            width: 1.0,
-                          ),
-                          borderRadius: const BorderRadius.only(
-                            topRight: Radius.circular(8.0),
-                            bottomLeft: Radius.circular(8.0),
-                          ),
-                        ),
-                        child: const Icon(
-                          Icons.close,
-                          color: Colors.black,
-                          size: 32.0,
-                          weight: 900,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+  Future<void> _buyPack(Pack pack) async {
+    try {
+      final result = await ApiService().buyPack(pack.pack_ID);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Набор успешно куплен!')),
+      );
+      
+      // Открываем экран с содержимым набора
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PackContentScreen(
+            setName: pack.name,
+            cards: (result['receivedCards'] as List).map((item) => CardModel.fromJson(item)).toList(),
           ),
         ),
-      ),
-    );
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(ErrorFormatter.formatError(e))),
+      );
+    }
+  }
+
+  Future<void> _buyCoinOffer(CoinOffer offer) async {
+    try {
+      final paymentUrl = await ApiService().purchaseCoins(
+        offer.offer_ID,
+        'cardly://payment-callback', // URL схема для возврата в приложение
+      );
+      
+      // Здесь нужно реализовать открытие URL для оплаты
+      // Это может быть WebView или переход в браузер
+      
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(ErrorFormatter.formatError(e))),
+      );
+    }
   }
 
   @override
@@ -408,131 +157,109 @@ class _ShopScreenState extends State<ShopScreen> with SingleTickerProviderStateM
           ),
         ],
       ),
-      body: Column(
+      body: _isLoading 
+          ? const Center(child: CircularProgressIndicator())
+          : _error.isNotEmpty
+              ? Center(child: Text(_error))
+              : SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFFEAD7C3),
-                borderRadius: BorderRadius.circular(12.0),
-              ),
-              child: TabBar(
-                controller: _tabController,
-                dividerColor: Colors.transparent,
-                indicator: const BoxDecoration(
-                  color: Color(0xFFD6A067),
-                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                ),
-                labelColor: Colors.black,
-                unselectedLabelColor: Colors.black,
-                indicatorSize: TabBarIndicatorSize.tab,
-                tabs: const [
-                  Tab(text: 'Наборы'),
-                  Tab(text: 'Монеты'),
-                ],
-                labelStyle: TextStyle(fontFamily: 'Jost'),
-                unselectedLabelStyle: TextStyle(fontFamily: 'Jost'),
-                onTap: (index) {
-                  setState(() {
-                    _selectedTab = index;
-                  });
-                },
-              ),
-            ),
-          ),
-          
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildSetsTab(),
-                _buildCoinsTab(),
-              ],
-            ),
-          ),
-        ],
+                      _buildPacksSection(),
+                      _buildCoinOffersSection(),
+                    ],
+                  ),
       ),
       bottomNavigationBar: null,
     );
   }
   
-  Widget _buildSetsTab() {
-    return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(16.0, 60.0, 16.0, 16.0),
-      itemCount: _sets.length,
-      separatorBuilder: (context, index) => const SizedBox(height: 30.0),
-      itemBuilder: (context, index) {
+  Widget _buildPacksSection() {
         return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            InkWell(
-              onTap: () => _showSetDetails(_sets[index]),
-              child: Container(
-                width: 321.0,
-                height: 120.0,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFD6A067),
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-              ),
-            ),
-            const SizedBox(height: 7.0),
+        const Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Text(
+            'Наборы карт',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+        ),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(16.0),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 0.75,
+            crossAxisSpacing: 16.0,
+            mainAxisSpacing: 16.0,
+          ),
+          itemCount: _packs.length,
+          itemBuilder: (context, index) {
+            final pack = _packs[index];
+            return Card(
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Image.network(
+                      pack.imageURL,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
             Text(
-              _sets[index],
-              style: const TextStyle(
-                fontSize: 16.0,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-                fontFamily: 'Jost',
+                          pack.name,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Text('${pack.price} монет'),
+                        ElevatedButton(
+                          onPressed: () => _buyPack(pack),
+                          child: const Text('Купить'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        );
-      },
+            );
+          },
+        ),
+      ],
     );
   }
-  
-  Widget _buildCoinsTab() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 15.0,
-          mainAxisSpacing: 15.0,
-          childAspectRatio: 150 / 175,
-        ),
-        itemCount: _coins.length,
-        itemBuilder: (context, index) {
+
+  Widget _buildCoinOffersSection() {
           return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              InkWell(
-                onTap: () => _showCoinDetails(_coins[index]),
-                child: Container(
-                  width: 150.0,
-                  height: 150.0,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFD6A067),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
+        const Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Text(
+            'Монеты',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+        ),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: _coinOffers.length,
+          itemBuilder: (context, index) {
+            final offer = _coinOffers[index];
+            return ListTile(
+              title: Text('${offer.coins} монет'),
+              subtitle: Text('${offer.price} ₽'),
+              trailing: ElevatedButton(
+                onPressed: () => _buyCoinOffer(offer),
+                child: const Text('Купить'),
               ),
-              const SizedBox(height: 7.0),
-              Text(
-                _coins[index],
-                style: const TextStyle(
-                  fontSize: 14.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                  fontFamily: 'Jost',
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
           );
         },
       ),
+      ],
     );
   }
 } 

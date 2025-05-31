@@ -109,4 +109,84 @@ class PurchaseCoinsResponse {
       paymentUrl: json['paymentUrl'] as String,
     );
   }
+}
+
+class Pack {
+  final int pack_ID;
+  final String name;
+  final String description;
+  final String imageURL;
+  final int price;
+  final int cardsCount;
+  final bool isAvailable;
+
+  Pack({
+    required this.pack_ID,
+    required this.name,
+    required this.description,
+    required this.imageURL,
+    required this.price,
+    required this.cardsCount,
+    this.isAvailable = true,
+  });
+
+  factory Pack.fromJson(Map<String, dynamic> json) {
+    return Pack(
+      pack_ID: json['pack_ID'],
+      name: json['name'],
+      description: json['description'],
+      imageURL: json['imageURL'],
+      price: json['price'],
+      cardsCount: json['cardsCount'],
+      isAvailable: json['isAvailable'] ?? true,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'pack_ID': pack_ID,
+      'name': name,
+      'description': description,
+      'imageURL': imageURL,
+      'price': price,
+      'cardsCount': cardsCount,
+      'isAvailable': isAvailable,
+    };
+  }
+}
+
+class CoinOffer {
+  final int offer_ID;
+  final int coins;
+  final double price;
+  final bool isPopular;
+  final bool isBestValue;
+
+  CoinOffer({
+    required this.offer_ID,
+    required this.coins,
+    required this.price,
+    this.isPopular = false,
+    this.isBestValue = false,
+  });
+
+  factory CoinOffer.fromJson(Map<String, dynamic> json) {
+    return CoinOffer(
+      offer_ID: json['offer_ID'],
+      coins: json['coins'],
+      price: json['price'].toDouble(),
+      isPopular: json['isPopular'] ?? false,
+      isBestValue: json['isBestValue'] ?? false,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'offer_ID': offer_ID,
+      'coins': coins,
+      'price': price,
+      'isPopular': isPopular,
+      'isBestValue': isBestValue,
+    };
+  }
 } 

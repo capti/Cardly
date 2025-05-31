@@ -4,6 +4,9 @@ import 'create_exchange_screen.dart';
 import 'profile_screen.dart';
 import 'search_players_screen.dart';
 import 'exchange_proposal_screen.dart';
+import '../services/api_service.dart';
+import '../models/trade_model.dart';
+import '../utils/error_formatter.dart';
 
 class ExchangesScreen extends StatefulWidget {
   final String? notification;
@@ -18,6 +21,8 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
   late TabController _tabController;
   String _sortOption = 'По дате';
   bool _showSortOptions = false;
+  bool _isLoading = false;
+  String? _error;
   
   @override
   void initState() {
@@ -643,6 +648,68 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
         ),
       ],
     );
+  }
+
+  Future<void> _loadTrades() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      // Implement the logic to load trades from the API
+      // This is a placeholder and should be replaced with actual implementation
+      // For example, you can use a Future.delayed to simulate a delay
+      await Future.delayed(Duration(seconds: 2));
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _error = ErrorFormatter.formatError(e);
+      });
+    }
+  }
+
+  Future<void> _acceptTrade(Trade trade) async {
+    try {
+      await ApiService().acceptTrade(trade.trade_ID);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Обмен принят')),
+      );
+      _loadTrades();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(ErrorFormatter.formatError(e))),
+      );
+    }
+  }
+
+  Future<void> _rejectTrade(Trade trade) async {
+    try {
+      await ApiService().rejectTrade(trade.trade_ID);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Обмен отклонен')),
+      );
+      _loadTrades();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(ErrorFormatter.formatError(e))),
+      );
+    }
+  }
+
+  Future<void> _cancelTrade(Trade trade) async {
+    try {
+      await ApiService().cancelTrade(trade.trade_ID);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Обмен отменен')),
+      );
+      _loadTrades();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(ErrorFormatter.formatError(e))),
+      );
+    }
   }
 }
 

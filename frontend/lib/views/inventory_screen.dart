@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'profile_screen.dart';
 import 'card_detail_screen.dart';
 import 'search_players_screen.dart';
+import '../services/api_service.dart';
+import '../models/card_model.dart';
+import '../utils/error_formatter.dart';
 
 class InventoryScreen extends StatefulWidget {
   final bool isOtherUser;
   final String? playerName;
-  final String? playerId;
+  final int? playerId;
   final String? collectionName;
   final bool isFromShop;
 
@@ -24,9 +27,70 @@ class InventoryScreen extends StatefulWidget {
 }
 
 class _InventoryScreenState extends State<InventoryScreen> {
-  String _sortOption = 'По редкости';
-  bool _showSortOptions = false;
-  
+  late bool _isLoading;
+  late List<CardModel> _cards;
+  late String _error;
+  String _sortBy = 'rarity';
+
+  @override
+  void initState() {
+    super.initState();
+    _isLoading = true;
+    _cards = [];
+    _error = '';
+    _loadInventory();
+  }
+
+  Future<void> _loadInventory() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      final cards = widget.isOtherUser
+          ? await ApiService().getOtherProfileInventory(widget.playerId ?? 0)
+          : await ApiService().getUserInventory(sortBy: _sortBy);
+      
+      setState(() {
+        _cards = (cards as List).map((item) => CardModel.fromJson(item)).toList();
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _error = ErrorFormatter.formatError(e);
+      });
+    }
+  }
+
+  Future<void> _disassembleCard(CardModel card) async {
+    try {
+      final coinsReceived = await ApiService().disassembleCard(card.card_ID);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Получено монет: $coinsReceived')),
+      );
+      await _loadInventory(); // Перезагружаем инвентарь
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(ErrorFormatter.formatError(e))),
+      );
+    }
+  }
+
+  void _showCardDetails(CardModel card) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CardDetailScreen(
+          card: card,
+          cardIndex: 0,
+          showExchangeButton: false,
+          isFromShop: false,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -167,241 +231,54 @@ class _InventoryScreenState extends State<InventoryScreen> {
           ),
         ],
       ),
-      body: Stack(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (widget.collectionName == null) // Only show sorting if not viewing a collection
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                        child: InkWell(
-                          onTap: () {
-                            setState(() {
-                              _showSortOptions = !_showSortOptions;
-                            });
-                          },
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'Сортировка:',
-                                style: const TextStyle(
-                                  fontSize: 14.0,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Jost',
+      body: _isLoading 
+          ? const Center(child: CircularProgressIndicator())
+          : _error.isNotEmpty
+              ? Center(child: Text(_error))
+              : _cards.isEmpty
+                  ? const Center(child: Text('Нет карт'))
+                  : GridView.builder(
+                      padding: const EdgeInsets.all(16.0),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 0.75,
+                        crossAxisSpacing: 16.0,
+                        mainAxisSpacing: 16.0,
+                      ),
+                      itemCount: _cards.length,
+                      itemBuilder: (context, index) {
+                        final card = _cards[index];
+                        return GestureDetector(
+                          onTap: () => _showCardDetails(card),
+                          onLongPress: widget.isOtherUser ? null : () => _disassembleCard(card),
+                          child: Card(
+                            child: Column(
+                              children: [
+                                Expanded(
+                                  child: Image.network(
+                                    card.imageURL,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(width: 6.0),
-                              Icon(
-                                _showSortOptions ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                                color: Colors.black,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              
-              Expanded(
-                child: GridView.builder(
-                  padding: const EdgeInsets.all(12.0),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                    childAspectRatio: 0.7,
-                    crossAxisSpacing: 8.0,
-                    mainAxisSpacing: 12.0,
-                  ),
-                  itemCount: 20,
-                  itemBuilder: (context, index) {
-                    return _buildCardItem(index: index);
-                  },
-                ),
-              ),
-            ],
-          ),
-          
-          if (_showSortOptions)
-            Positioned(
-              top: 50,
-              left: 16,
-              child: Container(
-                padding: const EdgeInsets.all(12.0),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEAD7C3),
-                  borderRadius: BorderRadius.circular(8.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        setState(() {
-                          _sortOption = 'По редкости';
-                          _showSortOptions = false;
-                        });
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Text(
-                          'По редкости',
-                          style: TextStyle(
-                            fontSize: 14.0,
-                            fontWeight: _sortOption == 'По редкости' ? FontWeight.bold : FontWeight.normal,
-                            fontFamily: 'Jost',
-                          ),
-                        ),
-                      ),
-                    ),
-                    const Divider(),
-                    InkWell(
-                      onTap: () {
-                        setState(() {
-                          _sortOption = 'По коллекциям';
-                          _showSortOptions = false;
-                        });
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Text(
-                          'По коллекциям',
-                          style: TextStyle(
-                            fontSize: 14.0,
-                            fontWeight: _sortOption == 'По коллекциям' ? FontWeight.bold : FontWeight.normal,
-                            fontFamily: 'Jost',
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-        ],
-      ),
-      bottomNavigationBar: null,
-    );
-  }
-  
-  Widget _buildCardItem({int index = 0}) {
-    return InkWell(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CardDetailScreen(
-              cardIndex: index,
-              showExchangeButton: widget.isOtherUser,
-              showFavoriteButton: !widget.isOtherUser,
-            ),
-          ),
-        );
-      },
-      child: AspectRatio(
-        aspectRatio: 3/4,
-        child: Stack(
-          children: [
-            // Внешняя тонкая черная рамка
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.black, width: 2),
-              ),
-            ),
-            // Прослойка цвета карточки
-            Padding(
-              padding: const EdgeInsets.all(2.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFFD6A067),
-                  borderRadius: BorderRadius.circular(7),
-                ),
-              ),
-            ),
-            // Внутренняя тонкая черная рамка
-            Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: Colors.black, width: 2),
-                ),
-              ),
-            ),
-            // Основная карточка
-            Padding(
-              padding: const EdgeInsets.all(6.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFFD6A067),
-                  borderRadius: BorderRadius.circular(5.0),
-                ),
-                child: Column(
-                  children: [
-                    Expanded(
-                      flex: 8,
-                      child: ClipRRect(
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(5.0),
-                          topRight: Radius.circular(5.0),
-                        ),
-                        child: Container(
-                          color: const Color(0xFFEAD7C3),
-                          child: const Center(
-                            child: Text(
-                              'Нет изображения',
-                              style: TextStyle(color: Colors.black45, fontSize: 12, fontFamily: 'Jost'),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        card.name,
+                                        style: const TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                                      Text('Редкость: ${card.rarity}'),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ),
-                      ),
+                        );
+                      },
                     ),
-                    Container(
-                      height: 3,
-                      color: Colors.black,
-                    ),
-                    Container(
-                      height: 32,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFD6A067),
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(5.0),
-                          bottomRight: Radius.circular(5.0),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: List.generate(4, (i) => Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 1.0),
-                          child: Image.asset(
-                            'assets/icons/редкость.png',
-                            height: 14,
-                          ),
-                        )),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+      bottomNavigationBar: null,
     );
   }
 } 

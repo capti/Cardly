@@ -1,7 +1,59 @@
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
+import '../models/notification_model.dart' as app_notification;
+import '../utils/error_formatter.dart';
 
-class NotificationsModal extends StatelessWidget {
+class NotificationsModal extends StatefulWidget {
   const NotificationsModal({super.key});
+
+  @override
+  _NotificationsModalState createState() => _NotificationsModalState();
+}
+
+class _NotificationsModalState extends State<NotificationsModal> {
+  late bool _isLoading;
+  late List<app_notification.Notification> _notifications;
+  late String _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _isLoading = true;
+    _notifications = [];
+    _error = '';
+    _loadNotifications();
+  }
+
+  Future<void> _loadNotifications() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      final notifications = await ApiService().getNotifications();
+      
+      setState(() {
+        _notifications = notifications;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _error = ErrorFormatter.formatError(e);
+      });
+    }
+  }
+
+  Future<void> _handleNotificationTap(app_notification.Notification notification) async {
+    try {
+      final redirectUrl = await ApiService().navigateToNotification(notification.notification_ID);
+      Navigator.pushNamed(context, redirectUrl);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(ErrorFormatter.formatError(e))),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,56 +82,25 @@ class NotificationsModal extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16.0),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: 10, // Dummy count for demonstration
-                    itemBuilder: (context, index) {
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 12.0),
-                        padding: const EdgeInsets.all(12.0),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFEAD7C3),
-                          borderRadius: BorderRadius.circular(8.0),
-                          border: Border.all(color: Colors.black, width: 1),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Text(
-                                  '${index + 1} мин назад',
-                                  style: const TextStyle(
-                                    color: Colors.black54,
-                                    fontSize: 12.0,
-                                  ),
+                _isLoading 
+                    ? const Center(child: CircularProgressIndicator())
+                    : _error.isNotEmpty
+                        ? Center(child: Text(_error))
+                        : _notifications.isEmpty
+                            ? const Center(child: Text('Нет уведомлений'))
+                            : Expanded(
+                                child: ListView.builder(
+                                  itemCount: _notifications.length,
+                                  itemBuilder: (context, index) {
+                                    final notification = _notifications[index];
+                                    return ListTile(
+                                      title: Text(notification.title),
+                                      subtitle: Text(_formatDate(notification.timestamp.toIso8601String())),
+                                      onTap: () => _handleNotificationTap(notification),
+                                    );
+                                  },
                                 ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            const Text(
-                              'Заголовок уведомления',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.w500,
                               ),
-                            ),
-                            const SizedBox(height: 4),
-                            const Text(
-                              'Описание уведомления. Здесь может быть текст любой длины, описывающий суть уведомления.',
-                              style: TextStyle(
-                                color: Colors.black87,
-                                fontSize: 14.0,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ),
               ],
             ),
           ),
@@ -110,5 +131,10 @@ class NotificationsModal extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _formatDate(String dateStr) {
+    final date = DateTime.parse(dateStr);
+    return '${date.day}.${date.month}.${date.year} ${date.hour}:${date.minute}';
   }
 } 

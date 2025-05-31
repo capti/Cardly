@@ -4,6 +4,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
 import '../models/card_model.dart';
 import '../models/shop_model.dart';
+import '../models/theme_model.dart' as app_theme;
+import '../models/achievement_model.dart';
+import '../models/news_model.dart';
+import '../models/quest_model.dart';
+import '../models/notification_model.dart';
+import '../models/trade_model.dart';
 
 class ApiService {
   static const String baseUrl = 'http://87.236.23.130:8080/api';
@@ -368,17 +374,13 @@ class ApiService {
   }
 
   // Магазин
-  Future<List<PackModel>> getAllPacks() async {
+  Future<List<Pack>> getAllPacks() async {
     try {
-      final headers = await getHeaders();
-      final response = await http.get(
-        Uri.parse('$shopUrl/packs'),
-        headers: headers,
-      );
+      final response = await http.get(Uri.parse('$baseUrl/shop/packs'));
 
       if (response.statusCode == 200) {
         final List<dynamic> jsonList = json.decode(response.body);
-        return jsonList.map((json) => PackModel.fromJson(json)).toList();
+        return jsonList.map((json) => Pack.fromJson(json)).toList();
       } else {
         throw Exception('Ошибка при получении списка наборов: ${response.body}');
       }
@@ -387,16 +389,14 @@ class ApiService {
     }
   }
 
-  Future<PackModel> getPackDetails(int packId) async {
+  Future<Pack> getPackDetails(int packId) async {
     try {
-      final headers = await getHeaders();
       final response = await http.get(
-        Uri.parse('$shopUrl/packs/$packId'),
-        headers: headers,
+        Uri.parse('$baseUrl/shop/packs/$packId'),
       );
 
       if (response.statusCode == 200) {
-        return PackModel.fromJson(json.decode(response.body));
+        return Pack.fromJson(json.decode(response.body));
       } else {
         throw Exception('Ошибка при получении деталей набора: ${response.body}');
       }
@@ -405,16 +405,19 @@ class ApiService {
     }
   }
 
-  Future<PurchasePackResponse> buyPack(int packId) async {
+  Future<Map<String, dynamic>> buyPack(int packId) async {
     try {
       final headers = await getHeaders();
       final response = await http.post(
-        Uri.parse('$shopUrl/packs/$packId/buy'),
+        Uri.parse('$baseUrl/shop/packs/$packId/buy'),
         headers: headers,
       );
 
       if (response.statusCode == 200) {
-        return PurchasePackResponse.fromJson(json.decode(response.body));
+        return json.decode(response.body);
+      } else if (response.statusCode == 402) {
+        final error = json.decode(response.body);
+        throw Exception('Недостаточно средств. Требуется: ${error['requiredAmount']}');
       } else {
         throw Exception('Ошибка при покупке набора: ${response.body}');
       }
@@ -423,57 +426,563 @@ class ApiService {
     }
   }
 
-  Future<List<CoinOfferModel>> getAllCoinOffers() async {
+  Future<Map<String, dynamic>> openPack(int packId) async {
     try {
       final headers = await getHeaders();
-      final response = await http.get(
-        Uri.parse('$shopUrl/coins/offers'),
+      final response = await http.post(
+        Uri.parse('$baseUrl/shop/packs/$packId/open'),
         headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('Ошибка при открытии набора: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  Future<List<CoinOffer>> getCoinOffers() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/shop/coins/offers'),
       );
 
       if (response.statusCode == 200) {
         final List<dynamic> jsonList = json.decode(response.body);
-        return jsonList.map((json) => CoinOfferModel.fromJson(json)).toList();
+        return jsonList.map((json) => CoinOffer.fromJson(json)).toList();
       } else {
-        throw Exception('Ошибка при получении списка предложений монет: ${response.body}');
+        throw Exception('Ошибка при получении предложений монет: ${response.body}');
       }
     } catch (e) {
       throw Exception('Ошибка сети: $e');
     }
   }
 
-  Future<CoinOfferModel> getCoinOfferDetails(int offerId) async {
+  Future<CoinOffer> getCoinOfferDetails(int offerId) async {
     try {
-      final headers = await getHeaders();
       final response = await http.get(
-        Uri.parse('$shopUrl/coins/offers/$offerId'),
-        headers: headers,
+        Uri.parse('$baseUrl/shop/coins/offers/$offerId'),
       );
 
       if (response.statusCode == 200) {
-        return CoinOfferModel.fromJson(json.decode(response.body));
+        return CoinOffer.fromJson(json.decode(response.body));
       } else {
-        throw Exception('Ошибка при получении деталей предложения монет: ${response.body}');
+        throw Exception('Ошибка при получении деталей предложения: ${response.body}');
       }
     } catch (e) {
       throw Exception('Ошибка сети: $e');
     }
   }
 
-  Future<PurchaseCoinsResponse> purchaseCoins(int offerId, String redirectUrl) async {
+  Future<String> purchaseCoins(int offerId, String redirectUrl) async {
     try {
       final headers = await getHeaders();
       final response = await http.post(
-        Uri.parse('$shopUrl/coins/offers/$offerId/purchase'),
+        Uri.parse('$baseUrl/shop/coins/offers/$offerId/purchase'),
         headers: headers,
         body: json.encode({'redirectUrl': redirectUrl}),
       );
 
       if (response.statusCode == 200) {
-        return PurchaseCoinsResponse.fromJson(json.decode(response.body));
+        final data = json.decode(response.body);
+        return data['paymentUrl'];
       } else {
         throw Exception('Ошибка при покупке монет: ${response.body}');
       }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  // Генерация карт
+  Future<List<app_theme.Theme>> getCardGenerationThemes() async {
+    try {
+      final headers = await getHeaders();
+      final response = await http.get(
+        Uri.parse('$baseUrl/home/generate-card/themes'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonList = json.decode(response.body);
+        return jsonList.map((json) => app_theme.Theme.fromJson(json)).toList();
+      } else {
+        throw Exception('Ошибка при получении тем: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> generateCard(int themeId) async {
+    try {
+      final headers = await getHeaders();
+      final response = await http.post(
+        Uri.parse('$baseUrl/home/generate-card'),
+        headers: headers,
+        body: json.encode({'theme_ID': themeId}),
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else if (response.statusCode == 402) {
+        final error = json.decode(response.body);
+        throw Exception('Недостаточно средств. Требуется: ${error['requiredAmount']}');
+      } else {
+        throw Exception('Ошибка при генерации карты: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  // Профиль
+  Future<Map<String, dynamic>> getProfile() async {
+    try {
+      final headers = await getHeaders();
+      final response = await http.get(
+        Uri.parse('$baseUrl/profile'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('Ошибка при получении профиля: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  Future<List<Achievement>> getAchievements() async {
+    try {
+      final headers = await getHeaders();
+      final response = await http.get(
+        Uri.parse('$baseUrl/profile/achievements'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return (data['achievements'] as List)
+            .map((json) => Achievement.fromJson(json))
+            .toList();
+      } else {
+        throw Exception('Ошибка при получении достижений: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  Future<bool> addAchievementToFavorites(int achievementId) async {
+    try {
+      final headers = await getHeaders();
+      final response = await http.post(
+        Uri.parse('$baseUrl/profile/achievements/$achievementId/favorite-add'),
+        headers: headers,
+      );
+
+      return response.statusCode == 200;
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  Future<bool> removeAchievementFromFavorites(int achievementId) async {
+    try {
+      final headers = await getHeaders();
+      final response = await http.delete(
+        Uri.parse('$baseUrl/profile/achievements/$achievementId/favorite-delete'),
+        headers: headers,
+      );
+
+      return response.statusCode == 200;
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> getProfileSettings() async {
+    try {
+      final headers = await getHeaders();
+      final response = await http.get(
+        Uri.parse('$baseUrl/profile/settings'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('Ошибка при получении настроек: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> updateProfileSettings(Map<String, dynamic> settings) async {
+    try {
+      final headers = await getHeaders();
+      final response = await http.put(
+        Uri.parse('$baseUrl/profile/settings-change'),
+        headers: headers,
+        body: json.encode(settings),
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('Ошибка при обновлении настроек: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  // Другие профили
+  Future<Map<String, dynamic>> getOtherProfile(int userId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/other-profile/$userId'),
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('Ошибка при получении профиля: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  Future<List<Achievement>> getOtherProfileAchievements(int userId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/other-profile/$userId/achievements'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return (data['achievements'] as List)
+            .map((json) => Achievement.fromJson(json))
+            .toList();
+      } else {
+        throw Exception('Ошибка при получении достижений: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> getOtherProfileInventory(int userId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/other-profile/$userId/inventory'),
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else if (response.statusCode == 403) {
+        throw Exception('Инвентарь скрыт');
+      } else {
+        throw Exception('Ошибка при получении инвентаря: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  Future<bool> reportUser(int userId, String reason, {String? comment}) async {
+    try {
+      final headers = await getHeaders();
+      final response = await http.post(
+        Uri.parse('$baseUrl/other-profile/$userId/report'),
+        headers: headers,
+        body: json.encode({
+          'reason': reason,
+          if (comment != null) 'comment': comment,
+        }),
+      );
+
+      return response.statusCode == 200;
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  // Новости
+  Future<List<News>> getNews() async {
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/home/news'));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonList = json.decode(response.body);
+        return jsonList.map((json) => News.fromJson(json)).toList();
+      } else {
+        throw Exception('Ошибка при получении новостей: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  Future<News> getNewsDetails(int newsId) async {
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/home/news/$newsId'));
+
+      if (response.statusCode == 200) {
+        return News.fromJson(json.decode(response.body));
+      } else {
+        throw Exception('Ошибка при получении новости: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  // Квесты
+  Future<Map<String, List<Quest>>> getQuests() async {
+    try {
+      final headers = await getHeaders();
+      final response = await http.get(
+        Uri.parse('$baseUrl/home/quests'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return {
+          'dailyQuests': (data['dailyQuests'] as List)
+              .map((json) => Quest.fromJson(json))
+              .toList(),
+          'weeklyQuests': (data['weeklyQuests'] as List)
+              .map((json) => Quest.fromJson(json))
+              .toList(),
+        };
+      } else {
+        throw Exception('Ошибка при получении квестов: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  Future<Quest> changeQuestStatus(int questId) async {
+    try {
+      final headers = await getHeaders();
+      final response = await http.post(
+        Uri.parse('$baseUrl/home/quests/$questId/change-status'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return Quest.fromJson(data['quest']);
+      } else {
+        throw Exception('Ошибка при изменении статуса квеста: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> claimQuestReward(String questType) async {
+    try {
+      final headers = await getHeaders();
+      final response = await http.post(
+        Uri.parse('$baseUrl/home/quests/claim-reward'),
+        headers: headers,
+        body: json.encode({'questType': questType}),
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('Ошибка при получении награды: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  // Уведомления
+  Future<List<Notification>> getNotifications() async {
+    try {
+      final headers = await getHeaders();
+      final response = await http.get(
+        Uri.parse('$baseUrl/home/notifications'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonList = json.decode(response.body);
+        return jsonList.map((json) => Notification.fromJson(json)).toList();
+      } else {
+        throw Exception('Ошибка при получении уведомлений: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  Future<Notification> getNotificationDetails(int notificationId) async {
+    try {
+      final headers = await getHeaders();
+      final response = await http.get(
+        Uri.parse('$baseUrl/home/notifications/$notificationId'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        return Notification.fromJson(json.decode(response.body));
+      } else {
+        throw Exception('Ошибка при получении уведомления: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  Future<String> navigateToNotification(int notificationId) async {
+    try {
+      final headers = await getHeaders();
+      final response = await http.post(
+        Uri.parse('$baseUrl/home/notifications/$notificationId/navigate'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['redirectUrl'];
+      } else {
+        throw Exception('Ошибка при переходе по уведомлению: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  // Обмен картами
+  Future<List<Trade>> getAllTrades({String? search}) async {
+    try {
+      String url = '$baseUrl/trades';
+      if (search != null && search.isNotEmpty) {
+        url += '?search=$search';
+      }
+
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonList = json.decode(response.body);
+        return jsonList.map((json) => Trade.fromJson(json)).toList();
+      } else {
+        throw Exception('Ошибка при получении списка обменов: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  Future<Trade> getTradeDetails(int tradeId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/trades/$tradeId'),
+      );
+
+      if (response.statusCode == 200) {
+        return Trade.fromJson(json.decode(response.body));
+      } else {
+        throw Exception('Ошибка при получении деталей обмена: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  Future<Trade> initiateTrade(int offeredCardId, List<int> requestedCardIds) async {
+    try {
+      final headers = await getHeaders();
+      final response = await http.post(
+        Uri.parse('$baseUrl/trades/initiate'),
+        headers: headers,
+        body: json.encode({
+          'offeredCardId': offeredCardId,
+          'requestedCardId': requestedCardIds,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        return Trade.fromJson(json.decode(response.body));
+      } else {
+        throw Exception('Ошибка при создании обмена: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  Future<List<Trade>> getMyTrades() async {
+    try {
+      final headers = await getHeaders();
+      final response = await http.get(
+        Uri.parse('$baseUrl/trades/my'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonList = json.decode(response.body);
+        return jsonList.map((json) => Trade.fromJson(json)).toList();
+      } else {
+        throw Exception('Ошибка при получении моих обменов: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  Future<bool> acceptTrade(int tradeId) async {
+    try {
+      final headers = await getHeaders();
+      final response = await http.post(
+        Uri.parse('$baseUrl/trades/$tradeId/accept'),
+        headers: headers,
+      );
+
+      return response.statusCode == 200;
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  Future<bool> rejectTrade(int tradeId) async {
+    try {
+      final headers = await getHeaders();
+      final response = await http.post(
+        Uri.parse('$baseUrl/trades/$tradeId/reject'),
+        headers: headers,
+      );
+
+      return response.statusCode == 200;
+    } catch (e) {
+      throw Exception('Ошибка сети: $e');
+    }
+  }
+
+  Future<bool> cancelTrade(int tradeId) async {
+    try {
+      final headers = await getHeaders();
+      final response = await http.post(
+        Uri.parse('$baseUrl/trades/$tradeId/cancel'),
+        headers: headers,
+      );
+
+      return response.statusCode == 200;
     } catch (e) {
       throw Exception('Ошибка сети: $e');
     }

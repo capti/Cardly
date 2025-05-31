@@ -1,130 +1,82 @@
 import 'package:flutter/material.dart';
 import '../models/achievement_model.dart';
+import '../services/api_service.dart';
+import '../utils/error_formatter.dart';
 
-class AchievementsScreen extends StatelessWidget {
-  const AchievementsScreen({super.key});
+class AchievementsScreen extends StatefulWidget {
+  final bool isOtherUser;
+  final int userId;
+
+  const AchievementsScreen({
+    Key? key, 
+    required this.isOtherUser, 
+    required this.userId
+  }) : super(key: key);
+
+  @override
+  _AchievementsScreenState createState() => _AchievementsScreenState();
+}
+
+class _AchievementsScreenState extends State<AchievementsScreen> {
+  late bool _isLoading;
+  late List<Achievement> _achievements;
+  late String _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _isLoading = true;
+    _achievements = [];
+    _error = '';
+    _loadAchievements();
+  }
+
+  Future<void> _loadAchievements() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      final achievements = widget.isOtherUser 
+          ? await ApiService().getOtherProfileAchievements(widget.userId)
+          : await ApiService().getAchievements();
+      
+      setState(() {
+        _achievements = achievements;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _error = ErrorFormatter.formatError(e);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final List<Achievement> achievements = List.generate(
-      10,
-      (index) => Achievement(
-        id: 'achievement_$index',
-        title: 'Достижение ${index + 1}',
-        description: 'Описание достижения ${index + 1}',
-        requirement: 'что нужно для достижения',
-        iconPath: 'assets/icons/достижение.png',
-        isCompleted: false,
-        progress: 0.0,
-      ),
-    );
-
     return Scaffold(
-      backgroundColor: const Color(0xFFFBF6EF), // Бежевый фон
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Back button and title
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                children: [
-                  Container(
-                    width: 40.0,
-                    height: 40.0,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: const Color(0xFFD6A067),
-                    ),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(10.0),
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Icon(
-                        Icons.arrow_back,
-                        color: Colors.black,
-                        size: 29.0,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  const Text(
-                    'Достижения',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Jost',
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // Achievements list
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: achievements.length,
-                itemBuilder: (context, index) {
-                  final achievement = achievements[index];
-                  return Card(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    color: const Color(0xFFEAD7C3),
-                    elevation: 0,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        children: [
-                          // Achievement icon using asset
-                          Container(
-                            width: 40,
-                            height: 40,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                            ),
-                            child: Image.asset(
-                              achievement.iconPath,
-                              width: 40,
-                              height: 40,
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          // Achievement details
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  achievement.title,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'Jost',
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  achievement.requirement,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey[600],
-                                    fontFamily: 'Jost',
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
+      appBar: AppBar(
+        title: Text('Достижения${widget.isOtherUser ? ' игрока' : ''}'),
       ),
+      body: _isLoading 
+          ? const Center(child: CircularProgressIndicator())
+          : _error.isNotEmpty
+              ? Center(child: Text(_error))
+              : ListView.builder(
+                  itemCount: _achievements.length,
+                  itemBuilder: (context, index) {
+                    final achievement = _achievements[index];
+                    return ListTile(
+                      leading: Image.network(achievement.imageURL),
+                      title: Text(achievement.name),
+                      subtitle: Text(achievement.description),
+                      trailing: achievement.isCompleted
+                          ? const Icon(Icons.check_circle, color: Colors.green)
+                          : const Icon(Icons.lock, color: Colors.grey),
+                    );
+                  },
+                ),
     );
   }
 }
