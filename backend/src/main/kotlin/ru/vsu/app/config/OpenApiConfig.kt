@@ -32,13 +32,13 @@ class OpenApiConfig {
 
     private fun getApiInfo(): Info {
         return Info()
-            .title("REST API Приложения")
-            .description("API для аутентификации, сброса пароля и получения информации о пользователе")
+            .title("REST API Cardly")
+            .description("API для взаимодействия с приложением Cardly")
             .version("1.0")
             .contact(
                 Contact()
-                    .name("Anastasia")
-                    .email("example@example.com")
+                    .name("Anna Dobrova")
+                    .email("anyaadobrova@gmail.com")
             )
     }
 } 

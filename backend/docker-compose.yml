@@ -1,18 +1,19 @@
 services:
   app:
+    container_name: cardly_app
     build: .
     ports:
       - "8080:8080"
-    environment:
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_NAME=auth_db
-      - DB_USER=appuser
-      - DB_PASSWORD=password
+    env_file:
+      - .env
     depends_on:
       - db
+    networks:
+      - backend
+      - monitoring
 
   db:
+    container_name: cardly_db
     image: postgres:14
     ports:
       - "5432:5432"
@@ -21,7 +22,90 @@ services:
       - POSTGRES_USER=appuser
       - POSTGRES_PASSWORD=password
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  prometheus:
+    container_name: cardly_prometheus
+    image: prom/prometheus
+    volumes:
+      - ./configs/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - monitoring
+
+  grafana:
+    container_name: cardly_grafana
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./configs/grafana/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    networks:
+      - monitoring
+  
+  node-exporter:
+    container_name: cardly_node_exporter
+    image: prom/node-exporter
+    ports:
+      - "9100:9100"
+    networks:
+      - monitoring
+    restart: unless-stopped
+    pid: "host"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($|/)'
+  flyway:
+    container_name: cardly_flyway
+    image: flyway/flyway
+    depends_on:
+      - db
+    command: -url=jdbc:postgresql://db:5432/auth_db -user=appuser -password=password -connectRetries=10 migrate
+    volumes:
+      - ./db/migration:/flyway/sql
+    networks:
+      - backend
+    # НЕ запускаем автоматически
+    deploy:
+      replicas: 0
+
+  pgadmin:
+    container_name: cardly_pgadmin
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - db
+    networks:
+      - backend
+
 
 volumes:
-  postgres-data: 
+  postgres_data: 
+  grafana_data:
+  pgadmin_data:
+
+networks:
+  backend:
+    driver: bridge
+  monitoring:
+    driver: bridge
