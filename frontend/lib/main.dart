@@ -11,7 +11,8 @@ import 'views/inventory_screen.dart';
 import 'views/shop_screen.dart';
 import 'views/exchanges_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -83,7 +84,22 @@ class MyApp extends StatelessWidget {
             elevation: 0,
           ),
         ),
-        home: const MainScreen(),
+        home: Builder(
+          builder: (context) {
+            return FutureBuilder<bool>(
+              future: Provider.of<AuthController>(context, listen: false).tryAutoLogin(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const SplashScreen();
+                }
+                if (snapshot.hasError) {
+                  return const AuthScreen();
+                }
+                return snapshot.data == true ? const MainScreen() : const AuthScreen();
+              },
+            );
+          },
+        ),
         routes: {
           '/auth': (context) => const AuthScreen(),
           '/login': (context) => const AuthScreen(initialTabIndex: 0),

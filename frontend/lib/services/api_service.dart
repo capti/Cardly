@@ -12,11 +12,11 @@ import '../models/notification_model.dart';
 import '../models/trade_model.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://87.236.23.130:8080/api';
+  static const String baseUrl = 'http://217.114.7.39:8080/api';
   static const String loginUrl = '$baseUrl/auth/login';
   static const String registerUrl = '$baseUrl/auth/register';
-  static const String activateUrl = '$baseUrl/auth/activate';
-  static const String resendActivationUrl = '$baseUrl/auth/resend-activation-code';
+  static const String activateUrl = '$baseUrl/auth/verify';
+  static const String resendActivationUrl = '$baseUrl/auth/resend-code';
   static const String forgotPasswordUrl = '$baseUrl/auth/forgot-password';
   static const String resetPasswordUrl = '$baseUrl/auth/reset-password';
   
@@ -81,7 +81,7 @@ class ApiService {
     }
   }
   
-  Future<bool> register(String email, String username, String password) async {
+  Future<Map<String, dynamic>> register(String email, String username, String password) async {
     try {
       print('Отправка запроса на регистрацию: $registerUrl');
       print('Данные запроса: email=$email, username=$username, password=${password.replaceAll(RegExp(r'.'), '*')}');
@@ -103,11 +103,11 @@ class ApiService {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseData = json.decode(response.body);
-        final success = responseData['success'] ?? false;
+        final tempToken = responseData['tempToken'];
         final message = responseData['message'] ?? 'Пользователь успешно зарегистрирован';
         
-        print('Результат регистрации: $message (успех: $success)');
-        return success;
+        print('Результат регистрации: $message (tempToken: $tempToken)');
+        return responseData;
       } else {
         final errorData = json.decode(response.body);
         final errorMessage = errorData['message'] ?? 'Ошибка регистрации. Попробуйте снова.';
@@ -136,18 +136,19 @@ class ApiService {
     await prefs.remove('auth_token');
   }
   
-  Future<bool> activateAccount(String email, String code) async {
+  Future<UserModel> activateAccount(String tempToken, String code) async {
     try {
       print('Отправка запроса на активацию аккаунта: $activateUrl');
-      print('Данные запроса: email=$email, code=$code');
+      print('Данные запроса: tempToken=$tempToken, code=$code');
+      
+      final headers = await getHeaders();
+      headers['Content-Type'] = 'application/json';
       
       final response = await http.post(
         Uri.parse(activateUrl),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: headers,
         body: json.encode({
-          'email': email,
+          'tempToken': tempToken,
           'code': code,
         }),
       );
@@ -157,11 +158,16 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        final success = responseData['success'] ?? false;
-        final message = responseData['message'] ?? 'Операция выполнена успешно';
+        final userModel = UserModel.fromJson(responseData);
         
-        print('Результат активации: $message (успех: $success)');
-        return success;
+        if (userModel.token != null) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('auth_token', userModel.token!);
+          print('Токен успешно сохранен');
+        }
+        
+        print('Аккаунт успешно активирован для: ${userModel.email}');
+        return userModel;
       } else {
         final errorData = json.decode(response.body);
         final errorMessage = errorData['message'] ?? 'Ошибка активации аккаунта. Попробуйте снова.';
@@ -179,11 +185,12 @@ class ApiService {
       print('Отправка запроса на повторную отправку кода: $resendActivationUrl');
       print('Данные запроса: email=$email');
       
+      final headers = await getHeaders();
+      headers['Content-Type'] = 'application/json';
+      
       final response = await http.post(
         Uri.parse(resendActivationUrl),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: headers,
         body: json.encode({
           'email': email,
         }),

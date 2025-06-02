@@ -2,18 +2,21 @@ import 'package:flutter/material.dart';
 import '../models/user_model.dart';
 import '../services/api_service.dart';
 import '../views/home_screen.dart';
+import '../views/email_verification_screen.dart';
+import '../main.dart';
 
 class AuthController with ChangeNotifier {
   UserModel? _currentUser;
   bool _isLoading = false;
   String? _token;
+  String? _tempToken;
   final ApiService _apiService = ApiService();
 
   UserModel? get currentUser => _currentUser;
   bool get isLoading => _isLoading;
   bool get isAuthenticated => _token != null;
 
-  static const String _baseUrl = 'http://87.236.23.130:8080/api';
+  static const String _baseUrl = 'http://217.114.7.39:8080/api';
   static const String _loginUrl = '$_baseUrl/auth/login';
 
   static const String loginError = 'Неверный логин или пароль';
@@ -54,7 +57,7 @@ class AuthController with ChangeNotifier {
 
       if (context != null) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          MaterialPageRoute(builder: (context) => const MainScreen()),
         );
       }
     } catch (e) {
@@ -71,21 +74,28 @@ class AuthController with ChangeNotifier {
     notifyListeners();
 
     try {
-      final success = await _apiService.register(email, username, password);
+      final response = await _apiService.register(email, username, password);
       
-      if (success) {
-        _currentUser = UserModel(
-          email: email,
-          username: username,
-          isEmailVerified: false,
-        );
-      }
+      _tempToken = response['tempToken'];
+      await _apiService.saveToken(_tempToken!);
+      _currentUser = UserModel(
+        email: email,
+        username: username,
+        isEmailVerified: false,
+      );
       
       _isLoading = false;
       notifyListeners();
 
-      if (context != null && success) {
-
+      if (context != null && _tempToken != null) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => EmailVerificationScreen(
+              email: email,
+              tempToken: _tempToken!,
+            ),
+          ),
+        );
       }
     } catch (e) {
       _isLoading = false;
@@ -96,34 +106,35 @@ class AuthController with ChangeNotifier {
     }
   }
 
-  Future<void> verifyEmail(String email, String code, {BuildContext? context}) async {
+  Future<void> verifyEmail(String tempToken, String code, {BuildContext? context}) async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      final success = await _apiService.activateAccount(email, code);
+      final userModel = await _apiService.activateAccount(tempToken, code);
       
-      if (success && _currentUser != null) {
-        _currentUser = UserModel(
-          email: _currentUser!.email,
-          username: _currentUser!.username,
-          token: _currentUser!.token,
-          isEmailVerified: true,
-        );
+      _currentUser = userModel;
+      _token = userModel.token;
+      if (_token != null) {
+        await _apiService.saveToken(_token!);
+      }
+      _tempToken = null;
+      await _apiService.removeToken();
+      if (_token != null) {
+        await _apiService.saveToken(_token!);
       }
       
       _isLoading = false;
       notifyListeners();
       
-      if (context != null && success) {
-
+      if (context != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Email успешно подтвержден')),
         );
 
-        if (_token == null) {
-          Navigator.of(context).popUntil((route) => route.isFirst);
-        }
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const MainScreen()),
+        );
       }
     } catch (e) {
       _isLoading = false;

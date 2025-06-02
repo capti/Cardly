@@ -82,17 +82,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
           context: context,
         );
         
-        if (!mounted) return;
-        
-        // Переход на экран подтверждения email
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => EmailVerificationScreen(
-              email: _registerEmailController.text.trim(),
-            ),
-          ),
-        );
+        // Убираем навигацию отсюда, так как она теперь происходит в AuthController
       } catch (e) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
