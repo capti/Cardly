@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.io.Decoders
+import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.userdetails.UserDetails
@@ -22,6 +23,16 @@ class JwtService {
 
     fun extractUsername(token: String): String {
         return extractClaim(token) { obj: Claims -> obj.subject }
+    }
+
+    fun extractUsernameIgnoreExpiration(token: String): String? {
+        return try {
+            extractClaim(token) { it.subject }
+        } catch (ex: ExpiredJwtException) {
+            ex.claims.subject // достаём email из протухшего токена
+        } catch (ex: Exception) {
+            null
+        }
     }
 
     fun <T> extractClaim(token: String, claimsResolver: (Claims) -> T): T {
@@ -49,7 +60,7 @@ class JwtService {
         return username == userDetails.username && !isTokenExpired(token)
     }
 
-    private fun isTokenExpired(token: String): Boolean {
+    fun isTokenExpired(token: String): Boolean {
         return extractExpiration(token).before(Date())
     }
 

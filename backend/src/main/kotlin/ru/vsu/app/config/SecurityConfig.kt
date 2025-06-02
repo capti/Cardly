@@ -15,12 +15,14 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import ru.vsu.app.security.JwtAuthenticationFilter
+import ru.vsu.app.config.PublicEndpointsConfig
 
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
     private val jwtAuthFilter: JwtAuthenticationFilter,
-    private val userDetailsService: UserDetailsService
+    private val userDetailsService: UserDetailsService,
+    private val publicEndpointsConfig: PublicEndpointsConfig
 ) {
 
     @Bean
@@ -28,17 +30,7 @@ class SecurityConfig(
         http
             .csrf { it.disable() }
             .authorizeHttpRequests {
-                it.requestMatchers(
-                    "/api/auth/register",
-                    "/api/auth/login",
-                    "/api/auth/forgot-password",
-                    "/api/auth/reset-password",
-                    "/api/auth/activate",
-                    "/v3/api-docs/**",
-                    "/swagger-ui/**",
-                    "/swagger-ui.html",
-                    "/webjars/**"
-                ).permitAll()
+                it.requestMatchers(*publicEndpointsConfig.endpoints.toTypedArray(), *publicEndpointsConfig.passiveTokenEndpoints.toTypedArray()).permitAll()
                     .anyRequest().authenticated()
             }
             .sessionManagement {
