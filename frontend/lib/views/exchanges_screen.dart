@@ -103,6 +103,7 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
                 InkWell(
                   onTap: () {
                     if (AuthUtils.checkGuestAccess(context, 'create_exchange_screen')) {
+                      AnalyticsService.trackExchange();
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => const CreateExchangeScreen()),
@@ -651,6 +652,7 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
   Future<void> _acceptTrade(Trade trade) async {
     try {
       await ApiService().acceptTrade(trade.trade_ID);
+      AnalyticsService.trackExchangeComplete();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Обмен принят')),
       );

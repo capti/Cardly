@@ -162,6 +162,7 @@ class _CreateCardScreenState extends State<CreateCardScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
+                  AnalyticsService.trackCardGeneration();
                   // Логика создания карточки
                 },
                 style: ElevatedButton.styleFrom(
