@@ -36,4 +36,14 @@ class AnalyticsService {
       ),
     );
   }
+
+  static void trackError(String errorName, String errorMessage) {
+    AppMetrica.reportError(
+      message: errorName,
+      errorDescription: AppMetricaErrorDescription.fromObjectAndStackTrace(
+        errorMessage,
+        StackTrace.current,
+      ),
+    );
+  }
 } 

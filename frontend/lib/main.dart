@@ -141,6 +141,8 @@ class _MainScreenState extends State<MainScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _pageController.jumpToPage(_currentIndex);
+        // Track initial screen view
+        AnalyticsService.trackScreenView(_screenNames[_currentIndex]);
         if (widget.notification != null) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -211,6 +213,8 @@ class _MainScreenState extends State<MainScreen> {
       _currentIndex = index;
     });
     _pageController.jumpToPage(index);
+    // Track screen view when user navigates
+    AnalyticsService.trackScreenView(_screenNames[index]);
   }
 
   @override
