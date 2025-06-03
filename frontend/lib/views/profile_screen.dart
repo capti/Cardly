@@ -8,6 +8,9 @@ import 'achievements_screen.dart';
 import 'profile_image_dialog.dart';
 import '../services/api_service.dart';
 import '../utils/error_formatter.dart';
+import '../utils/auth_utils.dart';
+import 'package:provider/provider.dart';
+import '../controllers/auth_controller.dart';
 
 class ProfileScreen extends StatefulWidget {
   final bool isOtherUser;
@@ -108,6 +111,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (Provider.of<AuthController>(context).currentUser?.isGuest ?? false) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!AuthUtils.checkGuestAccess(context, 'profile_screen')) {
+          Navigator.of(context).pop();
+        }
+      });
+      return Container(); // Return empty container while checking
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFFFBF6EF),
       appBar: AppBar(

@@ -4,6 +4,7 @@ import 'shop_screen.dart';
 import 'exchanges_screen.dart';
 import 'inventory_screen.dart';
 import 'profile_screen.dart';
+import '../utils/auth_utils.dart';
 
 class CreateCardScreen extends StatefulWidget {
   const CreateCardScreen({super.key});
@@ -17,6 +18,16 @@ class _CreateCardScreenState extends State<CreateCardScreen> {
   int _currentIndex = 0;
   final List<String> _categories = ['Категория 1', 'Категория 2', 'Категория 3', 'Категория 4'];
   String _selectedCategory = 'Выберите категорию';
+  
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!AuthUtils.checkGuestAccess(context, 'create_card_screen')) {
+        Navigator.of(context).pop();
+      }
+    });
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -33,10 +44,12 @@ class _CreateCardScreenState extends State<CreateCardScreen> {
             child: InkWell(
               borderRadius: BorderRadius.circular(20.0),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ProfileScreen()),
-                );
+                if (AuthUtils.checkGuestAccess(context, 'profile_screen')) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                  );
+                }
               },
               child: Image.asset('assets/icons/профиль.png', height: 22),
             ),

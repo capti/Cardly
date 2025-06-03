@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cardly/views/create_exchange_screen.dart'; // Import to reuse _buildExchangeCardVisual
 import 'package:cardly/views/exchanges_screen.dart'; // Import ExchangeItem
+import 'package:cardly/main.dart'; // Import MainScreen
 
 class ExchangeProposalScreen extends StatelessWidget {
   final ExchangeItem exchangeItem;
@@ -78,66 +79,85 @@ class ExchangeProposalScreen extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 130.0), // Increased space before buttons
-            // Buttons
-            ElevatedButton(
-              onPressed: () {
-                // TODO: Implement logic for 'Обменяться картой из списка'
-                 Navigator.pop(context); // Close ExchangeProposalScreen
-                 Navigator.pushAndRemoveUntil(
-                   context,
-                   MaterialPageRoute(
-                     builder: (context) => const ExchangesScreen(
-                       notification: 'Обмен успешно совершен', // Notification message
-                     ),
-                   ),
-                   (route) => false,
-                 );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFD6A067),
-                foregroundColor: Colors.black,
-                minimumSize: const Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
+            const SizedBox(height: 100.0), // Reduced space before buttons
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width * 0.06, // Reduced padding to make buttons wider
               ),
-              child: Text(
-                exchangeItem.myOfferedCardIds.length == 1 ? 'Обменяться картой из списка' : 'Обменяться картами из списка',
-                style: const TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Roboto',
-                ),
-              ),
-            ),
-            const SizedBox(height: 10.0),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CreateExchangeScreen(
-                      initialExchangeItem: exchangeItem,
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.065, // Match the height from create exchange screen
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const MainScreen(initialIndex: 3, notification: 'Обмен успешно совершен'),
+                          ),
+                          (route) => false,
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFD6A067),
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      ),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          exchangeItem.myOfferedCardIds.length == 1 ? 'Обменяться картой из списка' : 'Обменяться картами из списка',
+                          style: const TextStyle(
+                            fontSize: 18.0, // Slightly smaller font size
+                            fontWeight: FontWeight.w500, // Slightly lighter weight
+                            fontFamily: 'Roboto',
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFD6A067),
-                foregroundColor: Colors.black,
-                minimumSize: const Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              child: Text(
-                exchangeItem.myOfferedCardIds.length == 1 ? 'Предложить другую карту' : 'Предложить другие карты',
-                style: const TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Roboto',
-                ),
+                  const SizedBox(height: 10.0),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.065, // Match the height from create exchange screen
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CreateExchangeScreen(
+                              initialExchangeItem: exchangeItem,
+                            ),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFD6A067),
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      ),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          exchangeItem.myOfferedCardIds.length == 1 ? 'Предложить другую карту' : 'Предложить другие карты',
+                          style: const TextStyle(
+                            fontSize: 18.0, // Slightly smaller font size
+                            fontWeight: FontWeight.w500, // Slightly lighter weight
+                            fontFamily: 'Roboto',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

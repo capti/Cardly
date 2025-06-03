@@ -137,7 +137,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       backgroundColor: const Color(0xFFFBF6EF),
       body: Column(
         children: [
-          const SizedBox(height: 40),
+          const SizedBox(height: 80),
           Image.asset(
             'assets/icons/карты.png',
             height: 80,

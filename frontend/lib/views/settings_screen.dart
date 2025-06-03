@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
+import 'package:provider/provider.dart';
+import '../controllers/auth_controller.dart';
 
 class SettingsDialog extends StatefulWidget {
   const SettingsDialog({super.key});
@@ -105,7 +107,19 @@ class _SettingsDialogState extends State<SettingsDialog> {
                         child: SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed:(){},
+                            onPressed: () async {
+                              try {
+                                await Provider.of<AuthController>(context, listen: false).logout();
+                                if (!mounted) return;
+                                Navigator.of(context).pop(); // Закрываем диалог настроек
+                                Navigator.of(context).pushNamedAndRemoveUntil('/auth', (route) => false);
+                              } catch (e) {
+                                if (!mounted) return;
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Ошибка при выходе: ${e.toString()}')),
+                                );
+                              }
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFFD6A067),
                               foregroundColor: Colors.black,

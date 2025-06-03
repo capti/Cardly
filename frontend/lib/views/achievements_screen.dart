@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/achievement_model.dart';
 import '../services/api_service.dart';
 import '../utils/error_formatter.dart';
+import '../utils/auth_utils.dart';
 
 class AchievementsScreen extends StatefulWidget {
   final bool isOtherUser;
@@ -28,7 +29,13 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
     _isLoading = true;
     _achievements = [];
     _error = '';
-    _loadAchievements();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (AuthUtils.checkGuestAccess(context, 'achievements_screen')) {
+        _loadAchievements();
+      } else {
+        Navigator.of(context).pop();
+      }
+    });
   }
 
   Future<void> _loadAchievements() async {

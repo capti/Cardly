@@ -7,11 +7,13 @@ import 'exchange_proposal_screen.dart';
 import '../services/api_service.dart';
 import '../models/trade_model.dart';
 import '../utils/error_formatter.dart';
+import '../utils/auth_utils.dart';
+import 'package:provider/provider.dart';
+import '../controllers/auth_controller.dart';
 
 class ExchangesScreen extends StatefulWidget {
-  final String? notification;
   final int? initialTabIndex;
-  const ExchangesScreen({super.key, this.notification, this.initialTabIndex});
+  const ExchangesScreen({super.key, this.initialTabIndex});
 
   @override
   State<ExchangesScreen> createState() => _ExchangesScreenState();
@@ -28,49 +30,20 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this, initialIndex: widget.initialTabIndex ?? 0);
-    // Показываем Snackbar, если notification не null
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.notification != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Container(
-              width: 367,
-              height: 61,
-              decoration: BoxDecoration(
-                color: const Color(0xFFEAD7C3),
-                borderRadius: BorderRadius.circular(15.0),
-              ),
-              padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-              child: Center(
-                child: Text(
-                  widget.notification!,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.w500,
-                    fontFamily: 'Jost',
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-            backgroundColor: Colors.transparent,
-            duration: const Duration(seconds: 1),
-            behavior: SnackBarBehavior.floating,
-            margin: EdgeInsets.only(
-              bottom: MediaQuery.of(context).size.height - 200,
-              left: 16,
-              right: 16,
-            ),
-            elevation: 0,
-          ),
-        );
+    _tabController.addListener(_handleTabChange);
+  }
+
+  void _handleTabChange() {
+    if (_tabController.index == 1) { // Мои обмены
+      if (!AuthUtils.checkGuestAccess(context, 'my_exchanges_screen')) {
+        _tabController.animateTo(0); // Возвращаемся на вкладку "Обмен"
       }
-    });
+    }
   }
   
   @override
   void dispose() {
+    _tabController.removeListener(_handleTabChange);
     _tabController.dispose();
     super.dispose();
   }
@@ -82,6 +55,7 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
       appBar: AppBar(
         backgroundColor: const Color(0xFFFBF6EF),
         elevation: 0,
+        automaticallyImplyLeading: false,
         title: Container(
           padding: const EdgeInsets.all(8.0),
         ),
@@ -126,10 +100,12 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
               children: [
                 InkWell(
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const CreateExchangeScreen()),
-                    );
+                    if (AuthUtils.checkGuestAccess(context, 'create_exchange_screen')) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const CreateExchangeScreen()),
+                      );
+                    }
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 12.0),
@@ -164,7 +140,7 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
                 
                 Container(
                   child: IconButton(
-                    icon: Image.asset('assets/icons/поиск.png', height: 32),
+                    icon: Image.asset('assets/icons/поиск.png', height: 26),
                     onPressed: () {
                       showModalBottomSheet(
                         context: context,

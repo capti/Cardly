@@ -10,6 +10,8 @@ import 'views/home_screen.dart';
 import 'views/inventory_screen.dart';
 import 'views/shop_screen.dart';
 import 'views/exchanges_screen.dart';
+import 'utils/auth_utils.dart';
+import 'views/authorization_dialog.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -113,21 +115,75 @@ class MyApp extends StatelessWidget {
 }
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  final int? initialIndex;
+  final String? notification;
+  
+  const MainScreen({
+    super.key,
+    this.initialIndex,
+    this.notification,
+  });
 
   @override
   State<MainScreen> createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _currentIndex = 0;
+  late int _currentIndex;
   final PageController _pageController = PageController();
 
-  final List<Widget> _screens = const [
-    HomeScreen(),
-    InventoryScreen(),
-    ShopScreen(),
-    ExchangesScreen(),
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex ?? 0;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _pageController.jumpToPage(_currentIndex);
+        if (widget.notification != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Container(
+                width: 367,
+                height: 61,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEAD7C3),
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                child: Center(
+                  child: Text(
+                    widget.notification!,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: 'Jost',
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+              backgroundColor: Colors.transparent,
+              duration: const Duration(seconds: 1),
+              behavior: SnackBarBehavior.floating,
+              margin: EdgeInsets.only(
+                bottom: MediaQuery.of(context).size.height - 200,
+                left: 16,
+                right: 16,
+              ),
+              elevation: 0,
+            ),
+          );
+        }
+      }
+    });
+  }
+
+  final List<String> _screenNames = [
+    'home_screen',
+    'inventory_screen',
+    'shop_screen',
+    'exchanges_screen',
   ];
 
   @override
@@ -137,6 +193,18 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _onItemTapped(int index) {
+    final authController = Provider.of<AuthController>(context, listen: false);
+    if (authController.currentUser?.isGuest ?? false) {
+      if (!AuthUtils.isGuestAllowedScreen(_screenNames[index])) {
+        showDialog(
+          context: context,
+          barrierDismissible: true,
+          builder: (context) => const AuthorizationDialog(),
+        );
+        return;
+      }
+    }
+    
     setState(() {
       _currentIndex = index;
     });
@@ -145,11 +213,18 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> screens = [
+      const HomeScreen(),
+      const InventoryScreen(),
+      const ShopScreen(),
+      ExchangesScreen(initialTabIndex: _currentIndex == 3 ? 0 : null),
+    ];
+
     return Scaffold(
       body: PageView(
         controller: _pageController,
         physics: const NeverScrollableScrollPhysics(),
-        children: _screens,
+        children: screens,
       ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
