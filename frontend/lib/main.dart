@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'controllers/auth_controller.dart';
+import 'services/analytics_service.dart';
 import 'views/splash_screen.dart';
 import 'views/auth_screen.dart';
 import 'views/email_verification_screen.dart';
@@ -15,6 +16,7 @@ import 'views/authorization_dialog.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await AnalyticsService.initialize();
   runApp(const MyApp());
 }
 

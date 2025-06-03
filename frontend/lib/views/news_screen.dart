@@ -5,6 +5,7 @@ import 'search_players_screen.dart';
 import '../services/api_service.dart';
 import '../models/news_model.dart';
 import '../utils/error_formatter.dart';
+import '../services/analytics_service.dart';
 
 class NewsScreen extends StatefulWidget {
   const NewsScreen({super.key});
@@ -24,6 +25,7 @@ class _NewsScreenState extends State<NewsScreen> {
     _isLoading = true;
     _news = [];
     _error = '';
+    AnalyticsService.trackScreenView('news_screen');
     _loadNews();
   }
 

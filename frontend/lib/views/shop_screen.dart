@@ -10,6 +10,7 @@ import '../utils/error_formatter.dart';
 import '../utils/auth_utils.dart';
 import 'package:provider/provider.dart';
 import '../controllers/auth_controller.dart';
+import '../services/analytics_service.dart';
 
 class ShopScreen extends StatefulWidget {
   const ShopScreen({super.key});
@@ -32,6 +33,7 @@ class _ShopScreenState extends State<ShopScreen> {
     _coinOffers = [];
     _error = '';
     _loadShopData();
+    AnalyticsService.trackScreenView('shop_screen');
   }
 
   Future<void> _loadShopData() async {

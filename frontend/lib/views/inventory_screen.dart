@@ -8,6 +8,7 @@ import '../utils/error_formatter.dart';
 import '../utils/auth_utils.dart';
 import 'package:provider/provider.dart';
 import '../controllers/auth_controller.dart';
+import '../services/analytics_service.dart';
 
 class InventoryScreen extends StatefulWidget {
   final bool isOtherUser;
@@ -41,6 +42,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
     _isLoading = true;
     _cards = [];
     _error = '';
+    AnalyticsService.trackScreenView('inventory_screen');
     _loadInventory();
   }
 

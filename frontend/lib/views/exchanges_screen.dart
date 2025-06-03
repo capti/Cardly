@@ -10,6 +10,7 @@ import '../utils/error_formatter.dart';
 import '../utils/auth_utils.dart';
 import 'package:provider/provider.dart';
 import '../controllers/auth_controller.dart';
+import '../services/analytics_service.dart';
 
 class ExchangesScreen extends StatefulWidget {
   final int? initialTabIndex;
@@ -25,10 +26,11 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
   bool _showSortOptions = false;
   bool _isLoading = false;
   String? _error;
-  
+
   @override
   void initState() {
     super.initState();
+    AnalyticsService.trackScreenView('exchanges_screen');
     _tabController = TabController(length: 2, vsync: this, initialIndex: widget.initialTabIndex ?? 0);
     _tabController.addListener(_handleTabChange);
   }

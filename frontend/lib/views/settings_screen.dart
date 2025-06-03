@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import 'package:provider/provider.dart';
 import '../controllers/auth_controller.dart';
+import '../services/analytics_service.dart';
 
 class SettingsDialog extends StatefulWidget {
   const SettingsDialog({super.key});
@@ -27,6 +28,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
 
   @override
   Widget build(BuildContext context) {
+    AnalyticsService.trackScreenView('settings_dialog');
     return GestureDetector(
       onTapDown: (_) {
         if (_showHint) {

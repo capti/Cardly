@@ -11,6 +11,7 @@ import '../utils/error_formatter.dart';
 import '../utils/auth_utils.dart';
 import 'package:provider/provider.dart';
 import '../controllers/auth_controller.dart';
+import '../services/analytics_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   final bool isOtherUser;
@@ -49,6 +50,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _isLoading = true;
     _error = '';
     _settings = {};
+    AnalyticsService.trackScreenView('profile_screen');
     _loadProfileData();
   }
 

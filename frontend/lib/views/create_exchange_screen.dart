@@ -7,6 +7,7 @@ import 'inventory_screen.dart';
 import 'profile_screen.dart';
 import '../utils/auth_utils.dart';
 import '../main.dart';
+import '../services/analytics_service.dart';
 
 class CreateExchangeScreen extends StatefulWidget {
   final ExchangeItem? initialExchangeItem;
@@ -27,9 +28,11 @@ class _CreateExchangeScreenState extends State<CreateExchangeScreen> {
   Map<String, dynamic>? selectedTopCard;
   List<Map<String, dynamic>> selectedExchangeCards = [];
 
+
   @override
   void initState() {
     super.initState();
+    AnalyticsService.trackScreenView('create_exchange_screen');
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!AuthUtils.checkGuestAccess(context, 'create_exchange_screen')) {
         Navigator.of(context).pop();

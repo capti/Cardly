@@ -9,6 +9,7 @@ import '../utils/error_formatter.dart';
 import '../utils/auth_utils.dart';
 import 'package:provider/provider.dart';
 import '../controllers/auth_controller.dart';
+import '../services/analytics_service.dart';
 
 class QuestsDialogContent extends StatefulWidget {
   const QuestsDialogContent({super.key});
@@ -25,6 +26,7 @@ class _QuestsDialogContentState extends State<QuestsDialogContent> with SingleTi
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this, initialIndex: _selectedTab);
+    AnalyticsService.trackScreenView('quests_dialog_content');
   }
 
   @override
