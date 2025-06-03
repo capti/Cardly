@@ -13,9 +13,9 @@
 // import ru.vsu.app.model.UserEntity
 // import ru.vsu.app.service.InventoryService
 
-//@SecurityRequirement(name = "Bearer Authentication")
 // @RestController
 // @RequestMapping("/api/card")
+// @SecurityRequirement(name = "Bearer Authentication")
 // @Tag(name = "Card", description = "Функции, связанные с карточками пользователя")
 // class CardController(
 //     private val cardService: InventoryService

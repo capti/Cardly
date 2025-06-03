@@ -37,9 +37,9 @@ import jakarta.validation.constraints.Size
 import kotlin.collections.List
 import kotlin.collections.Map
 
-@SecurityRequirement(name = "Bearer Authentication")
 @RestController
 @Validated
+@SecurityRequirement(name = "Bearer Authentication")
 @RequestMapping("\${api.base-path:/api}")
 @Tag(name = "Trades", description = "Операции на странице \"Обменник\"")
 class TradesController() {

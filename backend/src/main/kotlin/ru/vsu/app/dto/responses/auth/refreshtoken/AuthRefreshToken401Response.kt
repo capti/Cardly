@@ -1,4 +1,4 @@
-package ru.vsu.app.dto.responses.auth.requestpassword
+package ru.vsu.app.dto.responses.auth.refreshtoken
 
 import java.util.Objects
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -15,12 +15,16 @@ import io.swagger.v3.oas.annotations.media.Schema
 
 /**
  * 
- * @param error 
+ * @param isAuthenticated 
+ * @param message 
  */
-data class RequestPasswordReset400Response(
+data class AuthRefreshToken401Response(
 
-    @Schema(example = "Некорректный формат email", description = "")
-    @get:JsonProperty("error") val error: kotlin.String? = null
+    @Schema(example = "false", description = "")
+    @get:JsonProperty("isAuthenticated") val isAuthenticated: kotlin.Boolean? = null,
+
+    @Schema(example = "Требуется авторизация", description = "")
+    @get:JsonProperty("message") val message: kotlin.String? = null
     ) {
 
 }

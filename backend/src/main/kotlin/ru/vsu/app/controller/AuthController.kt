@@ -1,29 +1,43 @@
 package ru.vsu.app.controller
 
+import ru.vsu.app.dto.responses.auth.login.LoginUser200Response
 import ru.vsu.app.dto.responses.auth.login.LoginUser400Response
 import ru.vsu.app.dto.responses.auth.login.LoginUser401Response
 import ru.vsu.app.dto.requests.LoginUserRequest
-import ru.vsu.app.dto.responses.auth.AuthCheckGet401Response
+
 import ru.vsu.app.dto.responses.auth.register.RegisterUser200Response
 import ru.vsu.app.dto.responses.auth.register.RegisterUser400Response
 import ru.vsu.app.dto.responses.auth.register.RegisterUser409Response
-import ru.vsu.app.dto.responses.common.InternalServerError
 import ru.vsu.app.dto.requests.RegisterUserRequest
+
+import ru.vsu.app.dto.responses.common.InternalServerError
+
 import ru.vsu.app.dto.responses.auth.requestpassword.RequestPasswordReset200Response
 import ru.vsu.app.dto.responses.auth.requestpassword.RequestPasswordReset400Response
 import ru.vsu.app.dto.responses.auth.requestpassword.RequestPasswordReset404Response
 import ru.vsu.app.dto.requests.RequestPasswordResetRequest
-import ru.vsu.app.dto.responses.auth.verifyemail.ResendVerificationCode200Response
-import ru.vsu.app.dto.requests.ResendVerificationCodeRequest
+
 import ru.vsu.app.dto.responses.auth.requestpassword.ResetPassword200Response
 import ru.vsu.app.dto.responses.auth.requestpassword.ResetPassword400Response
 import ru.vsu.app.dto.requests.ResetPasswordRequest
-import ru.vsu.app.dto.UserDto
+
+import ru.vsu.app.dto.responses.auth.verifyemail.ResendVerificationCode200Response
+import ru.vsu.app.dto.requests.ResendVerificationCodeRequest
+
 import ru.vsu.app.dto.responses.auth.verifyemail.VerifyEmail400Response
 import ru.vsu.app.dto.responses.auth.verifyemail.VerifyEmail410Response
 import ru.vsu.app.dto.requests.VerifyEmailRequest
 
+import ru.vsu.app.dto.responses.auth.AuthCheckGet401Response
+
+import ru.vsu.app.dto.responses.auth.refreshtoken.AuthRefreshToken200Response
+import ru.vsu.app.dto.responses.auth.refreshtoken.AuthRefreshToken401Response
+import ru.vsu.app.dto.requests.AuthRefreshRequest
+
+import ru.vsu.app.dto.UserDto
+
 import ru.vsu.app.service.AuthService
+import ru.vsu.app.service.JwtService
 
 import ru.vsu.app.metrics.AuthMetrics
 
@@ -55,13 +69,14 @@ import jakarta.validation.constraints.Size
 import kotlin.collections.List
 import kotlin.collections.Map
 
-@SecurityRequirement(name = "Bearer Authentication")
 @RestController
 @Validated
 @RequestMapping("\${api.base-path:/api}")
+@SecurityRequirement(name = "Bearer Authentication")
 @Tag(name = "Authentication", description = "Регистрация, вход и управление аккаунтом")
 class AuthController(
     private val authService: AuthService,
+    private val jwtService: JwtService,
     private val authMetrics: AuthMetrics
 ) {
 
@@ -83,33 +98,23 @@ class AuthController(
         produces = ["application/json"]
     )
     fun authCheckGet(): ResponseEntity<Any> {
+        authMetrics.authCheckAttempt()
+        val startTime = System.currentTimeMillis()
+
         val user = authService.getCurrentUser()
-        return if (user != null) {
+        val response: ResponseEntity<Any> = if (user != null) {
+            authMetrics.authCheckAuthorized()
             ResponseEntity.ok(user)
         } else {
+            authMetrics.authCheckUnauthorized()
             ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(AuthCheckGet401Response(false, "Пользователь не авторизован"))
         }
-    }
 
-    @Operation(
-        summary = "Выход из системы",
-        operationId = "authLogoutPost",
-        description = """Завершает текущую сессию пользователя.
-Удаляет сессионную cookie.
-""",
-        responses = [
-            ApiResponse(responseCode = "204", description = "Успешный выход"),
-            ApiResponse(responseCode = "500", description = "Что-то пошло не так", content = [Content(schema = Schema(implementation = InternalServerError::class))]) ],
-        security = [ SecurityRequirement(name = "bearerAuth") ]
-    )
-    @RequestMapping(
-        method = [RequestMethod.POST],
-        value = ["/auth/logout"],
-        produces = ["application/json"]
-    )
-    fun authLogoutPost(): ResponseEntity<Any> {
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+        val durationMs = System.currentTimeMillis() - startTime
+        authMetrics.authCheckDuration(durationMs)
+
+        return response
     }
 
     @Operation(
@@ -119,8 +124,8 @@ class AuthController(
 Требуется валидная существующая сессия.
 """,
         responses = [
-            ApiResponse(responseCode = "200", description = "Сессия успешно обновлена", content = [Content(schema = Schema(implementation = UserDto::class))]),
-            ApiResponse(responseCode = "401", description = "Ошибка аутентификации"),
+            ApiResponse(responseCode = "200", description = "Сессия успешно обновлена", content = [Content(schema = Schema(implementation = AuthRefreshToken200Response::class))]),
+            ApiResponse(responseCode = "401", description = "Ошибка аутентификации", content = [Content(schema = Schema(implementation = AuthRefreshToken401Response::class))]),
             ApiResponse(responseCode = "500", description = "Что-то пошло не так", content = [Content(schema = Schema(implementation = InternalServerError::class))]) ],
         security = [ SecurityRequirement(name = "bearerAuth") ]
     )
@@ -129,21 +134,49 @@ class AuthController(
         value = ["/auth/refresh"],
         produces = ["application/json"]
     )
-    fun authRefreshPost(): ResponseEntity<Any> {
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+    fun authRefreshPost(
+        @Parameter(description = "", required = true)
+        @Valid @RequestBody request: AuthRefreshRequest
+    ): ResponseEntity<Any> {
+        val start = System.currentTimeMillis()
+        authMetrics.refreshAttempt()
+
+        val result = authService.refreshSession(request)
+
+        authMetrics.refreshDuration(System.currentTimeMillis() - start)
+
+        return when (result) {
+            is AuthRefreshToken200Response -> {
+                authMetrics.refreshSuccess()
+                ResponseEntity.ok(result)
+            }
+            is AuthRefreshToken401Response -> {
+                authMetrics.refreshFailure()
+                ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(result)
+            }
+            is InternalServerError -> {
+                authMetrics.refreshFailure()
+                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result)
+            }
+            else -> {
+                authMetrics.refreshFailure()
+                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
+            }
+        }
     }
 
     @Operation(
         summary = "Вход в систему",
         operationId = "loginUser",
         description = """Аутентификация пользователя по email и паролю.
-Если данные введены верно - устанавливает сессионную cookie.
-""",
+    Если данные введены верно — создает сессионную cookie и возвращает данные пользователя.
+    """,
         responses = [
-            ApiResponse(responseCode = "200", description = "Успешный вход", content = [Content(schema = Schema(implementation = UserDto::class))]),
-            ApiResponse(responseCode = "400", description = "Неверный формат email", content = [Content(schema = Schema(implementation = LoginUser400Response::class))]),
-            ApiResponse(responseCode = "401", description = "Неверные учетные данные", content = [Content(schema = Schema(implementation = LoginUser401Response::class))]),
-            ApiResponse(responseCode = "500", description = "Что-то пошло не так", content = [Content(schema = Schema(implementation = InternalServerError::class))]) ]
+            ApiResponse(responseCode = "200", description = "Успешный вход", content = [Content(schema = Schema(implementation = LoginUser200Response::class))]),
+            ApiResponse(responseCode = "400", description = "Неверный формат или данные", content = [Content(schema = Schema(implementation = LoginUser400Response::class))]),
+            ApiResponse(responseCode = "401", description = "Неверные учётные данные", content = [Content(schema = Schema(implementation = LoginUser401Response::class))]),
+            ApiResponse(responseCode = "500", description = "Что-то пошло не так", content = [Content(schema = Schema(implementation = InternalServerError::class))])
+        ]
     )
     @RequestMapping(
         method = [RequestMethod.POST],
@@ -151,8 +184,45 @@ class AuthController(
         produces = ["application/json"],
         consumes = ["application/json"]
     )
-    fun loginUser(@Parameter(description = "", required = true) @Valid @RequestBody loginUserRequest: LoginUserRequest): ResponseEntity<Any> {
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+    fun loginUser(
+        @Parameter(description = "", required = true)
+        @Valid @RequestBody loginUserRequest: LoginUserRequest
+    ): ResponseEntity<Any> {
+        val start = System.currentTimeMillis()
+        authMetrics.loginAttempt()
+
+        val response = try {
+            authService.loginUser(loginUserRequest)
+        } catch (ex: Exception) {
+            authMetrics.loginFailure()
+            authMetrics.loginDuration(System.currentTimeMillis() - start)
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(InternalServerError("Ошибка при попытке входа", ex.message ?: "Неизвестная ошибка"))
+        }
+
+        val duration = System.currentTimeMillis() - start
+        authMetrics.loginDuration(duration)
+
+        return when (response) {
+            is UserDto -> {
+                val token = jwtService.generateToken(response.email)
+
+                authMetrics.loginSuccess(response.userID.toString())
+                ResponseEntity.ok(LoginUser200Response(user = response, accessToken = token))
+            }
+            is LoginUser400Response -> {
+                authMetrics.loginFailure()
+                ResponseEntity.badRequest().body(response)
+            }
+            is LoginUser401Response -> {
+                authMetrics.loginFailure()
+                ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response)
+            }
+            else -> {
+                authMetrics.loginFailure()
+                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
+            }
+        }
     }
 
     @Operation(
@@ -233,8 +303,40 @@ class AuthController(
         produces = ["application/json"],
         consumes = ["application/json"]
     )
-    fun requestPasswordReset(@Parameter(description = "", required = true) @Valid @RequestBody requestPasswordResetRequest: RequestPasswordResetRequest): ResponseEntity<Any> {
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+    fun requestPasswordReset(@Parameter(description = "", required = true) @Valid @RequestBody request: RequestPasswordResetRequest): ResponseEntity<Any> {
+        val start = System.currentTimeMillis()
+        authMetrics.passwordResetAttempt()
+
+        return try {
+            val result = authService.requestPasswordReset(request)
+
+            val duration = System.currentTimeMillis() - start
+            authMetrics.passwordResetDuration(duration)
+
+            when (result) {
+                is RequestPasswordReset200Response -> {
+                    authMetrics.passwordResetSuccess()
+                    ResponseEntity.ok(result)
+                }
+                is RequestPasswordReset404Response -> {
+                    authMetrics.passwordResetFailure()
+                    ResponseEntity.status(HttpStatus.NOT_FOUND).body(result)
+                }
+                is RequestPasswordReset400Response -> {
+                    authMetrics.passwordResetFailure()
+                    ResponseEntity.badRequest().body(result)
+                }
+                else -> {
+                    authMetrics.passwordResetFailure()
+                    ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(InternalServerError(error = "Ошибка: Неожиданный формат ответа"))
+                }
+            }
+        } catch (ex: Exception) {
+            authMetrics.passwordResetFailure()
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(InternalServerError(error = "Ошибка при сбросе пароля: "+ ex.message ?: "Неизвестная ошибка"))
+        }
     }
 
     @Operation(
@@ -301,8 +403,43 @@ class AuthController(
         produces = ["application/json"],
         consumes = ["application/json"]
     )
-    fun resetPassword(@Parameter(description = "", required = true) @Valid @RequestBody resetPasswordRequest: ResetPasswordRequest): ResponseEntity<Any> {
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+    fun resetPassword(
+        @Parameter(description = "", required = true)
+        @Valid @RequestBody resetPasswordRequest: ResetPasswordRequest
+    ): ResponseEntity<Any> {
+        val start = System.currentTimeMillis()
+        authMetrics.resetPasswordAttempt()
+
+        val response = try {
+            authService.resetPassword(resetPasswordRequest)
+        } catch (ex: Exception) {
+            authMetrics.resetPasswordFailure()
+            authMetrics.resetPasswordDuration(System.currentTimeMillis() - start)
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(InternalServerError("Ошибка при сбросе пароля", ex.message ?: "Неизвестная ошибка"))
+        }
+
+        val duration = System.currentTimeMillis() - start
+        authMetrics.resetPasswordDuration(duration)
+
+        return when (response) {
+            is ResetPassword200Response -> {
+                authMetrics.resetPasswordSuccess()
+                ResponseEntity.ok(response)
+            }
+            is ResetPassword400Response -> {
+                authMetrics.resetPasswordValidationError()
+                ResponseEntity.badRequest().body(response)
+            }
+            is InternalServerError -> {
+                authMetrics.resetPasswordFailure()
+                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response)
+            }
+            else -> {
+                authMetrics.resetPasswordFailure()
+                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Неизвестная ошибка")
+            }
+        }
     }
 
     @Operation(

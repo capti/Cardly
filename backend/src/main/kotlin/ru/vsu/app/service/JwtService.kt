@@ -77,8 +77,40 @@ class JwtService {
             .body
     }
 
+    fun generatePasswordResetToken(email: String, code: String): String {
+        val now = Date()
+        val expiration = Date(now.time + 24 * 60 * 60 * 1000) // 24 часа
+
+        return Jwts.builder()
+            .setSubject(email)
+            .claim("code", code)
+            .setIssuedAt(now)
+            .setExpiration(expiration)
+            .signWith(SignatureAlgorithm.HS256, secretKey)
+            .compact()
+    }
+
+    fun parseResetToken(token: String): ResetTokenPayload {
+        val claims = Jwts.parserBuilder()
+            .setSigningKey(secretKey)
+            .build()
+            .parseClaimsJws(token)
+            .body
+
+        return ResetTokenPayload(
+            email = claims.subject,
+            code = claims["code"] as String
+        )
+    }
+
+
     private fun getSigningKey(): Key {
         val keyBytes = Decoders.BASE64.decode(secretKey)
         return Keys.hmacShaKeyFor(keyBytes)
     }
 } 
+
+data class ResetTokenPayload(
+    val email: String,
+    val code: String
+)
