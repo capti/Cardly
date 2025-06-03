@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service
 @Service
 class AuthMetrics(private val metrics: MetricsRegistry) {
 
+    // ===== Авторизация =====
     fun loginAttempt() {
         metrics.count("auth.login.attempt")
     }
@@ -17,9 +18,11 @@ class AuthMetrics(private val metrics: MetricsRegistry) {
         metrics.count("auth.login.failure")
     }
 
-    fun loginDuration(duration: Long, userId: String) {
-        metrics.timer("auth.login.duration", duration, listOf(MetricTags.user(userId)))
+    fun loginDuration(duration: Long) {
+        metrics.timer("auth.login.duration", duration)
     }
+
+    // ===== Регистрация =====
 
     fun registerAttempt() {
         metrics.count("auth.register.attempt")
@@ -44,6 +47,8 @@ class AuthMetrics(private val metrics: MetricsRegistry) {
     fun registerDuration(durationMs: Long) {
         metrics.timer("auth.register.duration", durationMs)
     }
+
+    // ===== Верификация кода Email =====
 
     fun verifyAttempt() {
         metrics.count("auth.verify.attempt")
@@ -73,6 +78,8 @@ class AuthMetrics(private val metrics: MetricsRegistry) {
         }
     }
 
+    // ===== Переотправка кода на Email =====
+
     fun resendVerificationCodeAttempt() {
         metrics.count("auth.resend_code.attempt")
     }
@@ -91,6 +98,79 @@ class AuthMetrics(private val metrics: MetricsRegistry) {
 
     fun resendVerificationCodeDuration(durationMs: Long) {
         metrics.timer("auth.resend_code.duration", durationMs)
+    }
+
+    // ===== Сброс пароля через токен и код =====
+    fun resetPasswordAttempt() {
+        metrics.count("auth.reset.password.attempt")
+    }
+
+    
+    fun resetPasswordDuration(durationMs: Long) {
+        metrics.timer("auth.reset.password.duration", durationMs)
+    }
+
+    fun resetPasswordSuccess() {
+        metrics.count("auth.reset.password.success")
+    }
+
+    fun resetPasswordValidationError() {
+        metrics.count("reset.password.validation.error")
+    }
+
+    fun resetPasswordFailure() {
+        metrics.count("reset.password.failure")
+    }
+
+    // ===== Обновление пароля после проверки =====
+    fun passwordResetSuccess() {
+        metrics.count("password.reset.success")
+    }
+
+    fun passwordResetFailure() {
+        metrics.count("password.reset.failure")
+    }
+
+    fun passwordResetDuration(durationMs: Long) {
+        metrics.timer("password.reset.duration", durationMs)
+    }
+
+    fun passwordResetAttempt() {
+        metrics.count("password.reset.attempt")
+    }
+
+    // ===== Обновление токена (refresh) =====
+    fun refreshSuccess() {
+        metrics.count("auth.refresh.success")
+    }
+
+    fun refreshFailure() {
+        metrics.count("auth.refresh.failure")
+    }
+
+    fun refreshDuration(durationMs: Long) {
+        metrics.timer("auth.refresh.duration", durationMs)
+    }
+
+    fun refreshAttempt() {
+        metrics.count("auth.refresh.attempt")
+    }
+
+    // ===== Проверка авторизации =====
+    fun authCheckAttempt() {
+        metrics.count("auth.check.attempt")
+    }
+
+    fun authCheckAuthorized() {
+        metrics.count("auth.check.authorized")
+    }
+
+    fun authCheckUnauthorized() {
+        metrics.count("auth.check.unauthorized")
+    }
+
+    fun authCheckDuration(durationMs: Long) {
+        metrics.timer("auth.check.duration", durationMs)
     }
 
 }

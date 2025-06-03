@@ -1,4 +1,4 @@
-package ru.vsu.app.dto.responses.auth.requestpassword
+package ru.vsu.app.dto.requests
 
 import java.util.Objects
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -14,13 +14,15 @@ import jakarta.validation.Valid
 import io.swagger.v3.oas.annotations.media.Schema
 
 /**
- * 
- * @param error 
+ *
+ * @param accessToken
  */
-data class RequestPasswordReset400Response(
+data class AuthRefreshRequest(
 
-    @Schema(example = "Некорректный формат email", description = "")
-    @get:JsonProperty("error") val error: kotlin.String? = null
+    @field:NotNull
+    @Schema(description = "Обновлённый JWT токен для доступа", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
+    @get:JsonProperty("accessToken")
+    val accessToken: String
     ) {
 
 }

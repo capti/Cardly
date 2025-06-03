@@ -43,10 +43,10 @@
 // import kotlin.collections.List
 // import kotlin.collections.Map
 
-// @SecurityRequirement(name = "Bearer Authentication")
 // @RestController
 // @Validated
 // @RequestMapping("\${api.base-path:/api}")
+// @SecurityRequirement(name = "Bearer Authentication")
 // @Tag(name = "Inventory", description = "Операции на странице \"Инвентарь\"")
 // class InventoryController(private val inventoryService: InventoryService) {
 

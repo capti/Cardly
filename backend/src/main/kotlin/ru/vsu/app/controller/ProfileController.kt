@@ -33,10 +33,10 @@ import jakarta.validation.constraints.Size
 import kotlin.collections.List
 import kotlin.collections.Map
 
-@SecurityRequirement(name = "Bearer Authentication")
 @RestController
 @Validated
 @RequestMapping("\${api.base-path:/api}")
+@SecurityRequirement(name = "Bearer Authentication")
 @Tag(name = "Profile", description = "Операции в профиле пользователя")
 class ProfileController() {
 

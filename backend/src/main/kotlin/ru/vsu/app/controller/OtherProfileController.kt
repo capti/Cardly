@@ -39,10 +39,10 @@ import jakarta.validation.constraints.Size
 import kotlin.collections.List
 import kotlin.collections.Map
 
-@SecurityRequirement(name = "Bearer Authentication")
 @RestController
 @Validated
 @RequestMapping("\${api.base-path:/api}")
+@SecurityRequirement(name = "Bearer Authentication")
 @Tag(name = "OtherProfile", description = "Операции при просмотре профиля другого пользователя")
 class OtherProfileController() {
 
