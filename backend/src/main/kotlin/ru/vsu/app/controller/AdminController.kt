@@ -718,7 +718,7 @@ fun adminStatsGet(): ResponseEntity<Any> {
     )
 fun adminTradesGet(): ResponseEntity<Any> {
     try {
-        val trades = tradeService.getAllTrades()
+        val trades = tradeService.getAllTrades(null)
         return ResponseEntity.ok(trades)
     } catch (e: Exception) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(InternalServerError("Ошибка при получении списка обменов", e.message ?: "Неизвестная ошибка"))
