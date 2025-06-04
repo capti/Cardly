@@ -43,7 +43,6 @@ data class UserDto(
     @Schema(example = "user@example.com", required = true, description = "Электронная почта")
     @get:JsonProperty("email", required = true) val email: kotlin.String,
 
-
     @field:Valid
     @Schema(required = true, description = "Карты в инвентаре")
     @get:JsonProperty("inventoryCards", required = true) val inventoryCards: kotlin.collections.List<CardDto>,

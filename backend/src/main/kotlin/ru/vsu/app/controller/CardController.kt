@@ -21,25 +21,25 @@
 //     private val cardService: InventoryService
 // ) {
 
-//     // @Operation(
-//     //     summary = "Получить инвентарь пользователя",
-//     //     description = "Возвращает список карточек, принадлежащих пользователю. Можно указать параметр сортировки (по умолчанию — по редкости).",
-//     //     parameters = [
-//     //         Parameter(name = "sortBy", description = "Критерий сортировки (rarity, name, и т.д.)", required = false)
-//     //     ],
-//     //     responses = [
-//     //         ApiResponse(responseCode = "200", description = "Список карточек успешно получен",
-//     //             content = [Content(mediaType = "application/json", schema = Schema(implementation = CardResponse::class))])
-//     //     ]
-//     // )
-//     // @GetMapping("/inventory")
-//     // fun getUserInventory(
-//     //     @AuthenticationPrincipal user: UserEntity,
-//     //     @RequestParam(required = false, defaultValue = "rarity") sortBy: String
-//     // ): ResponseEntity<Any> {
-//     //     val cards = cardService.getUserCards(user, sortBy)
-//     //     return ResponseEntity.ok(cards)
-//     // }
+//     @Operation(
+//         summary = "Получить инвентарь пользователя",
+//         description = "Возвращает список карточек, принадлежащих пользователю. Можно указать параметр сортировки (по умолчанию — по редкости).",
+//         parameters = [
+//             Parameter(name = "sortBy", description = "Критерий сортировки (rarity, name, и т.д.)", required = false)
+//         ],
+//         responses = [
+//             ApiResponse(responseCode = "200", description = "Список карточек успешно получен",
+//                 content = [Content(mediaType = "application/json", schema = Schema(implementation = CardResponse::class))])
+//         ]
+//     )
+//     @GetMapping("/inventory")
+//     fun getUserInventory(
+//         @AuthenticationPrincipal user: UserEntity,
+//         @RequestParam(required = false, defaultValue = "rarity") sortBy: String
+//     ): ResponseEntity<Any> {
+//         val cards = cardService.getUserCards(user, sortBy)
+//         return ResponseEntity.ok(cards)
+//     }
 
 //     @Operation(
 //         summary = "Получить подробную информацию о карточке",

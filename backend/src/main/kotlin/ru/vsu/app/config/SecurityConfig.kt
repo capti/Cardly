@@ -30,6 +30,7 @@ class SecurityConfig(
         http
             .csrf { it.disable() }
             .authorizeHttpRequests {
+                it.requestMatchers("/admin/**").hasRole("ADMIN")
                 it.requestMatchers(*publicEndpointsConfig.endpoints.toTypedArray(), *publicEndpointsConfig.passiveTokenEndpoints.toTypedArray()).permitAll()
                     .anyRequest().authenticated()
             }

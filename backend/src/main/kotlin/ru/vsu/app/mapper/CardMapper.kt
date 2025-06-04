@@ -3,17 +3,22 @@ package ru.vsu.app.mapper
 import org.springframework.stereotype.Component
 import ru.vsu.app.dto.CardDto
 import ru.vsu.app.model.CardEntity
+import ru.vsu.app.mapper.ThemeMapper
 
 @Component
-class CardMapper {
-    fun toDto(entity: CardEntity): CardDto = CardDto(
-        cardID = entity.id,
-        name = entity.name,
-        imageURL = entity.imageUrl,
-        rarity = CardDto.Rarity.forValue(entity.rarity.value),
-        minPrice = entity.disassemblePrice,
-        isGenerated = entity.isGenerated,
-        description = entity.description,
-        theme = entity.theme
-    )
+class CardMapper(
+    private val themeMapper: ThemeMapper
+) {
+    fun toDto(cardEntity: CardEntity): CardDto {
+        return CardDto(
+            cardID = cardEntity.id,
+            name = cardEntity.name,
+            description = cardEntity.description,
+            rarity = CardDto.Rarity.forValue(cardEntity.rarity.value),
+            imageURL = cardEntity.imageUrl,
+            minPrice = cardEntity.disassemblePrice,
+            isGenerated = cardEntity.isGenerated,
+            theme = cardEntity.theme?.let { themeMapper.toDto(it) }
+        )
+    }
 }

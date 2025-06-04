@@ -1,193 +1,38 @@
-// package ru.vsu.app.service
+package ru.vsu.app.service
 
-// import org.springframework.security.crypto.password.PasswordEncoder
-// import org.springframework.stereotype.Service
-// import ru.vsu.app.dto.responses.RegisterResponse
-// import ru.vsu.app.dto.responses.ApiResponse
-// import ru.vsu.app.dto.responses.LoginResponse
-// import ru.vsu.app.dto.responses.UserInfoResponse
-// import ru.vsu.app.dto.requests.RegisterUserRequest
-// import ru.vsu.app.dto.requests.ActivateAccountRequest
-// import ru.vsu.app.dto.requests.LoginRequest
-// import ru.vsu.app.dto.requests.ForgotPasswordRequest
-// import ru.vsu.app.dto.requests.ResetPasswordRequest
-// import ru.vsu.app.model.UserEntity
-// import ru.vsu.app.repository.UserRepository
-// import ru.vsu.app.service.JwtService
-// import kotlin.random.Random
+import ru.vsu.app.dto.requests.AdminUsersUserIDBanPostRequest
+import ru.vsu.app.dto.requests.AdminUsersUserIDQuestsQuestIDResetPostRequest
+import ru.vsu.app.dto.responses.admin.AdminUsersUserIDBanPost200Response
+import ru.vsu.app.dto.responses.admin.AdminUsersUserIDQuestsQuestIDResetPost200Response
+import ru.vsu.app.dto.responses.admin.AdminUsersUserIDUnbanPost200Response
+import org.springframework.stereotype.Service
 
-// @Service
-// class UserService(
-//     private val userRepository: UserRepository,
-//     private val passwordEncoder: PasswordEncoder,
-//     private val emailService: EmailService,
-//     private val jwtService: JwtService
-// ) {
+@Service
+class UserService {
+    fun revokeAchievement(userID: Int, achievementID: Int) {
+        // Implementation for revoking an achievement from a user
+    }
 
-//     fun register(request: RegisterUserRequest): RegisterResponse {
-//         // Проверяем, что пользователь с таким email или username еще не существует
-//         if (userRepository.existsByEmail(request.email)) {
-//             return RegisterUser409Response("Пользователь с таким email уже существует")
-//         }
-        
-//         if (userRepository.existsByUsername(request.username)) {
-//             return RegisterUser409Response("Пользователь с таким username уже существует")
-//         }
-        
-//         // Генерируем 6-значный код активации
-//         val activationCode = generateSixDigitCode()
-        
-//         // Создаем пользователя
-//         val user = UserEntity(
-//             email = request.email,
-//             username = request.username,
-//             passwordHash = passwordEncoder.encode(request.password),
-//             isEnabled = false,
-//             activationToken = activationCode
-//         )
-        
-//         userRepository.save(user)
-        
-//         // Отправляем email с кодом подтверждения
-//         emailService.sendActivationEmail(user.email, activationCode)
-        
-//         return RegisterResponse("Пользователь успешно зарегистрирован. Проверьте email для получения кода активации", true) // 200
-//     }
-    
-//     fun activateAccount(request: ActivateAccountRequest): ApiResponse {
-//         val userOptional = userRepository.findByEmail(request.email)
-        
-//         if (userOptional.isEmpty) {
-//             return ApiResponse("Пользователь с таким email не найден", false)
-//         }
-        
-//         val user = userOptional.get()
-        
-//         // Если аккаунт уже активирован
-//         if (user.isEnabled) {
-//             return ApiResponse("Аккаунт уже активирован", true)
-//         }
-        
-//         // Проверяем код активации
-//         if (user.activationToken != request.code) {
-//             return ApiResponse("Неверный код активации", false)
-//         }
-        
-//         // Обновляем пользователя
-//         val updatedUser = user.copy(
-//             isEnabled = true,
-//             activationToken = null
-//         )
-        
-//         userRepository.save(updatedUser)
-        
-//         return ApiResponse("Аккаунт успешно активирован", true)
-//     }
-    
-//     fun login(request: LoginRequest): LoginResponse? {
-//         val userOptional = userRepository.findByEmail(request.email)
-        
-//         if (userOptional.isEmpty) {
-//             return null
-//         }
-        
-//         val user = userOptional.get()
-        
-//         // Проверяем, активирован ли аккаунт
-//         if (!user.isEnabled) {
-//             return null
-//         }
-        
-//         if (!passwordEncoder.matches(request.password, user.passwordHash)) {
-//             return null
-//         }
-        
-//         val token = jwtService.generateToken(user.email)
-        
-//         return LoginResponse(
-//             token = token,
-//             username = user.username,
-//             email = user.email
-//         )
-//     }
-    
-//     fun getUserInfo(email: String): UserInfoResponse {
-//         val user = userRepository.findByEmail(email).orElseThrow { 
-//             IllegalArgumentException("Пользователь не найден") 
-//         }
-        
-//         return UserInfoResponse(
-//             id = user.id,
-//             username = user.username,
-//             email = user.email
-//         )
-//     }
-    
-//     fun forgotPassword(request: ForgotPasswordRequest): ApiResponse {
-//         val userOptional = userRepository.findByEmail(request.email)
-        
-//         if (userOptional.isEmpty) {
-//             return ApiResponse("Пользователь с таким email не найден", false)
-//         }
-        
-//         val user = userOptional.get()
-        
-//         // Проверяем, активирован ли аккаунт
-//         if (!user.isEnabled) {
-//             return ApiResponse("Аккаунт не активирован", false)
-//         }
-        
-//         // Генерируем 6-значный код для сброса пароля
-//         val resetCode = generateSixDigitCode()
-        
-//         // Код будет действителен в течение 15 минут
-//         val expiryTime = System.currentTimeMillis() + (15 * 60 * 1000) // 15 минут
-        
-//         // Обновляем пользователя с кодом сброса пароля
-//         val updatedUser = user.copy(
-//             passwordResetToken = resetCode,
-//             passwordResetTokenExpiry = expiryTime
-//         )
-        
-//         userRepository.save(updatedUser)
-        
-//         // Отправляем код сброса пароля по email
-//         emailService.sendPasswordResetEmail(user.email, resetCode)
-        
-//         return ApiResponse("Код для сброса пароля отправлен на ваш email", true)
-//     }
-    
-//     fun resetPassword(request: ResetPasswordRequest): ApiResponse {
-//         val userOptional = userRepository.findByPasswordResetToken(request.resetToken)
-        
-//         if (userOptional.isEmpty) {
-//             return ApiResponse("Неверный код сброса пароля", false)
-//         }
-        
-//         val user = userOptional.get()
-        
-//         // Сохраняем значение токена в локальную переменную
-//         val tokenExpiry = user.passwordResetTokenExpiry
-        
-//         // Проверяем срок действия кода
-//         if (tokenExpiry == null || System.currentTimeMillis() > tokenExpiry) {
-//             return ApiResponse("Срок действия кода истек", false)
-//         }
-        
-//         // Обновляем пользователя с новым паролем
-//         val updatedUser = user.copy(
-//             passwordHash = passwordEncoder.encode(request.newPassword),
-//             passwordResetToken = null,
-//             passwordResetTokenExpiry = null
-//         )
-        
-//         userRepository.save(updatedUser)
-        
-//         return ApiResponse("Пароль успешно изменен", true)
-//     }
-    
-//     // Функция генерации 6-значного кода
-//     private fun generateSixDigitCode(): String {
-//         return (100000 + Random.nextInt(900000)).toString()
-//     }
-// }
+    fun banUser(userID: Int, request: AdminUsersUserIDBanPostRequest): AdminUsersUserIDBanPost200Response {
+        // Implementation for banning a user
+        return AdminUsersUserIDBanPost200Response()
+    }
+
+    fun deleteUser(userID: Int) {
+        // Implementation for deleting a user
+    }
+
+    fun deleteCardFromInventory(userID: Int, cardID: Int) {
+        // Implementation for deleting a card from a user's inventory
+    }
+
+    fun resetQuest(userID: Int, questID: Int, request: AdminUsersUserIDQuestsQuestIDResetPostRequest): AdminUsersUserIDQuestsQuestIDResetPost200Response {
+        // Implementation for resetting a quest for a user
+        return AdminUsersUserIDQuestsQuestIDResetPost200Response()
+    }
+
+    fun unbanUser(userID: Int): AdminUsersUserIDUnbanPost200Response {
+        // Implementation for unbanning a user
+        return AdminUsersUserIDUnbanPost200Response()
+    }
+}

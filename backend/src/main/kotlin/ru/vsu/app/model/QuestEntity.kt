@@ -32,7 +32,7 @@ data class QuestEntity(
     @Column(name = "is_claimed", nullable = false)
     val isClaimed: Boolean,
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "quest_reward_packs",
         joinColumns = [JoinColumn(name = "quest_id")],
