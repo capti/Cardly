@@ -9,6 +9,8 @@ import ru.vsu.app.dto.responses.trades.TradesTradeIdAcceptPost403Response
 import ru.vsu.app.dto.responses.trades.TradesTradeIdCancelPost200Response
 import ru.vsu.app.dto.responses.trades.TradesTradeIdGet404Response
 import ru.vsu.app.dto.responses.trades.TradesTradeIdRejectPost200Response
+import ru.vsu.app.service.TradeService
+import ru.vsu.app.security.CustomUserDetails
 import io.swagger.v3.oas.annotations.*
 import io.swagger.v3.oas.annotations.enums.*
 import io.swagger.v3.oas.annotations.media.*
@@ -18,11 +20,12 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-
 import org.springframework.web.bind.annotation.*
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.context.request.NativeWebRequest
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.core.userdetails.UserDetails
 
 import jakarta.validation.Valid
 import jakarta.validation.constraints.DecimalMax
@@ -42,7 +45,9 @@ import kotlin.collections.Map
 @SecurityRequirement(name = "Bearer Authentication")
 @RequestMapping("\${api.base-path:/api}")
 @Tag(name = "Trades", description = "Операции на странице \"Обменник\"")
-class TradesController() {
+class TradesController(
+    private val tradeService: TradeService
+) {
 
     @Operation(
         summary = "Получить все доступные предложения обмена",
@@ -59,8 +64,8 @@ class TradesController() {
         value = ["/trades"],
         produces = ["application/json"]
     )
-    fun tradesGet( @RequestParam(value = "search", required = false) search: kotlin.String?): ResponseEntity<Any> {
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+    fun tradesGet(@RequestParam(value = "search", required = false) search: String?): ResponseEntity<List<TradeDto>> {
+        return ResponseEntity.ok(tradeService.getAllTrades(search))
     }
 
     @Operation(
@@ -81,8 +86,13 @@ class TradesController() {
         produces = ["application/json"],
         consumes = ["application/json"]
     )
-    fun tradesInitiatePost(@Parameter(description = "", required = true) @Valid @RequestBody tradesInitiatePostRequest: TradesInitiatePostRequest): ResponseEntity<Any> {
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+    fun tradesInitiatePost(
+        @Parameter(description = "", required = true) @Valid @RequestBody tradesInitiatePostRequest: TradesInitiatePostRequest,
+        @AuthenticationPrincipal userDetails: UserDetails
+    ): ResponseEntity<TradeDto> {
+        val customUserDetails = userDetails as CustomUserDetails
+        val trade = tradeService.initiateTrade(tradesInitiatePostRequest, customUserDetails.getUser().userId)
+        return ResponseEntity.status(HttpStatus.CREATED).body(trade)
     }
 
     @Operation(
@@ -101,8 +111,10 @@ class TradesController() {
         value = ["/trades/my"],
         produces = ["application/json"]
     )
-    fun tradesMyGet( @RequestParam(value = "user_id", required = true) userId: kotlin.Int): ResponseEntity<Any> {
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+    fun tradesMyGet(@AuthenticationPrincipal userDetails: UserDetails): ResponseEntity<List<TradeDto>> {
+        val customUserDetails = userDetails as CustomUserDetails
+        val trades = tradeService.getUserTrades(customUserDetails.getUser().userId)
+        return ResponseEntity.ok(trades)
     }
 
     @Operation(
@@ -122,8 +134,13 @@ class TradesController() {
         value = ["/trades/{trade_id}/accept"],
         produces = ["application/json"]
     )
-    fun tradesTradeIdAcceptPost(@Parameter(description = "", required = true) @PathVariable("trade_id") tradeId: kotlin.Int): ResponseEntity<Any> {
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+    fun tradesTradeIdAcceptPost(
+        @Parameter(description = "", required = true) @PathVariable("trade_id") tradeId: Int,
+        @AuthenticationPrincipal userDetails: UserDetails
+    ): ResponseEntity<TradeDto> {
+        val customUserDetails = userDetails as CustomUserDetails
+        val trade = tradeService.acceptTrade(tradeId, customUserDetails.getUser().userId)
+        return ResponseEntity.ok(trade)
     }
 
     @Operation(
@@ -142,8 +159,13 @@ class TradesController() {
         value = ["/trades/{trade_id}/cancel"],
         produces = ["application/json"]
     )
-    fun tradesTradeIdCancelPost(@Parameter(description = "", required = true) @PathVariable("trade_id") tradeId: kotlin.Int): ResponseEntity<Any> {
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+    fun tradesTradeIdCancelPost(
+        @Parameter(description = "", required = true) @PathVariable("trade_id") tradeId: Int,
+        @AuthenticationPrincipal userDetails: UserDetails
+    ): ResponseEntity<TradeDto> {
+        val customUserDetails = userDetails as CustomUserDetails
+        val trade = tradeService.cancelTrade(tradeId, customUserDetails.getUser().userId)
+        return ResponseEntity.ok(trade)
     }
 
     @Operation(
@@ -161,8 +183,9 @@ class TradesController() {
         value = ["/trades/{trade_id}"],
         produces = ["application/json"]
     )
-    fun tradesTradeIdGet(@Parameter(description = "", required = true) @PathVariable("trade_id") tradeId: kotlin.Int): ResponseEntity<Any> {
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+    fun tradesTradeIdGet(@Parameter(description = "", required = true) @PathVariable("trade_id") tradeId: Int): ResponseEntity<TradeDto> {
+        val trade = tradeService.getTradeById(tradeId)
+        return ResponseEntity.ok(trade)
     }
 
     @Operation(
@@ -181,7 +204,12 @@ class TradesController() {
         value = ["/trades/{trade_id}/reject"],
         produces = ["application/json"]
     )
-    fun tradesTradeIdRejectPost(@Parameter(description = "", required = true) @PathVariable("trade_id") tradeId: kotlin.Int): ResponseEntity<Any> {
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+    fun tradesTradeIdRejectPost(
+        @Parameter(description = "", required = true) @PathVariable("trade_id") tradeId: Int,
+        @AuthenticationPrincipal userDetails: UserDetails
+    ): ResponseEntity<TradeDto> {
+        val customUserDetails = userDetails as CustomUserDetails
+        val trade = tradeService.rejectTrade(tradeId, customUserDetails.getUser().userId)
+        return ResponseEntity.ok(trade)
     }
 }
