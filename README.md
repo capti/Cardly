@@ -85,6 +85,7 @@ docker-compose up --build
 ## Документация 
 
 - Техническое задание [PDF](https://github.com/capti/Cardly/blob/main/Documentation/%D0%A2%D0%B5%D1%85%D0%BD%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%BE%D0%B5%20%D0%B7%D0%B0%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5.pdf) | [DOCX](https://github.com/capti/Cardly/blob/main/Documentation/%D0%A2%D0%B5%D1%85%D0%BD%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%BE%D0%B5%20%D0%B7%D0%B0%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5.docx)
+- Курсовая работа [PDF](https://github.com/capti/Cardly/blob/main/Documentation/%D0%9A%D1%83%D1%80%D1%81%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%B0.pdf) | [DOCX](https://github.com/capti/Cardly/blob/main/Documentation/%D0%9A%D1%83%D1%80%D1%81%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%B0.docx)
 - Roadmap [PDF](https://github.com/capti/Cardly/blob/main/Documentation/roadmap.pdf) | [DOCX](https://github.com/capti/Cardly/blob/main/Documentation/roadmap.docx)
 - Целевая аудитория и рынок [PDF](https://github.com/capti/Cardly/blob/main/Documentation/%D0%A6%D0%B5%D0%BB%D0%B5%D0%B2%D0%B0%D1%8F%20%D0%B0%D1%83%D0%B4%D0%B8%D1%82%D0%BE%D1%80%D0%B8%D1%8F%20%D0%B8%20%D1%80%D1%8B%D0%BD%D0%BE%D0%BA.pdf) | [DOCX](https://github.com/capti/Cardly/blob/main/Documentation/%D0%A6%D0%B5%D0%BB%D0%B5%D0%B2%D0%B0%D1%8F%20%D0%B0%D1%83%D0%B4%D0%B8%D1%82%D0%BE%D1%80%D0%B8%D1%8F%20%D0%B8%20%D1%80%D1%8B%D0%BD%D0%BE%D0%BA.docx)
 - Ограничения проекта [PDF](https://github.com/capti/Cardly/blob/main/Documentation/%D0%9E%D0%B3%D1%80%D0%B0%D0%BD%D0%B8%D1%87%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B0.pdf) | [DOCX](https://github.com/capti/Cardly/blob/main/Documentation/%D0%9E%D0%B3%D1%80%D0%B0%D0%BD%D0%B8%D1%87%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B0.docx)
@@ -111,8 +112,8 @@ docker-compose up --build
 - [Презентация MVP - 2 аттестация](https://github.com/capti/Cardly/blob/main/Documentation/%D0%9F%D1%80%D0%B5%D0%B7%D0%B5%D0%BD%D1%82%D0%B0%D1%86%D0%B8%D1%8F%202%20%D1%8D%D1%82%D0%B0%D0%BF.pdf)
 
 ## Видео защиты проекта 
-- [Видеопрезентация технического задания RUTUB](https://rutube.ru/video/private/495ed0d28afb267b57f242186af0053f/?p=t5f3gbQUlFE5zIx2hcnJZQ)
-- [Видеопрезентация MVP RUTUB](https://rutube.ru/video/private/abbadde6a376d9174a7dde41d90ad139/?p=KPUl4SrlU9Tk7hcOFwXyZQ)
+- [Видеопрезентация технического задания RUTUBE](https://rutube.ru/video/private/495ed0d28afb267b57f242186af0053f/?p=t5f3gbQUlFE5zIx2hcnJZQ)
+- [Видеопрезентация MVP RUTUBE](https://rutube.ru/video/private/abbadde6a376d9174a7dde41d90ad139/?p=KPUl4SrlU9Tk7hcOFwXyZQ)
 
 ---
 
