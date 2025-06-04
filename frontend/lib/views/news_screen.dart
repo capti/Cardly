@@ -1,199 +1,152 @@
 import 'package:flutter/material.dart';
-import 'home_screen.dart';
-import 'shop_screen.dart';
-import 'exchanges_screen.dart';
+import 'news_detail_screen.dart';
+import 'profile_screen.dart';
+import 'search_players_screen.dart';
+import '../services/api_service.dart';
+import '../models/news_model.dart';
+import '../utils/error_formatter.dart';
+import '../services/analytics_service.dart';
 
 class NewsScreen extends StatefulWidget {
   const NewsScreen({super.key});
 
   @override
-  State<NewsScreen> createState() => _NewsScreenState();
+  _NewsScreenState createState() => _NewsScreenState();
 }
 
 class _NewsScreenState extends State<NewsScreen> {
-  int _currentIndex = 1; // Индекс для нижней навигации (книга)
-  
-  // Примерные данные новостей (без использования типа DateTime для избежания ошибок)
-  final List<NewsItem> _newsItems = [
-    NewsItem(
-      title: 'Заголовок к новости',
-      content: 'Текст новости',
-      date: '12.05.2023',
-      fullContent: 'Расширенное описание новости с дополнительными подробностями о событии или объявлении.',
-    ),
-    NewsItem(
-      title: 'Заголовок к новости',
-      content: 'Текст новости',
-      date: '10.05.2023',
-      fullContent: 'Расширенное описание новости с дополнительными подробностями о событии или объявлении.',
-    ),
-    NewsItem(
-      title: 'Заголовок к новости',
-      content: 'Текст новости',
-      date: '08.05.2023',
-      fullContent: 'Расширенное описание новости с дополнительными подробностями о событии или объявлении.',
-    ),
-    NewsItem(
-      title: 'Заголовок к новости',
-      content: 'Текст новости',
-      date: '05.05.2023',
-      fullContent: 'Расширенное описание новости с дополнительными подробностями о событии или объявлении.',
-    ),
-  ];
-  
+  late bool _isLoading;
+  late List<News> _news;
+  late String _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _isLoading = true;
+    _news = [];
+    _error = '';
+    AnalyticsService.trackScreenView('news_screen');
+    _loadNews();
+  }
+
+  Future<void> _loadNews() async {
+    try {
+      setState(() {
+        _isLoading = true;
+        _error = '';
+      });
+
+      final news = await ApiService().getNews();
+      
+      setState(() {
+        _news = news;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _error = ErrorFormatter.formatError(e);
+      });
+    }
+  }
+
+  void _openNewsDetails(News news) {
+    try {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => NewsDetailScreen(
+            news: news,
+          ),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(ErrorFormatter.formatError(e))),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF4E3), // Бежевый фон
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFFFF4E3),
-        elevation: 0,
-        leading: Container(
-          margin: const EdgeInsets.all(8.0),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: Colors.black, width: 2),
-          ),
-          child: Image.asset(
-            'assets/icons/профиль.png',
-            height: 24,
-            color: Colors.black,
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: Image.asset(
-              'assets/icons/поиск.png',
-              height: 24,
-              color: Colors.black,
-            ),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: Image.asset(
-              'assets/icons/уведомления.png',
-              height: 24,
-              color: Colors.black,
-            ),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Кнопка возврата и заголовок
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      backgroundColor: const Color(0xFFFBF6EF),
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Кнопка назад
-                Container(
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFD6A067),
-                    shape: BoxShape.circle,
-                  ),
-                  child: IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.black),
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (context) => const HomeScreen()),
-                        (route) => false,
-                      );
-                    },
-                  ),
-                ),
-                
-                const SizedBox(height: 16.0),
-                
-                // Заголовок "Новости"
-                const Center(
-                  child: Text(
-                    'Новости',
-                    style: TextStyle(
-                      fontSize: 24.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: InkWell(
+                    onTap: () => Navigator.pop(context),
+                    borderRadius: BorderRadius.circular(20.0),
+                    child: Container(
+                      width: 40.0,
+                      height: 40.0,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: const Color(0xFFD6A067),
+                      ),
+                      child: const Icon(
+                        Icons.arrow_back,
+                        color: Colors.black,
+                        size: 29.0,
+                      ),
                     ),
                   ),
                 ),
               ],
             ),
-          ),
-          
-          const SizedBox(height: 16.0),
-          
-          // Список новостей
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              itemCount: _newsItems.length,
-              itemBuilder: (context, index) {
-                return _buildNewsItem(_newsItems[index]);
-              },
+            
+            const SizedBox(height: 16.0),
+            
+            // Заголовок "Новости"
+            const Center(
+              child: Text(
+                'Новости',
+                style: TextStyle(
+                  fontSize: 24.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                  fontFamily: 'Jost',
+                ),
+              ),
             ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: Color(0xFFD6A067),
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            if (index != _currentIndex) {
-              setState(() {
-                _currentIndex = index;
-              });
-              switch (index) {
-                case 0:
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
-                    (route) => false,
-                  );
-                  break;
-                case 2:
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ShopScreen()),
-                    (route) => false,
-                  );
-                  break;
-                case 3:
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ExchangesScreen()),
-                    (route) => false,
-                  );
-                  break;
-              }
-            }
-          },
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          type: BottomNavigationBarType.fixed,
-          selectedItemColor: Colors.black,
-          unselectedItemColor: Colors.black54,
-          items: [
-            BottomNavigationBarItem(
-              icon: Image.asset('assets/icons/главная.png', height: 24),
-              label: 'Гл.меню',
-            ),
-            BottomNavigationBarItem(
-              icon: Image.asset('assets/icons/Инвентарь.png', height: 24),
-              label: '',
-            ),
-            BottomNavigationBarItem(
-              icon: Image.asset('assets/icons/магазин.png', height: 24),
-              label: '',
-            ),
-            BottomNavigationBarItem(
-              icon: Image.asset('assets/icons/обменник.png', height: 24),
-              label: '',
+            
+            const SizedBox(height: 16.0),
+            
+            // Список новостей
+            Expanded(
+              child: _isLoading 
+                  ? const Center(child: CircularProgressIndicator())
+                  : _error.isNotEmpty
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(_error),
+                              const SizedBox(height: 16),
+                              ElevatedButton(
+                                onPressed: _loadNews,
+                                child: const Text('Повторить'),
+                              ),
+                            ],
+                          ),
+                        )
+                      : RefreshIndicator(
+                          onRefresh: _loadNews,
+                          child: ListView.builder(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            itemCount: _news.length,
+                            itemBuilder: (context, index) {
+                              final news = _news[index];
+                              return _buildNewsItem(context, news);
+                            },
+                          ),
+                        ),
             ),
           ],
         ),
@@ -202,46 +155,78 @@ class _NewsScreenState extends State<NewsScreen> {
   }
   
   // Метод для отображения элемента новости
-  Widget _buildNewsItem(NewsItem news) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16.0),
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: const Color(0xFFEDD6B0),
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Левая часть - заголовок
-          Expanded(
-            flex: 1,
-            child: Text(
+  Widget _buildNewsItem(BuildContext context, News news) {
+    return GestureDetector(
+      onTap: () => _openNewsDetails(news),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16.0),
+        padding: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: const Color(0xFFEAD7C3),
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Заголовок
+            Text(
               news.title,
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 14.0,
+                fontFamily: 'Jost',
               ),
             ),
-          ),
-          
-          const SizedBox(width: 16.0),
-          
-          // Правая часть - текст
-          Expanded(
-            flex: 1,
-            child: Text(
+            
+            const SizedBox(height: 8.0),
+            
+            // Текст
+            Text(
               news.content,
               style: const TextStyle(
                 fontSize: 14.0,
+                fontFamily: 'Jost',
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
+
+  String _formatDate(String dateStr) {
+    final date = DateTime.parse(dateStr);
+    return '${date.day}.${date.month}.${date.year}';
+  }
 }
+
+// Примерные данные новостей
+final List<NewsItem> _newsItems = [
+  NewsItem(
+    title: 'Заголовок к новости',
+    content: 'Текст новости',
+    date: '12.05.2023',
+    fullContent: 'Расширенное описание новости с дополнительными подробностями о событии или объявлении.',
+  ),
+  NewsItem(
+    title: 'Заголовок к новости',
+    content: 'Текст новости',
+    date: '10.05.2023',
+    fullContent: 'Расширенное описание новости с дополнительными подробностями о событии или объявлении.',
+  ),
+  NewsItem(
+    title: 'Заголовок к новости',
+    content: 'Текст новости',
+    date: '08.05.2023',
+    fullContent: 'Расширенное описание новости с дополнительными подробностями о событии или объявлении.',
+  ),
+  NewsItem(
+    title: 'Заголовок к новости',
+    content: 'Текст новости',
+    date: '05.05.2023',
+    fullContent: 'Расширенное описание новости с дополнительными подробностями о событии или объявлении.',
+  ),
+];
 
 // Класс для хранения данных новости
 class NewsItem {
@@ -256,4 +241,4 @@ class NewsItem {
     required this.date,
     required this.fullContent,
   });
-} 
+}

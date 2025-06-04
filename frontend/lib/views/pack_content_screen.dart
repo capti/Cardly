@@ -1,19 +1,27 @@
 import 'package:flutter/material.dart';
+import '../models/card_model.dart';
 import 'shop_screen.dart';
 import 'inventory_screen.dart';
 
 class PackContentScreen extends StatelessWidget {
   final String setName;
-  const PackContentScreen({super.key, required this.setName});
+  final List<CardModel> cards;
+
+  const PackContentScreen({
+    Key? key,
+    required this.setName,
+    required this.cards,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF4E3),
+      backgroundColor: const Color(0xFFFBF6EF),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFFF4E3),
+        backgroundColor: const Color(0xFFFBF6EF),
         elevation: 0,
-        title: const Text('Выпавшие карты:', style: TextStyle(color: Colors.black)),
+        automaticallyImplyLeading: false,
+        title: const Text('Выпавшие карты:', style: TextStyle(color: Colors.black, fontFamily: 'Jost')),
         centerTitle: true,
       ),
       body: Column(
@@ -22,19 +30,38 @@ class PackContentScreen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: GridView.builder(
+                padding: const EdgeInsets.all(16.0),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 4,
-                  crossAxisSpacing: 10.0,
-                  mainAxisSpacing: 10.0,
-                  childAspectRatio: 0.7,
+                  crossAxisCount: 2,
+                  childAspectRatio: 0.75,
+                  crossAxisSpacing: 16.0,
+                  mainAxisSpacing: 16.0,
                 ),
-                itemCount: 12,
+                itemCount: cards.length,
                 itemBuilder: (context, index) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFD6A067),
-                      borderRadius: BorderRadius.circular(6.0),
-                      border: Border.all(color: Colors.black, width: 1),
+                  final card = cards[index];
+                  return Card(
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: Image.network(
+                            card.imageURL,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: [
+                              Text(
+                                card.name,
+                                style: const TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Text('Редкость: ${card.rarity}'),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   );
                 },
@@ -60,10 +87,10 @@ class PackContentScreen extends StatelessWidget {
                       foregroundColor: Colors.black,
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
-                    child: const Text('Вернуться в магазин', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    child: const Text('Вернуться в магазин', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Roboto')),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -82,13 +109,13 @@ class PackContentScreen extends StatelessWidget {
                       foregroundColor: Colors.black,
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
-                    child: const Text('Перейти в Инвентарь', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    child: const Text('Перейти в инвентарь', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Roboto')),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 120),
               ],
             ),
           ),

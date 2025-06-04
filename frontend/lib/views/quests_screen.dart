@@ -3,138 +3,94 @@ import 'home_screen.dart';
 import 'shop_screen.dart';
 import 'exchanges_screen.dart';
 import 'news_screen.dart';
+import '../services/api_service.dart';
+import '../models/quest_model.dart';
+import '../utils/error_formatter.dart';
+import '../utils/auth_utils.dart';
+import 'package:provider/provider.dart';
+import '../controllers/auth_controller.dart';
+import '../services/analytics_service.dart';
 
-class QuestsScreen extends StatefulWidget {
-  const QuestsScreen({super.key});
+class QuestsDialogContent extends StatefulWidget {
+  const QuestsDialogContent({super.key});
 
   @override
-  State<QuestsScreen> createState() => _QuestsScreenState();
+  State<QuestsDialogContent> createState() => _QuestsDialogContentState();
 }
 
-class _QuestsScreenState extends State<QuestsScreen> with SingleTickerProviderStateMixin {
-  int _currentIndex = 0; // Индекс для нижней навигации (главное меню)
+class _QuestsDialogContentState extends State<QuestsDialogContent> with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  int _selectedTab = 1; // По умолчанию открываем вкладку "Недельные квесты"
-  
+  int _selectedTab = 0;
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this, initialIndex: _selectedTab);
+    AnalyticsService.trackScreenView('quests_dialog_content');
   }
-  
+
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFFFF4E3), // Бежевый фон
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFFFF4E3),
-        elevation: 0,
-        leading: Container(
-          margin: const EdgeInsets.all(8.0),
+    return Center(
+      child: Material(
+        color: Colors.transparent,
+        child: Container(
+          width: 380,
+          constraints: const BoxConstraints(maxHeight: 450),
           decoration: BoxDecoration(
-            shape: BoxShape.circle,
+            color: const Color(0xFFFFF4E3),
+            borderRadius: BorderRadius.circular(10.0),
             border: Border.all(color: Colors.black, width: 2),
           ),
-          child: Image.asset(
-            'assets/icons/профиль.png',
-            height: 24,
-            color: Colors.black,
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: Image.asset(
-              'assets/icons/поиск.png',
-              height: 24,
-              color: Colors.black,
-            ),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: Image.asset(
-              'assets/icons/уведомления.png',
-              height: 24,
-              color: Colors.black,
-            ),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          // Основная карточка с квестами
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEDD6B0),
-                  borderRadius: BorderRadius.circular(8.0),
-                  border: Border.all(color: Colors.black54, width: 1),
-                ),
-                child: Stack(
+          child: Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 0.0, right: 0.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Column(
-                      children: [
-                        // Заголовок
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                          decoration: const BoxDecoration(
-                            color: Color(0xFFD6A067),
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(7.0),
-                              topRight: Radius.circular(7.0),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                'Выполнено квестов 0/5',
-                                style: TextStyle(
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(4.0),
-                                  border: Border.all(color: Colors.black, width: 1),
-                                ),
-                                child: const Text(
-                                  'Награда',
-                                  style: TextStyle(
-                                    fontSize: 14.0,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ],
+                    // Верхняя панель с прогрессом и наградой
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12.0, right: 128.0),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFD6A067),
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        child: const Text(
+                          'Выполнено квестов 0/5',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        
-                        // Вкладки
-                        TabBar(
+                      ),
+                    ),
+                    // TabBar как в магазине
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFEAD7C3),
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        child: TabBar(
                           controller: _tabController,
-                          labelColor: Colors.black,
-                          unselectedLabelColor: Colors.black54,
-                          indicatorColor: Colors.transparent,
+                          dividerColor: Colors.transparent,
                           indicator: const BoxDecoration(
                             color: Color(0xFFD6A067),
-                            border: Border(
-                              bottom: BorderSide(
-                                color: Colors.black,
-                                width: 3.0,
-                              ),
-                            ),
+                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
                           ),
+                          labelColor: Colors.black,
+                          unselectedLabelColor: Colors.black,
+                          indicatorSize: TabBarIndicatorSize.tab,
                           tabs: const [
                             Tab(text: 'Ежедневные квесты'),
                             Tab(text: 'Недельные квесты'),
@@ -145,235 +101,70 @@ class _QuestsScreenState extends State<QuestsScreen> with SingleTickerProviderSt
                             });
                           },
                         ),
-                        
-                        // Содержимое вкладок
-                        Expanded(
-                          child: TabBarView(
-                            controller: _tabController,
-                            children: [
-                              // Вкладка с ежедневными квестами
-                              _buildDailyQuestsTab(),
-                              
-                              // Вкладка с недельными квестами
-                              _buildWeeklyQuestsTab(),
-                            ],
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                    
-                    // Кнопка закрытия в правом верхнем углу
-                    Positioned(
-                      top: 12.0,
-                      right: 12.0,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFD6A067),
-                          borderRadius: BorderRadius.circular(4.0),
-                        ),
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: const Icon(
-                            Icons.close,
-                            color: Colors.black,
-                            size: 24.0,
-                          ),
-                        ),
+                    // Содержимое вкладок
+                    Expanded(
+                      child: TabBarView(
+                        controller: _tabController,
+                        children: [
+                          _buildDailyQuestsTab(),
+                          _buildWeeklyQuestsTab(),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
-          ),
-          
-          const SizedBox(height: 20.0),
-          
-          // Кнопки "Квесты" и "Новости"
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-            child: Row(
-              children: [
-                // Кнопка "Квесты"
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // Уже на экране квестов
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFD6A067),
-                      foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 12.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
+              // Кнопка закрытия
+              Positioned(
+                top: -2.0,
+                right: -2.0,
+                child: InkWell(
+                  onTap: () => Navigator.of(context).pop(),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFD6A067),
+                      borderRadius: BorderRadius.circular(10.0),
+                      border: Border.all(color: Colors.black, width: 2),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          'assets/icons/квесты.png',
-                          height: 20.0,
-                          color: Colors.black,
-                        ),
-                        const SizedBox(width: 8.0),
-                        const Text(
-                          'Квесты',
-                          style: TextStyle(
-                            fontSize: 14.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
+                    padding: const EdgeInsets.all(4.0),
+                    child: const Icon(Icons.close, color: Colors.black, size: 32),
                   ),
                 ),
-                
-                const SizedBox(width: 16.0),
-                
-                // Кнопка "Новости"
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const NewsScreen(),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFD6A067),
-                      foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 12.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          'assets/icons/новости.png',
-                          height: 20.0,
-                          color: Colors.black,
-                        ),
-                        const SizedBox(width: 8.0),
-                        const Text(
-                          'Новости',
-                          style: TextStyle(
-                            fontSize: 14.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-          
-          const SizedBox(height: 10.0),
-          
-          // Нижняя навигационная панель
-          Container(
-            decoration: const BoxDecoration(
-              color: Color(0xFFD6A067),
-            ),
-            child: BottomNavigationBar(
-              currentIndex: _currentIndex,
-              onTap: (index) {
-                if (index != _currentIndex) {
-                  setState(() {
-                    _currentIndex = index;
-                  });
-                  switch (index) {
-                    case 0:
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (context) => const HomeScreen()),
-                        (route) => false,
-                      );
-                      break;
-                    case 2:
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (context) => const ShopScreen()),
-                        (route) => false,
-                      );
-                      break;
-                    case 3:
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (context) => const ExchangesScreen()),
-                        (route) => false,
-                      );
-                      break;
-                  }
-                }
-              },
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              type: BottomNavigationBarType.fixed,
-              selectedItemColor: Colors.black,
-              unselectedItemColor: Colors.black54,
-              items: [
-                BottomNavigationBarItem(
-                  icon: Image.asset('assets/icons/главная.png', height: 24),
-                  label: 'Гл.меню',
-                ),
-                BottomNavigationBarItem(
-                  icon: Image.asset('assets/icons/Инвентарь.png', height: 24),
-                  label: '',
-                ),
-                BottomNavigationBarItem(
-                  icon: Image.asset('assets/icons/магазин.png', height: 24),
-                  label: '',
-                ),
-                BottomNavigationBarItem(
-                  icon: Image.asset('assets/icons/обменник.png', height: 24),
-                  label: '',
-                ),
-              ],
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
-  
-  // Вкладка с ежедневными квестами
+
   Widget _buildDailyQuestsTab() {
     return ListView.builder(
       padding: const EdgeInsets.all(16.0),
-      itemCount: 6,
+      itemCount: 5,
       itemBuilder: (context, index) {
         return _buildQuestItem('Ежедневный квест', 200);
       },
     );
   }
-  
-  // Вкладка с недельными квестами
+
   Widget _buildWeeklyQuestsTab() {
     return ListView.builder(
       padding: const EdgeInsets.all(16.0),
-      itemCount: 4,
+      itemCount: 5,
       itemBuilder: (context, index) {
         return _buildQuestItem('Недельный квест', 1000);
       },
     );
   }
-  
-  // Элемент квеста
+
   Widget _buildQuestItem(String title, int reward) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12.0),
       child: Row(
         children: [
-          // Название квеста
           Expanded(
             child: Text(
               title,
@@ -383,16 +174,15 @@ class _QuestsScreenState extends State<QuestsScreen> with SingleTickerProviderSt
               ),
             ),
           ),
-          
-          // Награда
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 7.0),
             decoration: BoxDecoration(
               color: const Color(0xFFD6A067),
-              borderRadius: BorderRadius.circular(16.0),
+              borderRadius: BorderRadius.circular(10.0),
             ),
             child: Row(
               children: [
+                const SizedBox(width: 12.0),
                 Text(
                   reward.toString(),
                   style: const TextStyle(
@@ -401,16 +191,177 @@ class _QuestsScreenState extends State<QuestsScreen> with SingleTickerProviderSt
                   ),
                 ),
                 const SizedBox(width: 4.0),
-                const Icon(
-                  Icons.monetization_on,
-                  color: Colors.amber,
-                  size: 16.0,
+                Image.asset(
+                  'assets/icons/монеты.png',
+                  height: 20,
+                  width: 20,
                 ),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+// Функция для показа модального окна квестов
+void showQuestsDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    barrierDismissible: true,
+    builder: (context) => Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 40.0),
+      child: const SizedBox(
+        width: 380,
+        child: QuestsDialogContent(),
+      ),
+    ),
+  );
+}
+
+class QuestsScreen extends StatefulWidget {
+  const QuestsScreen({super.key});
+
+  @override
+  State<QuestsScreen> createState() => _QuestsScreenState();
+}
+
+class _QuestsScreenState extends State<QuestsScreen> {
+  late bool _isLoading;
+  late Map<String, List<Quest>> _quests;
+  late String _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _isLoading = true;
+    _quests = {
+      'dailyQuests': [],
+      'weeklyQuests': []
+    };
+    _error = '';
+    _loadQuests();
+  }
+
+  Future<void> _loadQuests() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      final quests = await ApiService().getQuests();
+      
+      setState(() {
+        _quests = quests;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _error = ErrorFormatter.formatError(e);
+      });
+    }
+  }
+
+  Future<void> _toggleQuestStatus(Quest quest) async {
+    try {
+      final updatedQuest = await ApiService().changeQuestStatus(quest.quest_ID);
+      await _loadQuests(); // Перезагружаем все квесты для обновления UI
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(ErrorFormatter.formatError(e))),
+      );
+    }
+  }
+
+  Future<void> _claimReward(String questType) async {
+    try {
+      final result = await ApiService().claimQuestReward(questType);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Получено: ${result['receivedCoins']} монет')),
+      );
+      await _loadQuests(); // Перезагружаем квесты после получения награды
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(ErrorFormatter.formatError(e))),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (Provider.of<AuthController>(context).currentUser?.isGuest ?? false) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!AuthUtils.checkGuestAccess(context, 'quests_screen')) {
+          Navigator.of(context).pop();
+        }
+      });
+      return Container(); // Return empty container while checking
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Квесты'),
+      ),
+      body: _isLoading 
+          ? const Center(child: CircularProgressIndicator())
+          : _error.isNotEmpty
+              ? Center(child: Text(_error))
+              : SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildQuestSection('Ежедневные квесты', _quests['dailyQuests']!, 'daily'),
+                      _buildQuestSection('Еженедельные квесты', _quests['weeklyQuests']!, 'weekly'),
+                    ],
+                  ),
+                ),
+    );
+  }
+
+  Widget _buildQuestSection(String title, List<Quest> quests, String questType) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            title,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+        ),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: quests.length,
+          itemBuilder: (context, index) {
+            final quest = quests[index];
+            return ListTile(
+              title: Text(quest.title),
+              subtitle: Text(quest.description),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('${quest.progress}/${quest.maxProgress}'),
+                  Checkbox(
+                    value: quest.isCompleted,
+                    onChanged: (bool? value) => _toggleQuestStatus(quest),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ElevatedButton(
+            onPressed: () => _claimReward(questType),
+            child: const Text('Получить награду'),
+          ),
+        ),
+      ],
     );
   }
 } 

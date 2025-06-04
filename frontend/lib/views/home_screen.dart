@@ -2,28 +2,23 @@ import 'package:flutter/material.dart';
 import 'inventory_screen.dart';
 import 'search_players_screen.dart';
 import 'create_card_screen.dart';
-import 'shop_screen.dart';
-import 'exchanges_screen.dart';
 import 'news_screen.dart';
 import 'quests_screen.dart';
 import 'profile_screen.dart';
+import 'notifications_modal.dart';
+import '../utils/auth_utils.dart';
+import 'package:provider/provider.dart';
+import '../controllers/auth_controller.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF4E3),
+      backgroundColor: const Color(0xFFFBF6EF),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFFF4E3),
+        backgroundColor: const Color(0xFFFBF6EF),
         elevation: 0,
         leading: Padding(
           padding: const EdgeInsets.only(left: 16.0),
@@ -33,12 +28,14 @@ class _HomeScreenState extends State<HomeScreen> {
             child: InkWell(
               borderRadius: BorderRadius.circular(20.0),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ProfileScreen()),
-                );
+                if (AuthUtils.checkGuestAccess(context, 'profile_screen')) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                  );
+                }
               },
-              child: Image.asset('assets/icons/профиль.png', height: 22),
+              child: Image.asset('assets/icons/профиль.png', height: 24),
             ),
           ),
         ),
@@ -46,25 +43,32 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: Image.asset(
               'assets/icons/поиск.png',
-              height: 32,
+              height: 26,
               color: Colors.black,
             ),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SearchPlayersScreen(),
-                ),
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (context) => const SearchPlayersModal(),
               );
             },
           ),
           IconButton(
             icon: Image.asset(
               'assets/icons/уведомления.png',
-              height: 36,
+              height: 30,
               color: Colors.black,
             ),
-            onPressed: null,
+            onPressed: () {
+              if (AuthUtils.checkGuestAccess(context, 'notifications_screen')) {
+                showDialog(
+                  context: context,
+                  builder: (context) => const NotificationsModal(),
+                );
+              }
+            },
           ),
         ],
       ),
@@ -78,6 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
+                fontFamily: 'Jost',
               ),
             ),
           ),
@@ -95,10 +100,45 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               itemCount: 8,
               itemBuilder: (context, index) {
-                return Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFEDD6B0),
-                    borderRadius: BorderRadius.circular(12.0),
+                // Dummy collection names for demonstration
+                final List<String> collectionNames = [
+                  'Весна',
+                  'Лето',
+                  'Осень',
+                  'Зима',
+                  'Горы',
+                  'Море',
+                  'Лес',
+                  'Город'
+                ];
+                
+                return InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => InventoryScreen(
+                          collectionName: collectionNames[index],
+                        ),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEAD7C3),
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    child: Center(
+                      child: Text(
+                        collectionNames[index],
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          fontFamily: 'Jost',
+                        ),
+                      ),
+                    ),
                   ),
                 );
               },
@@ -108,31 +148,40 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 120.0),
           
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: EdgeInsets.symmetric(
+              horizontal: MediaQuery.of(context).size.width * 0.06,
+            ),
             child: SizedBox(
               width: double.infinity,
+              height: MediaQuery.of(context).size.height * 0.065,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const CreateCardScreen(),
-                    ),
-                  );
+                  if (AuthUtils.checkGuestAccess(context, 'create_card_screen')) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CreateCardScreen(),
+                      ),
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFD6A067),
                   foregroundColor: Colors.black,
-                  padding: const EdgeInsets.symmetric(vertical: 24.0),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 ),
-                child: const Text(
-                  'Создай свою уникальную карточку',
-                  style: TextStyle(
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold,
+                child: const FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    'Создай свою уникальную карточку',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: 'Roboto',
+                    ),
                   ),
                 ),
               ),
@@ -142,44 +191,47 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 32.0),
           
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: EdgeInsets.symmetric(
+              horizontal: MediaQuery.of(context).size.width * 0.06,
+            ),
             child: Row(
               children: [
                 Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const QuestsScreen(),
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.085,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (AuthUtils.checkGuestAccess(context, 'quests_screen')) {
+                          showQuestsDialog(context);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFD6A067),
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
                         ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFD6A067),
-                      foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 24.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                       ),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image.asset(
-                          'assets/icons/квесты.png',
-                          height: 42,
-                          color: Colors.black,
-                        ),
-                        const SizedBox(height: 0.0),
-                        const Text(
-                          'Квесты',
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            'assets/icons/квесты.png',
+                            height: 28,
+                            color: Colors.black,
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 4.0),
+                          const Text(
+                            'Квесты',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: 'Roboto',
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -187,40 +239,44 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(width: 20.0),
                 
                 Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const NewsScreen(),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFD6A067),
-                      foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 24.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image.asset(
-                          'assets/icons/новости.png',
-                          height: 42,
-                          color: Colors.black,
-                        ),
-                        const SizedBox(height: 0.0),
-                        const Text(
-                          'Новости',
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.085,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const NewsScreen(),
                           ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFD6A067),
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
                         ),
-                      ],
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            'assets/icons/новости.png',
+                            height: 28,
+                            color: Colors.black,
+                          ),
+                          const SizedBox(height: 4.0),
+                          const Text(
+                            'Новости',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: 'Roboto',
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -229,115 +285,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: Color(0xFFD6A067),
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            if (index != _currentIndex) {
-              setState(() {
-                _currentIndex = index;
-              });
-              switch (index) {
-                case 1:
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const InventoryScreen()),
-                    (route) => false,
-                  );
-                  break;
-                case 2:
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ShopScreen()),
-                    (route) => false,
-                  );
-                  break;
-                case 3:
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ExchangesScreen()),
-                    (route) => false,
-                  );
-                  break;
-              }
-            }
-          },
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          type: BottomNavigationBarType.fixed,
-          selectedItemColor: Colors.black,
-          unselectedItemColor: Colors.black54,
-          showSelectedLabels: true,
-          showUnselectedLabels: true,
-          selectedIconTheme: const IconThemeData(
-            size: 28,
-          ),
-          unselectedIconTheme: const IconThemeData(
-            size: 24,
-          ),
-          selectedLabelStyle: const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.bold, 
-          ),
-          unselectedLabelStyle: const TextStyle(
-            fontSize: 11,
-          ),
-          items: [
-            BottomNavigationBarItem(
-              icon: Image.asset('assets/icons/главная.png', height: 24),
-              activeIcon: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEDD6B0),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Image.asset('assets/icons/главная.png', height: 24),
-              ),
-              label: 'Главная',
-            ),
-            BottomNavigationBarItem(
-              icon: Image.asset('assets/icons/Инвентарь.png', height: 24),
-              activeIcon: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEDD6B0),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Image.asset('assets/icons/Инвентарь.png', height: 24),
-              ),
-              label: 'Инвентарь',
-            ),
-            BottomNavigationBarItem(
-              icon: Image.asset('assets/icons/магазин.png', height: 24),
-              activeIcon: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEDD6B0),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Image.asset('assets/icons/магазин.png', height: 24),
-              ),
-              label: 'Магазин',
-            ),
-            BottomNavigationBarItem(
-              icon: Image.asset('assets/icons/обменник.png', height: 24),
-              activeIcon: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEDD6B0),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Image.asset('assets/icons/обменник.png', height: 24),
-              ),
-              label: 'Обменник',
-            ),
-          ],
-        ),
-      ),
+      bottomNavigationBar: null,
     );
   }
-} 
+}

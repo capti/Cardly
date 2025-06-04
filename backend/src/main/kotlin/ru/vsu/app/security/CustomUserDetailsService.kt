@@ -17,11 +17,6 @@ class CustomUserDetailsService(
         val user = userRepository.findByEmail(username)
             .orElseThrow { UsernameNotFoundException("Пользователь не найден: $username") }
 
-        return User.builder()
-            .username(user.email)
-            .password(user.passwordHash)
-            .authorities(SimpleGrantedAuthority("USER"))
-            .disabled(!user.isEnabled)
-            .build()
+        return CustomUserDetails(user)
     }
 } 

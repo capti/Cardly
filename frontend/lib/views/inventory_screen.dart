@@ -1,53 +1,220 @@
 import 'package:flutter/material.dart';
-import 'home_screen.dart';
-import 'shop_screen.dart';
-import 'exchanges_screen.dart';
 import 'profile_screen.dart';
 import 'card_detail_screen.dart';
+import 'search_players_screen.dart';
+import '../services/api_service.dart';
+import '../models/card_model.dart';
+import '../utils/error_formatter.dart';
+import '../utils/auth_utils.dart';
+import 'package:provider/provider.dart';
+import '../controllers/auth_controller.dart';
+import '../services/analytics_service.dart';
 
 class InventoryScreen extends StatefulWidget {
-  const InventoryScreen({super.key});
+  final bool isOtherUser;
+  final String? playerName;
+  final int? playerId;
+  final String? collectionName;
+  final bool isFromShop;
+
+  const InventoryScreen({
+    super.key,
+    this.isOtherUser = false,
+    this.playerName,
+    this.playerId,
+    this.collectionName,
+    this.isFromShop = false,
+  });
 
   @override
   State<InventoryScreen> createState() => _InventoryScreenState();
 }
 
 class _InventoryScreenState extends State<InventoryScreen> {
-  int _currentIndex = 1;
-  String _sortOption = 'По редкости';
-  bool _showSortOptions = false;
-  
+  late bool _isLoading;
+  late List<CardModel> _cards;
+  late String _error;
+  String _sortBy = 'rarity';
+
+  @override
+  void initState() {
+    super.initState();
+    _isLoading = true;
+    _cards = [];
+    _error = '';
+    AnalyticsService.trackScreenView('inventory_screen');
+    _loadInventory();
+  }
+
+  Future<void> _loadInventory() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      final cards = widget.isOtherUser
+          ? await ApiService().getOtherProfileInventory(widget.playerId ?? 0)
+          : await ApiService().getUserInventory(sortBy: _sortBy);
+      
+      setState(() {
+        _cards = (cards as List).map((item) => CardModel.fromJson(item)).toList();
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _error = ErrorFormatter.formatError(e);
+      });
+    }
+  }
+
+  Future<void> _disassembleCard(CardModel card) async {
+    try {
+      final coinsReceived = await ApiService().disassembleCard(card.card_ID);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Получено монет: $coinsReceived')),
+      );
+      await _loadInventory(); // Перезагружаем инвентарь
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(ErrorFormatter.formatError(e))),
+      );
+    }
+  }
+
+  void _showCardDetails(CardModel card) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CardDetailScreen(
+          card: card,
+          cardIndex: 0,
+          showExchangeButton: false,
+          isFromShop: false,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (Provider.of<AuthController>(context).currentUser?.isGuest ?? false) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!AuthUtils.checkGuestAccess(context, 'inventory_screen')) {
+          Navigator.of(context).pop();
+        }
+      });
+      return Container(); // Возвращаем пустой контейнер, пока происходит проверка
+    }
+
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF4E3),
+      backgroundColor: const Color(0xFFFBF6EF),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFFF4E3),
+        backgroundColor: const Color(0xFFFBF6EF),
         elevation: 0,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 16.0),
-          child: Container(
-            width: 40.0,
-            height: 40.0,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(20.0),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ProfileScreen()),
-                );
-              },
-              child: Image.asset('assets/icons/профиль.png', height: 22),
-            ),
-          ),
-        ),
-        title: null,
-        centerTitle: true,
-        actions: [
+        automaticallyImplyLeading: false,
+        titleSpacing: 0,
+        title: widget.isOtherUser
+            ? Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16.0),
+                    child: Container(
+                      width: 40.0,
+                      height: 40.0,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: const Color(0xFFD6A067),
+                      ),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(20.0),
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Icon(
+                          Icons.arrow_back,
+                          color: Colors.black,
+                          size: 29.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Инвентарь ${widget.playerName}',
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18.0,
+                      fontFamily: 'Jost',
+                    ),
+                  ),
+                ],
+              )
+            : widget.collectionName != null
+                ? Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16.0),
+                        child: Container(
+                          width: 40.0,
+                          height: 40.0,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: const Color(0xFFD6A067),
+                          ),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(20.0),
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Icon(
+                              Icons.arrow_back,
+                              color: Colors.black,
+                              size: 29.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        widget.isFromShop 
+                            ? 'Содержимое ${widget.collectionName}'
+                            : 'Коллекция ${widget.collectionName}',
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18.0,
+                          fontFamily: 'Jost',
+                        ),
+                      ),
+                    ],
+                  )
+                : Padding(
+                    padding: const EdgeInsets.only(left: 16.0),
+                    child: Container(
+                      width: 40.0,
+                      height: 40.0,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(20.0),
+                        onTap: () {
+                          if (AuthUtils.checkGuestAccess(context, 'profile_screen')) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                            );
+                          }
+                        },
+                        child: Image.asset('assets/icons/профиль.png', height: 24),
+                      ),
+                    ),
+                  ),
+        centerTitle: false,
+        actions: widget.isOtherUser ? null : widget.collectionName != null ? null : [
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
             decoration: BoxDecoration(
-              color: const Color(0xFFEDD6B0),
+              color: const Color(0xFFEAD7C3),
               borderRadius: BorderRadius.circular(10.0),
             ),
             child: Row(
@@ -59,6 +226,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                     color: Colors.black,
                     fontSize: 16.0,
                     fontWeight: FontWeight.bold,
+                    fontFamily: 'Jost',
                   ),
                 ),
                 SizedBox(width: 6.0),
@@ -67,1030 +235,66 @@ class _InventoryScreenState extends State<InventoryScreen> {
             ),
           ),
           IconButton(
-            icon: Image.asset('assets/icons/поиск.png', height: 32),
-            onPressed: () {},
+            icon: Image.asset('assets/icons/поиск.png', height: 26),
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (context) => const SearchPlayersModal(),
+              );
+            },
           ),
         ],
       ),
-      body: Stack(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                      child: InkWell(
-                        onTap: () {
-                          setState(() {
-                            _showSortOptions = !_showSortOptions;
-                          });
-                        },
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'Сортировка:',
-                              style: const TextStyle(
-                                fontSize: 14.0,
-                                fontWeight: FontWeight.bold,
-                              ),
+      body: _isLoading 
+          ? const Center(child: CircularProgressIndicator())
+          : _error.isNotEmpty
+              ? Center(child: Text(_error))
+              : _cards.isEmpty
+                  ? const Center(child: Text('Нет карт'))
+                  : GridView.builder(
+                      padding: const EdgeInsets.all(16.0),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 0.75,
+                        crossAxisSpacing: 16.0,
+                        mainAxisSpacing: 16.0,
+                      ),
+                      itemCount: _cards.length,
+                      itemBuilder: (context, index) {
+                        final card = _cards[index];
+                        return GestureDetector(
+                          onTap: () => _showCardDetails(card),
+                          onLongPress: widget.isOtherUser ? null : () => _disassembleCard(card),
+                          child: Card(
+                            child: Column(
+                              children: [
+                                Expanded(
+                                  child: Image.network(
+                                    card.imageURL,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        card.name,
+                                        style: const TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                                      Text('Редкость: ${card.rarity}'),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 6.0),
-                            Icon(
-                              _showSortOptions ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                              color: Colors.black,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              
-              Expanded(
-                child: GridView.builder(
-                  padding: const EdgeInsets.all(12.0),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                    childAspectRatio: 0.7,
-                    crossAxisSpacing: 8.0,
-                    mainAxisSpacing: 12.0,
-                  ),
-                  itemCount: 20,
-                  itemBuilder: (context, index) {
-                    return _buildCardItem(index: index);
-                  },
-                ),
-              ),
-            ],
-          ),
-          
-          if (_showSortOptions)
-            Positioned(
-              top: 50,
-              left: 16,
-              child: Container(
-                padding: const EdgeInsets.all(12.0),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEDD6B0),
-                  borderRadius: BorderRadius.circular(8.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        setState(() {
-                          _sortOption = 'По редкости';
-                          _showSortOptions = false;
-                        });
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Text(
-                          'По редкости',
-                          style: TextStyle(
-                            fontSize: 14.0,
-                            fontWeight: _sortOption == 'По редкости' ? FontWeight.bold : FontWeight.normal,
                           ),
-                        ),
-                      ),
-                    ),
-                    const Divider(),
-                    InkWell(
-                      onTap: () {
-                        setState(() {
-                          _sortOption = 'По коллекциям';
-                          _showSortOptions = false;
-                        });
+                        );
                       },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Text(
-                          'По коллекциям',
-                          style: TextStyle(
-                            fontSize: 14.0,
-                            fontWeight: _sortOption == 'По коллекциям' ? FontWeight.bold : FontWeight.normal,
-                          ),
-                        ),
-                      ),
                     ),
-                  ],
-                ),
-              ),
-            ),
-        ],
-      ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: Color(0xFFD6A067),
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            if (index != _currentIndex) {
-              setState(() {
-                _currentIndex = index;
-              });
-              switch (index) {
-                case 0:
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
-                    (route) => false,
-                  );
-                  break;
-                case 2:
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ShopScreen()),
-                    (route) => false,
-                  );
-                  break;
-                case 3:
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ExchangesScreen()),
-                    (route) => false,
-                  );
-                  break;
-              }
-            }
-          },
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          type: BottomNavigationBarType.fixed,
-          selectedItemColor: Colors.black,
-          unselectedItemColor: Colors.black54,
-          showSelectedLabels: true,
-          showUnselectedLabels: true,
-          selectedIconTheme: const IconThemeData(
-            size: 28,
-          ),
-          unselectedIconTheme: const IconThemeData(
-            size: 24,
-          ),
-          selectedLabelStyle: const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.bold, 
-          ),
-          unselectedLabelStyle: const TextStyle(
-            fontSize: 11,
-          ),
-          items: [
-            BottomNavigationBarItem(
-              icon: Image.asset('assets/icons/главная.png', height: 24),
-              activeIcon: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEDD6B0),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Image.asset('assets/icons/главная.png', height: 24),
-              ),
-              label: 'Главная',
-            ),
-            BottomNavigationBarItem(
-              icon: Image.asset('assets/icons/Инвентарь.png', height: 24),
-              activeIcon: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEDD6B0),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Image.asset('assets/icons/Инвентарь.png', height: 24),
-              ),
-              label: 'Инвентарь',
-            ),
-            BottomNavigationBarItem(
-              icon: Image.asset('assets/icons/магазин.png', height: 24),
-              activeIcon: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEDD6B0),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Image.asset('assets/icons/магазин.png', height: 24),
-              ),
-              label: 'Магазин',
-            ),
-            BottomNavigationBarItem(
-              icon: Image.asset('assets/icons/обменник.png', height: 24),
-              activeIcon: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEDD6B0),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Image.asset('assets/icons/обменник.png', height: 24),
-              ),
-              label: 'Обменник',
-            ),
-          ],
-        ),
-      ),
+      bottomNavigationBar: null,
     );
-  }
-  
-  Widget _buildCardItem({int index = 0}) {
-    if (index == 0) {
-      return InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CardDetailScreen(cardIndex: index),
-            ),
-          );
-        },
-        child: AspectRatio(
-          aspectRatio: 3/4,
-          child: Stack(
-            children: [
-              // Внешняя тонкая черная рамка
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.black, width: 2),
-                ),
-              ),
-              // Прослойка цвета карточки
-              Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFD6A067),
-                    borderRadius: BorderRadius.circular(7),
-                  ),
-                ),
-              ),
-              // Внутренняя тонкая черная рамка
-              Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: Colors.black, width: 2),
-                  ),
-                ),
-              ),
-              // Основная карточка
-              Padding(
-                padding: const EdgeInsets.all(6.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFD6A067),
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        flex: 8,
-                        child: ClipRRect(
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(5.0),
-                            topRight: Radius.circular(5.0),
-                          ),
-                          child: Image.asset(
-                            'assets/images/chameleon.jpg',
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        height: 3,
-                        color: Colors.black,
-                      ),
-                      Container(
-                        height: 32,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFD6A067),
-                          borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(5.0),
-                            bottomRight: Radius.circular(5.0),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: List.generate(4, (i) => Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 1.0),
-                            child: Image.asset(
-                              'assets/icons/редкость.png',
-                              height: 14,
-                            ),
-                          )),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    } else if (index == 1) {
-      return InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CardDetailScreen(cardIndex: index),
-            ),
-          );
-        },
-        child: AspectRatio(
-          aspectRatio: 3/4,
-          child: Stack(
-            children: [
-              // Внешняя тонкая черная рамка
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.black, width: 2),
-                ),
-              ),
-              // Прослойка цвета карточки
-              Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFD6A067),
-                    borderRadius: BorderRadius.circular(7),
-                  ),
-                ),
-              ),
-              // Внутренняя тонкая черная рамка
-              Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: Colors.black, width: 2),
-                  ),
-                ),
-              ),
-              // Основная карточка
-              Padding(
-                padding: const EdgeInsets.all(6.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFD6A067),
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        flex: 8,
-                        child: ClipRRect(
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(5.0),
-                            topRight: Radius.circular(5.0),
-                          ),
-                          child: Image.asset(
-                            'assets/images/kiwi.jpg',
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        height: 3,
-                        color: Colors.black,
-                      ),
-                      Container(
-                        height: 32,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFD6A067),
-                          borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(5.0),
-                            bottomRight: Radius.circular(5.0),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: List.generate(4, (i) => Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 1.0),
-                            child: Image.asset(
-                              'assets/icons/редкость.png',
-                              height: 14,
-                            ),
-                          )),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    } else if (index == 2) {
-      return InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CardDetailScreen(cardIndex: index),
-            ),
-          );
-        },
-        child: AspectRatio(
-          aspectRatio: 3/4,
-          child: Stack(
-            children: [
-              // Внешняя тонкая черная рамка
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.black, width: 2),
-                ),
-              ),
-              // Прослойка цвета карточки
-              Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFFD6A067),
-                    borderRadius: BorderRadius.circular(7),
-                  ),
-                ),
-              ),
-              // Внутренняя тонкая черная рамка
-              Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: Colors.black, width: 2),
-      ),
-                ),
-              ),
-              // Основная карточка
-              Padding(
-                padding: const EdgeInsets.all(6.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFD6A067),
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-      child: Column(
-        children: [
-          Expanded(
-                        flex: 8,
-                        child: ClipRRect(
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(5.0),
-                            topRight: Radius.circular(5.0),
-                          ),
-                          child: Image.asset(
-                            'assets/images/platypus.jpg',
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        height: 3,
-                        color: Colors.black,
-                      ),
-                      Container(
-                        height: 32,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFD6A067),
-                          borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(5.0),
-                            bottomRight: Radius.circular(5.0),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: List.generate(4, (i) => Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 1.0),
-                            child: Image.asset(
-                              'assets/icons/редкость.png',
-                              height: 14,
-                            ),
-                          )),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    } else if (index == 3) {
-      return InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CardDetailScreen(cardIndex: index),
-            ),
-          );
-        },
-        child: AspectRatio(
-          aspectRatio: 3/4,
-          child: Stack(
-            children: [
-              // Внешняя тонкая черная рамка
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.black, width: 2),
-                ),
-              ),
-              // Прослойка цвета карточки
-              Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFD6A067),
-                    borderRadius: BorderRadius.circular(7),
-                  ),
-                ),
-              ),
-              // Внутренняя тонкая черная рамка
-              Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: Colors.black, width: 2),
-                  ),
-                ),
-              ),
-              // Основная карточка
-              Padding(
-                padding: const EdgeInsets.all(6.0),
-            child: Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFD6A067),
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        flex: 8,
-                        child: ClipRRect(
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(5.0),
-                            topRight: Radius.circular(5.0),
-                          ),
-                          child: Image.asset(
-                            'assets/images/pantera.jpg',
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        height: 3,
-                        color: Colors.black,
-                      ),
-                      Container(
-                        height: 32,
-              decoration: const BoxDecoration(
-                          color: Color(0xFFD6A067),
-                borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(5.0),
-                            bottomRight: Radius.circular(5.0),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: List.generate(4, (i) => Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 1.0),
-                            child: Image.asset(
-                              'assets/icons/редкость.png',
-                              height: 14,
-                            ),
-                          )),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-      
-    } else if (index == 4) {
-      return InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CardDetailScreen(cardIndex: index),
-            ),
-          );
-        },
-        child: AspectRatio(
-          aspectRatio: 3/4,
-          child: Stack(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.black, width: 2),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFD6A067),
-                    borderRadius: BorderRadius.circular(7),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: Colors.black, width: 2),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(6.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFD6A067),
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        flex: 8,
-                        child: ClipRRect(
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(5.0),
-                            topRight: Radius.circular(5.0),
-                          ),
-                          child: Image.asset(
-                            'assets/images/white_bear.jpg',
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        height: 3,
-                        color: Colors.black,
-                      ),
-                      Container(
-                        height: 32,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFD6A067),
-                          borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(5.0),
-                            bottomRight: Radius.circular(5.0),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: List.generate(3, (i) => Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 1.0),
-                            child: Image.asset(
-                              'assets/icons/редкость.png',
-                              height: 14,
-                            ),
-                          )),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }else if (index == 5) {
-      return InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CardDetailScreen(cardIndex: index),
-            ),
-          );
-        },
-        child: AspectRatio(
-          aspectRatio: 3/4,
-          child: Stack(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.black, width: 2),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFD6A067),
-                    borderRadius: BorderRadius.circular(7),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: Colors.black, width: 2),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(6.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFD6A067),
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        flex: 8,
-                        child: ClipRRect(
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(5.0),
-                            topRight: Radius.circular(5.0),
-                          ),
-                          child: Image.asset(
-                            'assets/images/camel.jpg',
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        height: 3,
-                        color: Colors.black,
-          ),
-          Container(
-                        height: 32,
-            decoration: const BoxDecoration(
-                          color: Color(0xFFD6A067),
-              borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(5.0),
-                            bottomRight: Radius.circular(5.0),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: List.generate(3, (i) => Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 1.0),
-                            child: Image.asset(
-                              'assets/icons/редкость.png',
-                              height: 14,
-                            ),
-                          )),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    } else if (index == 6) {
-      return InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CardDetailScreen(cardIndex: index),
-            ),
-          );
-        },
-        child: AspectRatio(
-          aspectRatio: 3/4,
-          child: Stack(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.black, width: 2),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFD6A067),
-                    borderRadius: BorderRadius.circular(7),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: Colors.black, width: 2),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(6.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFD6A067),
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        flex: 8,
-                        child: ClipRRect(
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(5.0),
-                            topRight: Radius.circular(5.0),
-                          ),
-                          child: Image.asset(
-                            'assets/images/zebra.jpg',
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        height: 3,
-                        color: Colors.black,
-                      ),
-                      Container(
-                        height: 32,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFD6A067),
-                          borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(5.0),
-                            bottomRight: Radius.circular(5.0),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: List.generate(3, (i) => Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 1.0),
-                            child: Image.asset(
-                              'assets/icons/редкость.png',
-                              height: 14,
-                            ),
-                          )),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    } else if (index == 7) {
-      return InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CardDetailScreen(cardIndex: index),
-            ),
-          );
-        },
-        child: AspectRatio(
-          aspectRatio: 3/4,
-          child: Stack(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.black, width: 2),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFD6A067),
-                    borderRadius: BorderRadius.circular(7),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: Colors.black, width: 2),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(6.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFD6A067),
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        flex: 8,
-                        child: ClipRRect(
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(5.0),
-                            topRight: Radius.circular(5.0),
-                          ),
-                          child: Image.asset(
-                            'assets/images/elephant.jpg',
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        height: 3,
-                        color: Colors.black,
-                      ),
-                      Container(
-                        height: 32,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFD6A067),
-                          borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(5.0),
-                            bottomRight: Radius.circular(5.0),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: List.generate(3, (i) => Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 1.0),
-                            child: Image.asset(
-                              'assets/icons/редкость.png',
-                              height: 14,
-                            ),
-                          )),
-                        ),
-                      ),
-                    ],
-                  ),
-            ),
-          ),
-        ],
-          ),
-        ),
-      );
-    //};// else {
-      //return Container(
-        //decoration: BoxDecoration(
-         // color: const Color(0xFFD6A067),
-        //  borderRadius: BorderRadius.circular(8.0),
-        //  border: Border.all(color: Colors.black, width: 2),
-      //),
-    //);
-    }
-    return const SizedBox.shrink();
   }
 } 

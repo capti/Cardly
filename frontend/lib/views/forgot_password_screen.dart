@@ -69,6 +69,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               fontSize: 32,
               color: Color(0xFFD9A76A),
               fontWeight: FontWeight.bold,
+              fontFamily: 'Jost',
             ),
           ),
           const SizedBox(height: 40),
@@ -86,6 +87,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
+                        fontFamily: 'Jost',
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -99,6 +101,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           borderRadius: BorderRadius.all(Radius.circular(8)),
                         ),
                         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        labelStyle: TextStyle(fontFamily: 'Jost'),
+                        hintStyle: TextStyle(fontFamily: 'Jost'),
                       ),
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
@@ -141,6 +145,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
+                                fontFamily: 'Roboto',
                               ),
                             ),
                       ),

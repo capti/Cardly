@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import 'shop_screen.dart';
 import 'exchanges_screen.dart';
+import 'inventory_screen.dart';
+import 'profile_screen.dart';
+import '../utils/auth_utils.dart';
+import '../services/analytics_service.dart';
 
 class CreateCardScreen extends StatefulWidget {
   const CreateCardScreen({super.key});
@@ -12,32 +16,55 @@ class CreateCardScreen extends StatefulWidget {
 
 class _CreateCardScreenState extends State<CreateCardScreen> {
   bool _showCategories = false;
-  int _currentIndex = 0; // Установлено 0 для главного меню
+  int _currentIndex = 0;
   final List<String> _categories = ['Категория 1', 'Категория 2', 'Категория 3', 'Категория 4'];
-  String _selectedCategory = 'Пример категории';
+  String _selectedCategory = 'Выберите категорию';
+
+  @override
+  void initState() {
+    super.initState();
+    AnalyticsService.trackScreenView('create_card_screen');
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!AuthUtils.checkGuestAccess(context, 'create_card_screen')) {
+        Navigator.of(context).pop();
+      }
+    });
+  }
   
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF4E3), // Бежевый фон
+      backgroundColor: const Color(0xFFFBF6EF),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFFF4E3),
+        backgroundColor: const Color(0xFFFBF6EF),
         elevation: 0,
-        leading: Container(
-          margin: const EdgeInsets.all(8.0),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: Colors.black, width: 2),
-          ),
-          child: const Icon(
-            Icons.person_outline,
-            color: Colors.black,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 16.0),
+          child: Container(
+            width: 40.0,
+            height: 40.0,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(20.0),
+              onTap: () {
+                if (AuthUtils.checkGuestAccess(context, 'profile_screen')) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                  );
+                }
+              },
+              child: Image.asset('assets/icons/профиль.png', height: 22),
+            ),
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.search, color: Colors.black),
-            onPressed: () {},
+            icon: Image.asset(
+              'assets/icons/уведомления.png',
+              height: 36,
+              color: Colors.black,
+            ),
+            onPressed: null,
           ),
         ],
       ),
@@ -73,7 +100,7 @@ class _CreateCardScreenState extends State<CreateCardScreen> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFEDD6B0),
+                        color: const Color(0xFFEAD7C3),
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       child: Row(
@@ -84,12 +111,12 @@ class _CreateCardScreenState extends State<CreateCardScreen> {
                             style: const TextStyle(
                               color: Colors.black,
                               fontSize: 16.0,
+                              fontFamily: 'Jost',
                             ),
                           ),
-                          // Значок стрелки меняется в зависимости от состояния
                           Icon(
-                            _showCategories ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down, 
-                            color: Colors.black
+                            _showCategories ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                            color: Colors.black,
                           ),
                         ],
                       ),
@@ -100,17 +127,13 @@ class _CreateCardScreenState extends State<CreateCardScreen> {
             ),
           ),
           
-          // Основное содержимое - макет карточки или список категорий
+          // Основное содержимое
           Expanded(
             child: Stack(
+              alignment: Alignment.center,
               children: [
-                // Макет карточки всегда показывается в фоне
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: _buildCardTemplate(),
-                ),
+                _buildCardTemplate(),
                 
-                // Список категорий показывается поверх, если _showCategories = true
                 if (_showCategories)
                   Positioned(
                     top: 16.0,
@@ -119,7 +142,7 @@ class _CreateCardScreenState extends State<CreateCardScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(12.0),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFEDD6B0).withOpacity(0.95),
+                        color: const Color(0xFFEAD7C3).withOpacity(0.95),
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       child: Column(
@@ -139,6 +162,7 @@ class _CreateCardScreenState extends State<CreateCardScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
+                  AnalyticsService.trackCardGeneration();
                   // Логика создания карточки
                 },
                 style: ElevatedButton.styleFrom(
@@ -154,146 +178,69 @@ class _CreateCardScreenState extends State<CreateCardScreen> {
                   style: TextStyle(
                     fontSize: 16.0,
                     fontWeight: FontWeight.bold,
+                    fontFamily: 'Roboto',
                   ),
                 ),
               ),
             ),
           ),
-          
-          // Нижняя навигационная панель
-          Container(
-            decoration: const BoxDecoration(
-              color: Color(0xFFD6A067),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(16.0),
-                topRight: Radius.circular(16.0),
-              ),
-            ),
-            child: BottomNavigationBar(
-              currentIndex: _currentIndex,
-              onTap: (index) {
-                if (index != _currentIndex) {
-                  setState(() {
-                    _currentIndex = index;
-                  });
-                  
-                  // Навигация в зависимости от выбранного индекса
-                  switch (index) {
-                    case 0: // Главное меню
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (context) => const HomeScreen()),
-                        (route) => false,
-                      );
-                      break;
-                    case 2: // Магазин
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (context) => const ShopScreen()),
-                        (route) => false,
-                      );
-                      break;
-                    case 3: // Обменчик
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (context) => const ExchangesScreen()),
-                        (route) => false,
-                      );
-                      break;
-                  }
-                }
-              },
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              type: BottomNavigationBarType.fixed,
-              selectedItemColor: Colors.black,
-              unselectedItemColor: Colors.black54,
-              items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.home),
-                  label: 'Главная',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.book),
-                  label: '',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.storefront),
-                  label: '',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.people),
-                  label: '',
-                ),
-              ],
-            ),
-          ),
         ],
       ),
+      bottomNavigationBar: null,
     );
   }
   
-  // Метод построения шаблона карточки
   Widget _buildCardTemplate() {
     return Container(
+      width: 300,
+      height: 450,
       decoration: BoxDecoration(
         color: const Color(0xFFD6A067),
-        borderRadius: BorderRadius.circular(8.0),
-        border: Border.all(color: Colors.black, width: 2),
+        borderRadius: BorderRadius.circular(12.0),
+        border: Border.all(color: Colors.black, width: 3),
       ),
-      child: Column(
-        children: [
-          // Верхняя часть карточки
-          Expanded(
-            flex: 2,
-            child: Container(
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                color: Color(0xFFD6A067),
-                border: Border(
-                  bottom: BorderSide(color: Colors.black, width: 2),
-                ),
-              ),
+      child: Container(
+        margin: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.black, width: 3),
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              flex: 7,
+              child: Container(),
             ),
-          ),
-          
-          // Нижняя часть карточки
-          Expanded(
-            flex: 1,
-            child: Container(
-              width: double.infinity,
-              color: const Color(0xFFD6A067),
+            Container(
+              height: 3,
+              color: Colors.black,
             ),
-          ),
-        ],
+            Expanded(
+              flex: 3,
+              child: Container(),
+            ),
+          ],
+        ),
       ),
     );
   }
   
-  // Метод построения элемента категории
   Widget _buildCategoryItem(String category) {
-    return GestureDetector(
+    return InkWell(
       onTap: () {
         setState(() {
           _selectedCategory = category;
           _showCategories = false;
         });
       },
-      child: Container(
-        width: double.infinity,
-        margin: const EdgeInsets.only(bottom: 8.0),
-        padding: const EdgeInsets.symmetric(vertical: 12.0),
-        decoration: BoxDecoration(
-          color: const Color(0xFFD6A067),
-          borderRadius: BorderRadius.circular(4.0),
-        ),
-        alignment: Alignment.center,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: Text(
           category,
           style: const TextStyle(
             fontSize: 16.0,
-            fontWeight: FontWeight.w500,
             color: Colors.black,
+            fontFamily: 'Jost',
           ),
         ),
       ),
