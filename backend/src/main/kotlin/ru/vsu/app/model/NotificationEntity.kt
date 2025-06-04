@@ -12,7 +12,7 @@ data class NotificationEntity(
     @Column(name = "notification_ID")
     val notificationID: Int = 0,
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     val user: UserEntity,
 

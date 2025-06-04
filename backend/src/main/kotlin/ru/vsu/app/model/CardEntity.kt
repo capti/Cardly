@@ -1,7 +1,9 @@
 package ru.vsu.app.model
 
 import jakarta.persistence.*
+
 import ru.vsu.app.model.UserEntity
+import ru.vsu.app.model.ThemeEntity
 
 @Entity
 @Table(name = "cards")
@@ -30,14 +32,15 @@ data class CardEntity(
     @Column(name = "description")
     val description: String? = null,
 
-    @Column(name = "theme")
-    val theme: String? = null,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "theme_id")
+    val theme: ThemeEntity? = null,
 
     @ManyToOne
     @JoinColumn(name = "collection_id")
     val collection: CollectionEntity? = null,
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "owner_id")
     val owner: UserEntity? = null,
 ) {

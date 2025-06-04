@@ -33,8 +33,7 @@ data class UserEntity(
     @Column(nullable = true, name = "avatar_url")
     var avatarUrl: String? = null,
 
-    // Пример связи "один ко многим" — пользователь может иметь много карточек в инвентаре
-    @OneToMany(targetEntity = CardEntity::class, fetch = FetchType.LAZY)
+    @OneToMany(targetEntity = CardEntity::class, fetch = FetchType.EAGER)
     @JoinTable(
         name = "user_inventory_cards",
         joinColumns = [JoinColumn(name = "user_id")],
@@ -42,7 +41,7 @@ data class UserEntity(
     )
     var inventoryCards: List<CardEntity> = emptyList(),
 
-    @OneToMany(targetEntity = CardEntity::class, fetch = FetchType.LAZY)
+    @OneToMany(targetEntity = CardEntity::class, fetch = FetchType.EAGER)
     @JoinTable(
         name = "user_favorite_cards",
         joinColumns = [JoinColumn(name = "user_id")],
@@ -50,7 +49,7 @@ data class UserEntity(
     )
     var favoriteCards: List<CardEntity> = emptyList(),
 
-    @OneToMany(targetEntity = CardEntity::class, fetch = FetchType.LAZY)
+    @OneToMany(targetEntity = CardEntity::class, fetch = FetchType.EAGER)
     @JoinTable(
         name = "user_onchange_cards",
         joinColumns = [JoinColumn(name = "user_id")],
@@ -58,7 +57,7 @@ data class UserEntity(
     )
     var onChange: List<CardEntity> = emptyList(),
 
-    @OneToMany(targetEntity = AchievementEntity::class, fetch = FetchType.LAZY)
+    @OneToMany(targetEntity = AchievementEntity::class, fetch = FetchType.EAGER)
     @JoinTable(
         name = "user_achievements",
         joinColumns = [JoinColumn(name = "user_id")],
@@ -66,7 +65,7 @@ data class UserEntity(
     )
     var achievements: List<AchievementEntity> = emptyList(),
 
-    @OneToMany(targetEntity = AchievementEntity::class, fetch = FetchType.LAZY)
+    @OneToMany(targetEntity = AchievementEntity::class, fetch = FetchType.EAGER)
     @JoinTable(
         name = "user_favorite_achievements",
         joinColumns = [JoinColumn(name = "user_id")],
@@ -74,11 +73,26 @@ data class UserEntity(
     )
     var favoriteAchievements: List<AchievementEntity> = emptyList(),
 
-    @OneToMany(targetEntity = NotificationEntity::class, fetch = FetchType.LAZY)
+    @OneToMany(targetEntity = NotificationEntity::class, fetch = FetchType.EAGER)
     @JoinTable(
         name = "user_notifications",
         joinColumns = [JoinColumn(name = "user_id")],
         inverseJoinColumns = [JoinColumn(name = "notification_id")]
     )
-    var notifications: List<NotificationEntity> = emptyList()
+    var notifications: List<NotificationEntity> = emptyList(),
+
+    @OneToMany(targetEntity = CollectionEntity::class, fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "user_completed_collections",
+        joinColumns = [JoinColumn(name = "user_id")],
+        inverseJoinColumns = [JoinColumn(name = "collection_id")]
+    )
+    var completedCollections: List<CollectionEntity> = emptyList(),
+
+    @Enumerated(EnumType.STRING)
+    var role: Role = Role.USER
 )
+
+enum class Role {
+    USER, ADMIN
+}

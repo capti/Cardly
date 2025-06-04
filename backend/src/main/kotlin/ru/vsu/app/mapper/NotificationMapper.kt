@@ -6,11 +6,13 @@ import ru.vsu.app.model.NotificationEntity
 
 @Component
 class NotificationMapper {
-    fun toDto(entity: NotificationEntity): NotificationDto = NotificationDto(
-        notificationID = entity.notificationID,
-        userID = entity.user.userId,
-        message = entity.message,
-        notificationDateTime = entity.notificationDateTime,
-        links = entity.links.takeIf { it.isNotEmpty() }
-    )
+    fun toDto(entity: NotificationEntity): NotificationDto {
+        return NotificationDto(
+            notificationID = entity.notificationID,
+            userID = entity.user.userId,
+            message = entity.message,
+            notificationDateTime = entity.notificationDateTime,
+            links = entity.links.takeIf { it.isNotEmpty() }
+        )
+    }
 }

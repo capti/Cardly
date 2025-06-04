@@ -97,25 +97,25 @@ class AuthController(
         value = ["/auth/check"],
         produces = ["application/json"]
     )
-    fun authCheckGet(): ResponseEntity<Any> {
-        authMetrics.authCheckAttempt()
-        val startTime = System.currentTimeMillis()
+        fun authCheckGet(): ResponseEntity<Any> {
+            authMetrics.authCheckAttempt()
+            val startTime = System.currentTimeMillis()
 
-        val user = authService.getCurrentUser()
-        val response: ResponseEntity<Any> = if (user != null) {
-            authMetrics.authCheckAuthorized()
-            ResponseEntity.ok(user)
-        } else {
-            authMetrics.authCheckUnauthorized()
-            ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(AuthCheckGet401Response(false, "Пользователь не авторизован"))
+            val user = authService.getCurrentUser()
+            val response: ResponseEntity<Any> = if (user != null) {
+                authMetrics.authCheckAuthorized()
+                ResponseEntity.ok(user)
+            } else {
+                authMetrics.authCheckUnauthorized()
+                ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(AuthCheckGet401Response(false, "Пользователь не авторизован"))
+            }
+
+            val durationMs = System.currentTimeMillis() - startTime
+            authMetrics.authCheckDuration(durationMs)
+
+            return response
         }
-
-        val durationMs = System.currentTimeMillis() - startTime
-        authMetrics.authCheckDuration(durationMs)
-
-        return response
-    }
 
     @Operation(
         summary = "Обновление сессии",
@@ -134,22 +134,22 @@ class AuthController(
         value = ["/auth/refresh"],
         produces = ["application/json"]
     )
-    fun authRefreshPost(
-        @Parameter(description = "", required = true)
-        @Valid @RequestBody request: AuthRefreshRequest
-    ): ResponseEntity<Any> {
-        val start = System.currentTimeMillis()
-        authMetrics.refreshAttempt()
+        fun authRefreshPost(
+            @Parameter(description = "", required = true)
+            @Valid @RequestBody request: AuthRefreshRequest
+        ): ResponseEntity<Any> {
+            val start = System.currentTimeMillis()
+            authMetrics.refreshAttempt()
 
-        val result = authService.refreshSession(request)
+            val result = authService.refreshSession(request)
 
-        authMetrics.refreshDuration(System.currentTimeMillis() - start)
+            authMetrics.refreshDuration(System.currentTimeMillis() - start)
 
-        return when (result) {
-            is AuthRefreshToken200Response -> {
-                authMetrics.refreshSuccess()
-                ResponseEntity.ok(result)
-            }
+            return when (result) {
+                is AuthRefreshToken200Response -> {
+                    authMetrics.refreshSuccess()
+                    ResponseEntity.ok(result)
+        }
             is AuthRefreshToken401Response -> {
                 authMetrics.refreshFailure()
                 ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(result)

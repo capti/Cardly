@@ -14,7 +14,7 @@ data class CollectionEntity(
     @Column(nullable = false)
     val name: String,
 
-    @OneToMany(mappedBy = "collection", cascade = [CascadeType.ALL], fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "collection", cascade = [CascadeType.ALL], fetch = FetchType.EAGER, orphanRemoval = true)
     val cards: List<CardEntity> = emptyList(),
 
     @Column(name = "image_url", nullable = false)

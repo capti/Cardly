@@ -8,7 +8,7 @@ import ru.vsu.app.model.UserEntity
 import java.util.Optional
 
 @Repository
-interface UserRepository : JpaRepository<UserEntity, Long> {
+interface UserRepository : JpaRepository<UserEntity, Int> {
     fun findByEmail(email: String): Optional<UserEntity>
     fun findByUsername(username: String): Optional<UserEntity>
     fun findByActivationToken(activationToken: String): Optional<UserEntity>

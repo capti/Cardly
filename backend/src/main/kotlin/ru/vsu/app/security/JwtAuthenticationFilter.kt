@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.stereotype.Component
 import org.springframework.util.AntPathMatcher
@@ -13,10 +12,12 @@ import org.springframework.web.filter.OncePerRequestFilter
 import ru.vsu.app.service.JwtService
 import ru.vsu.app.config.PublicEndpointsConfig
 
+import ru.vsu.app.security.CustomUserDetailsService
+
 @Component
 class JwtAuthenticationFilter(
     private val jwtService: JwtService,
-    private val userDetailsService: UserDetailsService,
+    private val userDetailsService: CustomUserDetailsService,
     private val publicEndpointsConfig: PublicEndpointsConfig
 ) : OncePerRequestFilter() {
 
@@ -38,7 +39,6 @@ class JwtAuthenticationFilter(
         val authHeader = request.getHeader("Authorization")
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response)
-            println("Without authorization")
             return
         }
 
@@ -46,7 +46,6 @@ class JwtAuthenticationFilter(
         val userEmail = jwtService.extractUsername(jwt)
 
         if (SecurityContextHolder.getContext().authentication == null) {
-            println("Authentication = null")
             val userDetails = userDetailsService.loadUserByUsername(userEmail)
 
             if (jwtService.isTokenValid(jwt, userDetails)) {
