@@ -22,6 +22,8 @@ import ru.vsu.app.dto.responses.common.InternalServerError
 
 import ru.vsu.app.model.UserEntity
 
+import ru.vsu.app.repository.UserRepository
+
 import ru.vsu.app.service.InventoryService
 
 import ru.vsu.app.metrics.InventoryMetrics
@@ -67,7 +69,8 @@ import kotlin.collections.Map
 @Tag(name = "Inventory", description = "Операции на странице \"Инвентарь\"")
 class InventoryController(
     private val inventoryService: InventoryService,
-    private val inventoryMetrics: InventoryMetrics
+    private val inventoryMetrics: InventoryMetrics,
+    private val userRepository: UserRepository
 ) {
 
     @Operation(
@@ -88,8 +91,32 @@ class InventoryController(
         value = ["/inventory/card/{card_ID}/favorite-add"],
         produces = ["application/json"]
     )
-    fun inventoryCardCardIDFavoriteAddPost(@Parameter(description = "", required = true) @PathVariable("card_ID") cardID: kotlin.Int): ResponseEntity<Any> {
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+    fun inventoryCardCardIDFavoriteAddPost(
+        @Parameter(hidden = true) @AuthenticationPrincipal user: CustomUserDetails,
+        @Parameter(description = "", required = true) @PathVariable("card_ID") cardID: kotlin.Int
+    ): ResponseEntity<Any> {
+        try {
+            val userEntity = user.getUser()
+            val card = userEntity.inventoryCards.find { it.id == cardID }
+                ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Карта не найдена в инвентаре")
+
+            if (userEntity.favoriteCards.size >= 5) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Достигнут лимит избранных карт (5)")
+            }
+
+            if (userEntity.favoriteCards.any { it.id == cardID }) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Карта уже в избранном")
+            }
+
+            userEntity.favoriteCards = userEntity.favoriteCards + card
+            userRepository.save(userEntity)
+
+            return ResponseEntity.ok().build()
+        } catch (e: Exception) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                InternalServerError("Ошибка при добавлении карты в избранное", e.message ?: "Неизвестная ошибка")
+            )
+        }
     }
 
     @Operation(
@@ -107,8 +134,26 @@ class InventoryController(
         value = ["/inventory/card/{card_ID}/favorite-delete"],
         produces = ["application/json"]
     )
-    fun inventoryCardCardIDFavoriteDeleteDelete(@Parameter(description = "", required = true) @PathVariable("card_ID") cardID: kotlin.Int): ResponseEntity<Any> {
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+    fun inventoryCardCardIDFavoriteDeleteDelete(
+        @Parameter(hidden = true) @AuthenticationPrincipal user: CustomUserDetails,
+        @Parameter(description = "", required = true) @PathVariable("card_ID") cardID: kotlin.Int
+    ): ResponseEntity<Any> {
+        try {
+            val userEntity = user.getUser()
+            
+            if (!userEntity.favoriteCards.any { it.id == cardID }) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Карта не найдена в избранном")
+            }
+
+            userEntity.favoriteCards = userEntity.favoriteCards.filter { it.id != cardID }
+            userRepository.save(userEntity)
+
+            return ResponseEntity.ok().build()
+        } catch (e: Exception) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                InternalServerError("Ошибка при удалении карты из избранного", e.message ?: "Неизвестная ошибка")
+            )
+        }
     }
 
     @Operation(
@@ -126,8 +171,20 @@ class InventoryController(
         value = ["/inventory/card/{card_ID}/favorite"],
         produces = ["application/json"]
     )
-    fun inventoryCardCardIDFavoriteGet(@Parameter(description = "", required = true) @PathVariable("card_ID") cardID: kotlin.Int): ResponseEntity<Any> {
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+    fun inventoryCardCardIDFavoriteGet(
+        @Parameter(hidden = true) @AuthenticationPrincipal user: CustomUserDetails,
+        @Parameter(description = "", required = true) @PathVariable("card_ID") cardID: kotlin.Int
+    ): ResponseEntity<Any> {
+        try {
+            val userEntity = user.getUser()
+            val isFavorite = userEntity.favoriteCards.any { it.id == cardID }
+            
+            return ResponseEntity.ok(InventoryCardCardIDFavoriteGet200Response(isFavorite))
+        } catch (e: Exception) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                InternalServerError("Ошибка при проверке статуса карты", e.message ?: "Неизвестная ошибка")
+            )
+        }
     }
 
     @Operation(
@@ -146,8 +203,20 @@ class InventoryController(
         value = ["/inventory/card/{card_ID}/quantity"],
         produces = ["application/json"]
     )
-    fun inventoryCardCardIDQuantityGet(@Parameter(description = "", required = true) @PathVariable("card_ID") cardID: kotlin.Int): ResponseEntity<Any> {
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+    fun inventoryCardCardIDQuantityGet(
+        @Parameter(hidden = true) @AuthenticationPrincipal user: CustomUserDetails,
+        @Parameter(description = "", required = true) @PathVariable("card_ID") cardID: kotlin.Int
+    ): ResponseEntity<Any> {
+        try {
+            val userEntity = user.getUser()
+            val quantity = userEntity.inventoryCards.count { it.id == cardID }
+            
+            return ResponseEntity.ok(InventoryCardCardIDQuantityGet200Response(quantity))
+        } catch (e: Exception) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                InternalServerError("Ошибка при проверке количества карт", e.message ?: "Неизвестная ошибка")
+            )
+        }
     }
 
     @Operation(
@@ -164,8 +233,24 @@ class InventoryController(
         value = ["/inventory/card/{card_ID}/trade-cancel"],
         produces = ["application/json"]
     )
-    fun inventoryCardCardIDTradeCancelPost(@Parameter(description = "", required = true) @PathVariable("card_ID") cardID: kotlin.Int): ResponseEntity<Any> {
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+    fun inventoryCardCardIDTradeCancelPost(
+        @Parameter(hidden = true) @AuthenticationPrincipal user: CustomUserDetails,
+        @Parameter(description = "", required = true) @PathVariable("card_ID") cardID: kotlin.Int
+    ): ResponseEntity<Any> {
+        try {
+            val userEntity = user.getUser()
+            val card = userEntity.onChange.find { it.id == cardID }
+                ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Карта не найдена в разделе 'На обмен'")
+
+            userEntity.onChange = userEntity.onChange.filter { it.id != cardID }
+            userRepository.save(userEntity)
+
+            return ResponseEntity.ok(InventoryCardCardIDTradeCancelPost200Response("true"))
+        } catch (e: Exception) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                InternalServerError("Ошибка при снятии карты с обмена", e.message ?: "Неизвестная ошибка")
+            )
+        }
     }
 
     @Operation(
@@ -184,8 +269,20 @@ class InventoryController(
         value = ["/inventory/card/{card_ID}/trade-status"],
         produces = ["application/json"]
     )
-    fun inventoryCardCardIDTradeStatusGet(@Parameter(description = "", required = true) @PathVariable("card_ID") cardID: kotlin.Int): ResponseEntity<Any> {
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+    fun inventoryCardCardIDTradeStatusGet(
+        @Parameter(hidden = true) @AuthenticationPrincipal user: CustomUserDetails,
+        @Parameter(description = "", required = true) @PathVariable("card_ID") cardID: kotlin.Int
+    ): ResponseEntity<Any> {
+        try {
+            val userEntity = user.getUser()
+            val isOnTrade = userEntity.onChange.any { it.id == cardID }
+            
+            return ResponseEntity.ok(InventoryCardCardIDTradeStatusGet200Response(isOnTrade))
+        } catch (e: Exception) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                InternalServerError("Ошибка при проверке статуса обмена карты", e.message ?: "Неизвестная ошибка")
+            )
+        }
     }
 
     @Operation(
@@ -206,8 +303,37 @@ class InventoryController(
         produces = ["application/json"],
         consumes = ["application/json"]
     )
-    fun inventoryDestroyPost(@Parameter(description = "", required = true) @Valid @RequestBody inventoryDestroyPostRequest: InventoryDestroyPostRequest): ResponseEntity<Any> {
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+    fun inventoryDestroyPost(
+        @Parameter(hidden = true) @AuthenticationPrincipal user: CustomUserDetails,
+        @Parameter(description = "", required = true) @Valid @RequestBody inventoryDestroyPostRequest: InventoryDestroyPostRequest
+    ): ResponseEntity<Any> {
+        try {
+            val userEntity = user.getUser()
+            val cardId = inventoryDestroyPostRequest.cardID
+            
+            val cardCount = userEntity.inventoryCards.count { it.id == cardId }
+            if (cardCount < 2) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Недостаточно экземпляров карты для разбора")
+            }
+
+            val card = userEntity.inventoryCards.find { it.id == cardId }
+                ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Карта не найдена в инвентаре")
+
+            // Remove one instance of the card
+            userEntity.inventoryCards = userEntity.inventoryCards.filter { it.id != cardId }.toMutableList().apply {
+                addAll(userEntity.inventoryCards.filter { it.id == cardId }.drop(1))
+            }
+
+            // Add card value to user's balance
+            userEntity.balance += card.disassemblePrice
+            userRepository.save(userEntity)
+
+            return ResponseEntity.ok(InventoryDestroyPost200Response(card.disassemblePrice))
+        } catch (e: Exception) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                InternalServerError("Ошибка при разборе карты", e.message ?: "Неизвестная ошибка")
+            )
+        }
     }
 
     @Operation(
@@ -226,8 +352,19 @@ class InventoryController(
         value = ["/inventory/favorites/count"],
         produces = ["application/json"]
     )
-    fun inventoryFavoritesCountGet(): ResponseEntity<Any> {
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+    fun inventoryFavoritesCountGet(
+        @Parameter(hidden = true) @AuthenticationPrincipal user: CustomUserDetails
+    ): ResponseEntity<Any> {
+        try {
+            val userEntity = user.getUser()
+            val count = userEntity.favoriteCards.size
+            
+            return ResponseEntity.ok(InventoryFavoritesCountGet200Response(count))
+        } catch (e: Exception) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                InternalServerError("Ошибка при получении количества избранных карт", e.message ?: "Неизвестная ошибка")
+            )
+        }
     }
 
     @Operation(
@@ -316,7 +453,34 @@ class InventoryController(
         produces = ["application/json"],
         consumes = ["application/json"]
     )
-    fun inventoryPutOnTradePost(@Parameter(description = "", required = true) @Valid @RequestBody inventoryDestroyPostRequest: InventoryDestroyPostRequest): ResponseEntity<Any> {
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+    fun inventoryPutOnTradePost(
+        @Parameter(hidden = true) @AuthenticationPrincipal user: CustomUserDetails,
+        @Parameter(description = "", required = true) @Valid @RequestBody inventoryDestroyPostRequest: InventoryDestroyPostRequest
+    ): ResponseEntity<Any> {
+        try {
+            val userEntity = user.getUser()
+            val cardId = inventoryDestroyPostRequest.cardID
+            
+            val cardCount = userEntity.inventoryCards.count { it.id == cardId }
+            if (cardCount < 2) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Недостаточно экземпляров карты для обмена")
+            }
+
+            if (userEntity.onChange.any { it.id == cardId }) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Карта уже выставлена на обмен")
+            }
+
+            val card = userEntity.inventoryCards.find { it.id == cardId }
+                ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Карта не найдена в инвентаре")
+
+            userEntity.onChange = userEntity.onChange + card
+            userRepository.save(userEntity)
+
+            return ResponseEntity.ok(OtherProfileCardCardIDInitiateTradePost200Response("true"))
+        } catch (e: Exception) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                InternalServerError("Ошибка при выставлении карты на обмен", e.message ?: "Неизвестная ошибка")
+            )
+        }
     }
 }
