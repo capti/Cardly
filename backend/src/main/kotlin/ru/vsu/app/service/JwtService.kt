@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.io.Decoders
+import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.userdetails.UserDetails
@@ -22,6 +23,16 @@ class JwtService {
 
     fun extractUsername(token: String): String {
         return extractClaim(token) { obj: Claims -> obj.subject }
+    }
+
+    fun extractUsernameIgnoreExpiration(token: String): String? {
+        return try {
+            extractClaim(token) { it.subject }
+        } catch (ex: ExpiredJwtException) {
+            ex.claims.subject // достаём email из протухшего токена
+        } catch (ex: Exception) {
+            null
+        }
     }
 
     fun <T> extractClaim(token: String, claimsResolver: (Claims) -> T): T {
@@ -49,7 +60,7 @@ class JwtService {
         return username == userDetails.username && !isTokenExpired(token)
     }
 
-    private fun isTokenExpired(token: String): Boolean {
+    fun isTokenExpired(token: String): Boolean {
         return extractExpiration(token).before(Date())
     }
 
@@ -66,8 +77,40 @@ class JwtService {
             .body
     }
 
+    fun generatePasswordResetToken(email: String, code: String): String {
+        val now = Date()
+        val expiration = Date(now.time + 24 * 60 * 60 * 1000) // 24 часа
+
+        return Jwts.builder()
+            .setSubject(email)
+            .claim("code", code)
+            .setIssuedAt(now)
+            .setExpiration(expiration)
+            .signWith(SignatureAlgorithm.HS256, secretKey)
+            .compact()
+    }
+
+    fun parseResetToken(token: String): ResetTokenPayload {
+        val claims = Jwts.parserBuilder()
+            .setSigningKey(secretKey)
+            .build()
+            .parseClaimsJws(token)
+            .body
+
+        return ResetTokenPayload(
+            email = claims.subject,
+            code = claims["code"] as String
+        )
+    }
+
+
     private fun getSigningKey(): Key {
         val keyBytes = Decoders.BASE64.decode(secretKey)
         return Keys.hmacShaKeyFor(keyBytes)
     }
 } 
+
+data class ResetTokenPayload(
+    val email: String,
+    val code: String
+)

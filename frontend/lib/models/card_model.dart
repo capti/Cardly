@@ -1,51 +1,43 @@
 class CardModel {
-  final int id;
+  final int card_ID;
   final String name;
   final String description;
-  final String imageUrl;
-  final int rarity;
-  final String collection;
-  final String type;
-  final int disassemblePrice;
-  final int quantity;
+  final String imageURL;
+  final String rarity;
+  final bool isInCollection;
+  final DateTime dateObtained;
 
   CardModel({
-    required this.id,
+    required this.card_ID,
     required this.name,
     required this.description,
-    required this.imageUrl,
+    required this.imageURL,
     required this.rarity,
-    required this.collection,
-    required this.type,
-    required this.disassemblePrice,
-    required this.quantity,
+    this.isInCollection = false,
+    required this.dateObtained,
   });
 
   factory CardModel.fromJson(Map<String, dynamic> json) {
     return CardModel(
-      id: json['id'] as int,
-      name: json['name'] as String,
-      description: json['description'] as String,
-      imageUrl: json['imageUrl'] as String,
-      rarity: json['rarity'] as int,
-      collection: json['collection'] as String,
-      type: json['type'] as String,
-      disassemblePrice: json['disassemblePrice'] as int,
-      quantity: json['quantity'] as int? ?? 1,
+      card_ID: json['card_ID'],
+      name: json['name'],
+      description: json['description'],
+      imageURL: json['imageURL'],
+      rarity: json['rarity'],
+      isInCollection: json['isInCollection'] ?? false,
+      dateObtained: DateTime.parse(json['dateObtained']),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      'card_ID': card_ID,
       'name': name,
       'description': description,
-      'imageUrl': imageUrl,
+      'imageURL': imageURL,
       'rarity': rarity,
-      'collection': collection,
-      'type': type,
-      'disassemblePrice': disassemblePrice,
-      'quantity': quantity,
+      'isInCollection': isInCollection,
+      'dateObtained': dateObtained.toIso8601String(),
     };
   }
 } 

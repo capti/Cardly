@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 import 'home_screen.dart';
 import 'shop_screen.dart';
 import 'exchanges_screen.dart';
 import 'inventory_screen.dart';
 import 'profile_screen.dart';
+import '../utils/auth_utils.dart';
+import '../main.dart';
+import '../services/analytics_service.dart';
 
 class CreateExchangeScreen extends StatefulWidget {
   final ExchangeItem? initialExchangeItem;
@@ -24,9 +28,16 @@ class _CreateExchangeScreenState extends State<CreateExchangeScreen> {
   Map<String, dynamic>? selectedTopCard;
   List<Map<String, dynamic>> selectedExchangeCards = [];
 
+
   @override
   void initState() {
     super.initState();
+    AnalyticsService.trackScreenView('create_exchange_screen');
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!AuthUtils.checkGuestAccess(context, 'create_exchange_screen')) {
+        Navigator.of(context).pop();
+      }
+    });
     if (widget.initialExchangeItem != null && widget.initialExchangeItem!.otherUserOfferedCardIds.isNotEmpty) {
       selectedTopCard = {
         'id': widget.initialExchangeItem!.otherUserOfferedCardIds[0],
@@ -50,7 +61,7 @@ class _CreateExchangeScreenState extends State<CreateExchangeScreen> {
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          backgroundColor: const Color(0xFFFFF4E3),
+          backgroundColor: const Color(0xFFFBF6EF),
           child: Container(
             width: MediaQuery.of(context).size.width * 0.9,
             height: MediaQuery.of(context).size.height * 0.8,
@@ -141,6 +152,9 @@ class _CreateExchangeScreenState extends State<CreateExchangeScreen> {
   }
 
   void _showTopCardSelectionDialog() {
+    if (!AuthUtils.checkGuestAccess(context, 'create_exchange_screen')) {
+      return;
+    }
     _showCardSelectionDialog(
       title: 'Выберите вашу карту',
       onCardSelected: (card) {
@@ -154,6 +168,9 @@ class _CreateExchangeScreenState extends State<CreateExchangeScreen> {
   }
 
   void _showLargeCardSelectionDialog() {
+    if (!AuthUtils.checkGuestAccess(context, 'create_exchange_screen')) {
+      return;
+    }
     _showCardSelectionDialog(
       title: 'Выберите карту для обмена',
       onCardSelected: (card) {
@@ -171,7 +188,7 @@ class _CreateExchangeScreenState extends State<CreateExchangeScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFFBF6EF),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFFF4E3),
+        backgroundColor: const Color(0xFFFBF6EF),
         elevation: 0,
         leading: Container(
           margin: const EdgeInsets.all(8.0),
@@ -255,83 +272,102 @@ class _CreateExchangeScreenState extends State<CreateExchangeScreen> {
             child: _buildExchangeCardsRow(),
           ),
           // Кнопка создания обмена
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              onPressed: selectedTopCard == null || ((widget.initialExchangeItem != null || widget.cardId == null) && selectedExchangeCards.isEmpty)
-                  ? null // Делаем кнопку неактивной
-                  : () {
-                      // Если мы дошли до сюда, значит, все необходимые проверки пройдены.
-                      // Показываем успешное сообщение и готовимся к переходу.
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.only(
+              left: MediaQuery.of(context).size.width * 0.06,
+              right: MediaQuery.of(context).size.width * 0.06,
+              bottom: MediaQuery.of(context).padding.bottom + 12.0,
+              top: 4.0,
+            ),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final screenWidth = MediaQuery.of(context).size.width;
+                final screenHeight = MediaQuery.of(context).size.height;
+                final diagonal = math.sqrt(screenWidth * screenWidth + screenHeight * screenHeight);
+                final buttonHeight = diagonal * 0.065;
 
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Container(
-                            width: 367,
-                            height: 61,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFEAD7C3),
-                              borderRadius: BorderRadius.circular(15.0),
-                            ),
-                            padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-                            child: Center(
-                              child: Text(
-                                widget.initialExchangeItem != null ? 'Обмен успешно отправлен' : 'Обмен создан',
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 18.0,
-                                  fontWeight: FontWeight.w500,
-                                  fontFamily: 'Jost',
+                return SizedBox(
+                  height: buttonHeight,
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: selectedTopCard == null || ((widget.initialExchangeItem != null || widget.cardId == null) && selectedExchangeCards.isEmpty)
+                        ? null
+                        : () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Container(
+                                  width: 367,
+                                  height: 61,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFEAD7C3),
+                                    borderRadius: BorderRadius.circular(15.0),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                                  child: Center(
+                                    child: Text(
+                                      widget.initialExchangeItem != null ? 'Обмен успешно отправлен' : 'Обмен создан',
+                                      style: const TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.w500,
+                                        fontFamily: 'Jost',
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
                                 ),
-                                textAlign: TextAlign.center,
+                                backgroundColor: Colors.transparent,
+                                duration: const Duration(seconds: 2),
+                                behavior: SnackBarBehavior.floating,
+                                margin: EdgeInsets.only(
+                                  bottom: MediaQuery.of(context).size.height - 200,
+                                  left: 16,
+                                  right: 16,
+                                ),
+                                elevation: 0,
                               ),
-                            ),
-                          ),
-                          backgroundColor: Colors.transparent,
-                          duration: const Duration(seconds: 2),
-                          behavior: SnackBarBehavior.floating,
-                          margin: EdgeInsets.only(
-                            bottom: MediaQuery.of(context).size.height - 200,
-                            left: 16,
-                            right: 16,
-                          ),
-                          elevation: 0,
-                        ),
-                      );
+                            );
 
-                      // Переходим на экран обменов только после успешного показа уведомления
-                      Future.delayed(const Duration(milliseconds: 500), () {
-                         if (context.mounted) {
-                           Navigator.pushAndRemoveUntil(
-                             context,
-                             MaterialPageRoute(
-                               builder: (context) => ExchangesScreen(
-                                 initialTabIndex: widget.initialExchangeItem != null ? 1 : 0,
-                               ),
-                             ),
-                             (route) => false,
-                           );
-                         }
-                       });
-                    },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFD6A067),
-                foregroundColor: Colors.black,
-                minimumSize: const Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                disabledBackgroundColor: const Color(0xFFD6A067).withOpacity(0.7),
-                disabledForegroundColor: Colors.black.withOpacity(0.5),
-              ),
-              child: Text(
-                widget.initialExchangeItem != null ? 'Предложить обмен' : 'Создать обмен',
-                style: const TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Roboto',
-                ),
-              ),
+                            Future.delayed(const Duration(milliseconds: 500), () {
+                               if (context.mounted) {
+                                 Navigator.pushAndRemoveUntil(
+                                   context,
+                                   MaterialPageRoute(
+                                     builder: (context) => MainScreen(
+                                       initialIndex: 3,
+                                       notification: widget.initialExchangeItem != null ? 'Обмен успешно отправлен' : 'Обмен создан',
+                                     ),
+                                   ),
+                                   (route) => false,
+                                 );
+                               }
+                             });
+                          },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFD6A067),
+                      foregroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      disabledBackgroundColor: const Color(0xFFD6A067).withOpacity(0.7),
+                      disabledForegroundColor: Colors.black.withOpacity(0.5),
+                    ),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        widget.initialExchangeItem != null ? 'Предложить обмен' : 'Создать обмен',
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.w500,
+                          fontFamily: 'Roboto',
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
           ),
         ],

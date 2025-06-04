@@ -6,6 +6,9 @@ import 'news_screen.dart';
 import 'quests_screen.dart';
 import 'profile_screen.dart';
 import 'notifications_modal.dart';
+import '../utils/auth_utils.dart';
+import 'package:provider/provider.dart';
+import '../controllers/auth_controller.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -25,12 +28,14 @@ class HomeScreen extends StatelessWidget {
             child: InkWell(
               borderRadius: BorderRadius.circular(20.0),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ProfileScreen()),
-                );
+                if (AuthUtils.checkGuestAccess(context, 'profile_screen')) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                  );
+                }
               },
-              child: Image.asset('assets/icons/профиль.png', height: 22),
+              child: Image.asset('assets/icons/профиль.png', height: 24),
             ),
           ),
         ),
@@ -38,7 +43,7 @@ class HomeScreen extends StatelessWidget {
           IconButton(
             icon: Image.asset(
               'assets/icons/поиск.png',
-              height: 32,
+              height: 26,
               color: Colors.black,
             ),
             onPressed: () {
@@ -53,14 +58,16 @@ class HomeScreen extends StatelessWidget {
           IconButton(
             icon: Image.asset(
               'assets/icons/уведомления.png',
-              height: 36,
+              height: 30,
               color: Colors.black,
             ),
             onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => const NotificationsModal(),
-              );
+              if (AuthUtils.checkGuestAccess(context, 'notifications_screen')) {
+                showDialog(
+                  context: context,
+                  builder: (context) => const NotificationsModal(),
+                );
+              }
             },
           ),
         ],
@@ -141,32 +148,40 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(height: 120.0),
           
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: EdgeInsets.symmetric(
+              horizontal: MediaQuery.of(context).size.width * 0.06,
+            ),
             child: SizedBox(
               width: double.infinity,
+              height: MediaQuery.of(context).size.height * 0.065,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const CreateCardScreen(),
-                    ),
-                  );
+                  if (AuthUtils.checkGuestAccess(context, 'create_card_screen')) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CreateCardScreen(),
+                      ),
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFD6A067),
                   foregroundColor: Colors.black,
-                  padding: const EdgeInsets.symmetric(vertical: 24.0),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 ),
-                child: const Text(
-                  'Создай свою уникальную карточку',
-                  style: TextStyle(
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: 'Roboto',
+                child: const FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    'Создай свою уникальную карточку',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: 'Roboto',
+                    ),
                   ),
                 ),
               ),
@@ -176,40 +191,47 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(height: 32.0),
           
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: EdgeInsets.symmetric(
+              horizontal: MediaQuery.of(context).size.width * 0.06,
+            ),
             child: Row(
               children: [
                 Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      showQuestsDialog(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFD6A067),
-                      foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 24.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.085,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (AuthUtils.checkGuestAccess(context, 'quests_screen')) {
+                          showQuestsDialog(context);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFD6A067),
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                       ),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image.asset(
-                          'assets/icons/квесты.png',
-                          height: 42,
-                          color: Colors.black,
-                        ),
-                        const SizedBox(height: 0.0),
-                        const Text(
-                          'Квесты',
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.w400,
-                            fontFamily: 'Roboto',
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            'assets/icons/квесты.png',
+                            height: 28,
+                            color: Colors.black,
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 4.0),
+                          const Text(
+                            'Квесты',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: 'Roboto',
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -217,41 +239,44 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(width: 20.0),
                 
                 Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const NewsScreen(),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFD6A067),
-                      foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 24.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image.asset(
-                          'assets/icons/новости.png',
-                          height: 42,
-                          color: Colors.black,
-                        ),
-                        const SizedBox(height: 0.0),
-                        const Text(
-                          'Новости',
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.w400,
-                            fontFamily: 'Roboto',
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.085,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const NewsScreen(),
                           ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFD6A067),
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
                         ),
-                      ],
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            'assets/icons/новости.png',
+                            height: 28,
+                            color: Colors.black,
+                          ),
+                          const SizedBox(height: 4.0),
+                          const Text(
+                            'Новости',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: 'Roboto',
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

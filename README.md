@@ -2,6 +2,63 @@
 
  **Cardly** - это сервис для обмена коллекционными карточками и наборами, включая карточки с изображениями животных, пейзажей и т.д.
 
+## Сборка и развертывание
+
+### Требования
+
+#### Для мобильного приложения:
+- Flutter SDK (версия указана в pubspec.yaml)
+- Android Studio
+- JDK 17 или выше
+- Android SDK (для Android сборки)
+
+
+#### Для бэкенда:
+- JDK 17 или выше
+- Kotlin 1.9.25 или выше
+- Docker и Docker Compose
+- Gradle 8.13 или выше
+- Spring Boot 3.4.4 или выше
+
+### Сборка мобильного приложения
+
+1. Перейдите в директорию frontend:
+```bash
+cd frontend
+```
+
+2. Установите зависимости:
+```bash
+flutter pub get
+```
+
+3. Для сборки Android APK:
+```bash
+flutter build apk --release
+```
+APK файл будет находиться в `build/app/outputs/flutter-apk/app-release.apk`
+
+### Развертывание бэкенда
+
+1. Перейдите в директорию backend:
+```bash
+cd backend
+```
+
+2. Запустите с помощью Docker Compose:
+```bash
+docker-compose up --build
+```
+
+### Конфигурация
+
+#### Бэкенд
+- Для изменения порта или других параметров отредактируйте `docker-compose.yml`
+
+#### Мобильное приложение
+- API URL настраивается в `frontend/lib/config/api_config.dart`
+
+
 ---
 
 ## Команда (ТП 5-1)
@@ -72,7 +129,7 @@
 - [Команда 5-4](https://github.com/TP-Jobsy/jobsy-docs/blob/main/%D0%A7%D0%B5%D0%BA%D0%BB%D0%B8%D1%81%D1%82%201%20%D1%8D%D1%82%D0%B0%D0%BF.pdf)
 - [Команда 6-1](https://gitlab.usr0.ru/tailoredtastes/tailoredtastes-documentation/-/tree/master/%D0%9A%D1%80%D0%BE%D1%81%D1%81-%D0%BF%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%BA%D0%B0?ref_type=heads)
 - [Команда 6-2](https://github.com/AlexanderLaptev/Taskbench/blob/main/docs/%D0%A7%D0%B5%D0%BA%D0%BB%D0%B8%D1%81%D1%82%201%20%D1%8D%D1%82%D0%B0%D0%BF.pdf)
-=======
+  
 - [Тестовая документация](https://github.com/capti/Cardly/tree/dev/Documentation/Testing)
 
 

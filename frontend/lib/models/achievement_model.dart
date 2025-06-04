@@ -1,43 +1,47 @@
 class Achievement {
-  final String id;
-  final String title;
+  final int achievement_ID;
+  final String name;
   final String description;
-  final String requirement;
-  final String iconPath;
+  final String imageURL;
+  final int progress;
+  final int maxProgress;
   final bool isCompleted;
-  final double progress;
+  final bool isFavorite;
 
   Achievement({
-    required this.id,
-    required this.title,
+    required this.achievement_ID,
+    required this.name,
     required this.description,
-    required this.requirement,
-    required this.iconPath,
-    this.isCompleted = false,
-    this.progress = 0.0,
+    required this.imageURL,
+    required this.progress,
+    required this.maxProgress,
+    required this.isCompleted,
+    required this.isFavorite,
   });
 
   factory Achievement.fromJson(Map<String, dynamic> json) {
     return Achievement(
-      id: json['id'] as String,
-      title: json['title'] as String,
-      description: json['description'] as String,
-      requirement: json['requirement'] as String,
-      iconPath: json['iconPath'] as String,
-      isCompleted: json['isCompleted'] as bool? ?? false,
-      progress: (json['progress'] as num?)?.toDouble() ?? 0.0,
+      achievement_ID: json['achievement_ID'],
+      name: json['name'],
+      description: json['description'],
+      imageURL: json['imageURL'],
+      progress: json['progress'],
+      maxProgress: json['maxProgress'],
+      isCompleted: json['isCompleted'],
+      isFavorite: json['isFavorite'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'title': title,
+      'achievement_ID': achievement_ID,
+      'name': name,
       'description': description,
-      'requirement': requirement,
-      'iconPath': iconPath,
-      'isCompleted': isCompleted,
+      'imageURL': imageURL,
       'progress': progress,
+      'maxProgress': maxProgress,
+      'isCompleted': isCompleted,
+      'isFavorite': isFavorite,
     };
   }
 }

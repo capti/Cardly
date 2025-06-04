@@ -5,10 +5,12 @@ import '../controllers/auth_controller.dart';
 
 class EmailVerificationScreen extends StatefulWidget {
   final String email;
+  final String tempToken;
   
   const EmailVerificationScreen({
     super.key,
     required this.email,
+    required this.tempToken,
   });
 
   @override
@@ -55,12 +57,12 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     if (_formKey.currentState!.validate()) {
       try {
         await Provider.of<AuthController>(context, listen: false)
-            .verifyEmail(widget.email, _codeController.text.trim(), context: context);
+            .verifyEmail(widget.tempToken, _codeController.text.trim(), context: context);
 
       } catch (e) {
         if (!mounted) return;
 
-        final errorText = e.toString().replaceAll('', '');
+        final errorText = e.toString().replaceAll('Exception: ', '');
         
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -88,8 +90,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       } catch (e) {
         if (!mounted) return;
         
-        // Получаем текст ошибки без "Exception: "
-        final errorText = e.toString().replaceAll('', '');
+        final errorText = e.toString().replaceAll('Exception: ', '');
         
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -106,6 +107,26 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     }
   }
 
+  String _obscureEmail(String email) {
+    final parts = email.split('@');
+    if (parts.length != 2) return email;
+    
+    final name = parts[0];
+    final domain = parts[1];
+    
+    final obscuredName = name.length > 2 
+        ? '${name.substring(0, 2)}${'*' * (name.length - 2)}'
+        : name;
+    
+    return '$obscuredName@$domain';
+  }
+
+  String _formatTimeLeft(int seconds) {
+    final minutes = seconds ~/ 60;
+    final remainingSeconds = seconds % 60;
+    return '$minutes:${remainingSeconds.toString().padLeft(2, '0')}';
+  }
+
   @override
   Widget build(BuildContext context) {
     final authController = Provider.of<AuthController>(context);
@@ -113,10 +134,10 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     final obscuredEmail = _obscureEmail(widget.email);
     
     return Scaffold(
-
+      backgroundColor: const Color(0xFFFBF6EF),
       body: Column(
         children: [
-          const SizedBox(height: 40),
+          const SizedBox(height: 80),
           Image.asset(
             'assets/icons/карты.png',
             height: 80,
@@ -171,7 +192,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       controller: _codeController,
                       decoration: const InputDecoration(
                         filled: true,
-                        fillColor: Color(0xFFEDD6B0),
+                        fillColor: Color(0xFFEAD7C3),
                         border: OutlineInputBorder(
                           borderSide: BorderSide.none,
                           borderRadius: BorderRadius.all(Radius.circular(8)),
@@ -184,6 +205,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Пожалуйста, введите код';
+                        }
+                        if (value.length != 6) {
+                          return 'Код должен состоять из 6 цифр';
                         }
                         return null;
                       },
@@ -245,71 +269,13 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                             ),
                       ),
                     ),
-                    
-                    const SizedBox(height: 16),
-
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () => Navigator.pop(context),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFD6A067),
-                          foregroundColor: Colors.black,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: const Text(
-                          'Назад',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Roboto',
-                          ),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
             ),
           ),
-
-          Container(
-            width: 100,
-            height: 4,
-            margin: const EdgeInsets.only(bottom: 16),
-            decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
         ],
       ),
     );
-  }
-  
-  String _obscureEmail(String email) {
-    if (email.isEmpty) return '';
-    
-    final parts = email.split('@');
-    if (parts.length != 2) return email;
-    
-    String username = parts[0];
-    String domain = parts[1];
-    
-    if (username.length <= 4) {
-      return '*' * username.length + '@' + domain;
-    } else {
-      return username.substring(0, 4) + '*' * (username.length - 4) + '@' + domain;
-    }
-  }
-
-  String _formatTimeLeft(int seconds) {
-    int hours = seconds ~/ 3600;
-    int minutes = (seconds % 3600) ~/ 60;
-    int secs = seconds % 60;
-    return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
   }
 } 

@@ -2,9 +2,70 @@ import 'package:flutter/material.dart';
 import 'news_detail_screen.dart';
 import 'profile_screen.dart';
 import 'search_players_screen.dart';
+import '../services/api_service.dart';
+import '../models/news_model.dart';
+import '../utils/error_formatter.dart';
+import '../services/analytics_service.dart';
 
-class NewsScreen extends StatelessWidget {
+class NewsScreen extends StatefulWidget {
   const NewsScreen({super.key});
+
+  @override
+  _NewsScreenState createState() => _NewsScreenState();
+}
+
+class _NewsScreenState extends State<NewsScreen> {
+  late bool _isLoading;
+  late List<News> _news;
+  late String _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _isLoading = true;
+    _news = [];
+    _error = '';
+    AnalyticsService.trackScreenView('news_screen');
+    _loadNews();
+  }
+
+  Future<void> _loadNews() async {
+    try {
+      setState(() {
+        _isLoading = true;
+        _error = '';
+      });
+
+      final news = await ApiService().getNews();
+      
+      setState(() {
+        _news = news;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _error = ErrorFormatter.formatError(e);
+      });
+    }
+  }
+
+  void _openNewsDetails(News news) {
+    try {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => NewsDetailScreen(
+            news: news,
+          ),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(ErrorFormatter.formatError(e))),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,13 +120,33 @@ class NewsScreen extends StatelessWidget {
             
             // Список новостей
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                itemCount: _newsItems.length,
-                itemBuilder: (context, index) {
-                  return _buildNewsItem(context, _newsItems[index]);
-                },
-              ),
+              child: _isLoading 
+                  ? const Center(child: CircularProgressIndicator())
+                  : _error.isNotEmpty
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(_error),
+                              const SizedBox(height: 16),
+                              ElevatedButton(
+                                onPressed: _loadNews,
+                                child: const Text('Повторить'),
+                              ),
+                            ],
+                          ),
+                        )
+                      : RefreshIndicator(
+                          onRefresh: _loadNews,
+                          child: ListView.builder(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            itemCount: _news.length,
+                            itemBuilder: (context, index) {
+                              final news = _news[index];
+                              return _buildNewsItem(context, news);
+                            },
+                          ),
+                        ),
             ),
           ],
         ),
@@ -74,14 +155,9 @@ class NewsScreen extends StatelessWidget {
   }
   
   // Метод для отображения элемента новости
-  Widget _buildNewsItem(BuildContext context, NewsItem news) {
+  Widget _buildNewsItem(BuildContext context, News news) {
     return GestureDetector(
-      onTap: () {
-        showDialog(
-          context: context,
-          builder: (context) => NewsDetailScreen(news: news),
-        );
-      },
+      onTap: () => _openNewsDetails(news),
       child: Container(
         margin: const EdgeInsets.only(bottom: 16.0),
         padding: const EdgeInsets.all(16.0),
@@ -116,6 +192,11 @@ class NewsScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _formatDate(String dateStr) {
+    final date = DateTime.parse(dateStr);
+    return '${date.day}.${date.month}.${date.year}';
   }
 }
 

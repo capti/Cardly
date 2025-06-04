@@ -82,17 +82,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
           context: context,
         );
         
-        if (!mounted) return;
-        
-        // Переход на экран подтверждения email
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => EmailVerificationScreen(
-              email: _registerEmailController.text.trim(),
-            ),
-          ),
-        );
+        // Убираем навигацию отсюда, так как она теперь происходит в AuthController
       } catch (e) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
@@ -112,7 +102,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
       body: Column(
         children: [
           // Логотип и название
-          const SizedBox(height: 40),
+          const SizedBox(height: 80),
           Image.asset(
             'assets/icons/карты.png',
             height: 80,
@@ -285,31 +275,50 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                           child: ElevatedButton(
                             onPressed: isLoading ? null : _login,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFDBAA76),
-                              foregroundColor: Colors.black,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              backgroundColor: const Color(0xFFD6A067),
+                              minimumSize: const Size(double.infinity, 48),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              disabledBackgroundColor: const Color(0xFFDBAA76).withOpacity(0.7),
                             ),
                             child: isLoading
-                              ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.black,
+                                ? const SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                    ),
+                                  )
+                                : const Text(
+                                    'Войти',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      fontFamily: 'Jost',
+                                    ),
                                   ),
-                                )
-                              : const Text(
-                                  'Вход',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'Roboto',
-                                  ),
-                                ),
+                          ),
+                        ),
+                        
+                        const SizedBox(height: 16),
+                        
+                        Center(
+                          child: TextButton(
+                            onPressed: isLoading ? null : () {
+                              Provider.of<AuthController>(context, listen: false)
+                                .loginAsGuest(context: context);
+                            },
+                            child: const Text(
+                              'Войти как гость',
+                              style: TextStyle(
+                                color: Color.fromARGB(255, 0, 0, 0),
+                                fontSize: 15,
+                                fontFamily: 'Jost',
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
                           ),
                         ),
                       ],

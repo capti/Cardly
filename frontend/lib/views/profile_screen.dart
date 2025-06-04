@@ -6,8 +6,14 @@ import 'inventory_screen.dart';
 import 'settings_screen.dart' show SettingsDialog;
 import 'achievements_screen.dart';
 import 'profile_image_dialog.dart';
+import '../services/api_service.dart';
+import '../utils/error_formatter.dart';
+import '../utils/auth_utils.dart';
+import 'package:provider/provider.dart';
+import '../controllers/auth_controller.dart';
+import '../services/analytics_service.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   final bool isOtherUser;
   final String? playerName;
   final String? playerId;
@@ -26,7 +32,96 @@ class ProfileScreen extends StatelessWidget {
   });
 
   @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  late bool _isLoading;
+  late String _error;
+  late Map<String, dynamic> _userStats;
+  late List<dynamic> _favoriteCards;
+  late List<dynamic> _favoriteAchievements;
+  late List<dynamic> _achievements;
+  late Map<String, dynamic> _settings;
+
+  @override
+  void initState() {
+    super.initState();
+    _isLoading = true;
+    _error = '';
+    _settings = {};
+    AnalyticsService.trackScreenView('profile_screen');
+    _loadProfileData();
+  }
+
+  Future<void> _loadProfileData() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      final profileData = await ApiService().getProfile();
+      final achievements = await ApiService().getAchievements();
+      
+      setState(() {
+        _userStats = profileData['userStats'];
+        _favoriteCards = profileData['favoriteCards'];
+        _favoriteAchievements = profileData['favoriteAchievements'];
+        _achievements = achievements;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _error = ErrorFormatter.formatError(e);
+      });
+    }
+  }
+
+  Future<void> _toggleAchievementFavorite(int achievementId, bool isFavorite) async {
+    try {
+      bool success;
+      if (isFavorite) {
+        success = await ApiService().removeAchievementFromFavorites(achievementId);
+      } else {
+        success = await ApiService().addAchievementToFavorites(achievementId);
+      }
+
+      if (success) {
+        await _loadProfileData();
+      }
+    } catch (e) {
+      // Показать ошибку пользователю
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(ErrorFormatter.formatError(e))),
+      );
+    }
+  }
+
+  Future<void> _updateSettings() async {
+    try {
+      await ApiService().updateProfileSettings(_settings);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Настройки успешно сохранены')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(ErrorFormatter.formatError(e))),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (Provider.of<AuthController>(context).currentUser?.isGuest ?? false) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!AuthUtils.checkGuestAccess(context, 'profile_screen')) {
+          Navigator.of(context).pop();
+        }
+      });
+      return Container(); // Return empty container while checking
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFFFBF6EF),
       appBar: AppBar(
@@ -57,7 +152,7 @@ class ProfileScreen extends StatelessWidget {
           ),
         ),
         actions: [
-          if (isOtherUser)
+          if (widget.isOtherUser)
             Padding(
               padding: const EdgeInsets.only(right: 16.0),
               child: Container(
@@ -69,7 +164,7 @@ class ProfileScreen extends StatelessWidget {
                     showDialog(
                       context: context,
                       barrierColor: Colors.black.withOpacity(0.2),
-                      builder: (context) => ReportDialog(playerName: playerName ?? ''),
+                      builder: (context) => ReportDialog(playerName: widget.playerName ?? ''),
                     );
                   },
                   child: Transform(
@@ -115,7 +210,7 @@ class ProfileScreen extends StatelessWidget {
           
           // Аватар пользователя
           GestureDetector(
-            onTap: isOtherUser ? null : () {
+            onTap: widget.isOtherUser ? null : () {
               showDialog(
                 context: context,
                 barrierColor: Colors.black.withOpacity(0.2),
@@ -144,7 +239,7 @@ class ProfileScreen extends StatelessWidget {
           
           // Имя пользователя
           Text(
-            isOtherUser ? playerName ?? '' : 'Ник',
+            widget.isOtherUser ? widget.playerName ?? '' : 'Ник',
             style: const TextStyle(
               fontSize: 18.0,
               fontWeight: FontWeight.bold,
@@ -156,7 +251,7 @@ class ProfileScreen extends StatelessWidget {
           
           // ID пользователя
           Text(
-            isOtherUser ? playerId ?? '' : '######',
+            widget.isOtherUser ? widget.playerId ?? '' : '######',
             style: const TextStyle(
               fontSize: 16.0,
               color: Colors.black54,
@@ -174,7 +269,7 @@ class ProfileScreen extends StatelessWidget {
               children: List.generate(
                 5, // Always generate 5 cards
                 (index) => _buildCard(
-                  index < favoriteCardIds.length ? favoriteCardIds[index] : -1,
+                  index < widget.favoriteCardIds.length ? widget.favoriteCardIds[index] : -1,
                 ),
               ),
             ),
@@ -215,12 +310,15 @@ class ProfileScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const AchievementsScreen(),
+                            builder: (context) => AchievementsScreen(
+                              isOtherUser: widget.isOtherUser,
+                              userId: widget.isOtherUser ? int.parse(widget.playerId ?? '0') : 0,
+                            ),
                           ),
                         );
                       },
                       child: Text(
-                        isOtherUser ? 'Достижения →' : 'Все достижения →',
+                        widget.isOtherUser ? 'Достижения →' : 'Все достижения →',
                         style: const TextStyle(
                           fontSize: 13.0,
                           fontWeight: FontWeight.normal,
@@ -254,7 +352,7 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      isOtherUser ? (cardsCollected?.toString() ?? '0') : '****',
+                      widget.isOtherUser ? (_userStats['cardsCollected']?.toString() ?? '0') : '****',
                       style: const TextStyle(
                         fontSize: 16.0,
                         fontWeight: FontWeight.bold,
@@ -278,7 +376,7 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      isOtherUser ? (collectionsCollected?.toString() ?? '0') : '***',
+                      widget.isOtherUser ? (_userStats['collectionsCollected']?.toString() ?? '0') : '***',
                       style: const TextStyle(
                         fontSize: 16.0,
                         fontWeight: FontWeight.bold,
@@ -287,7 +385,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                if (isOtherUser) ...[
+                if (widget.isOtherUser) ...[
                   const SizedBox(height: 18.0),
                   // Кнопка посмотреть инвентарь
                   Align(
@@ -299,8 +397,8 @@ class ProfileScreen extends StatelessWidget {
                           MaterialPageRoute(
                             builder: (context) => InventoryScreen(
                               isOtherUser: true,
-                              playerName: playerName ?? '',
-                              playerId: playerId ?? '',
+                              playerName: widget.playerName ?? '',
+                              playerId: widget.playerId != null ? int.tryParse(widget.playerId!) : null,
                             ),
                           ),
                         );

@@ -4,11 +4,17 @@ import 'create_exchange_screen.dart';
 import 'profile_screen.dart';
 import 'search_players_screen.dart';
 import 'exchange_proposal_screen.dart';
+import '../services/api_service.dart';
+import '../models/trade_model.dart';
+import '../utils/error_formatter.dart';
+import '../utils/auth_utils.dart';
+import 'package:provider/provider.dart';
+import '../controllers/auth_controller.dart';
+import '../services/analytics_service.dart';
 
 class ExchangesScreen extends StatefulWidget {
-  final String? notification;
   final int? initialTabIndex;
-  const ExchangesScreen({super.key, this.notification, this.initialTabIndex});
+  const ExchangesScreen({super.key, this.initialTabIndex});
 
   @override
   State<ExchangesScreen> createState() => _ExchangesScreenState();
@@ -18,54 +24,28 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
   late TabController _tabController;
   String _sortOption = 'По дате';
   bool _showSortOptions = false;
-  
+  bool _isLoading = false;
+  String? _error;
+
   @override
   void initState() {
     super.initState();
+    AnalyticsService.trackScreenView('exchanges_screen');
     _tabController = TabController(length: 2, vsync: this, initialIndex: widget.initialTabIndex ?? 0);
-    // Показываем Snackbar, если notification не null
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.notification != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Container(
-              width: 367,
-              height: 61,
-              decoration: BoxDecoration(
-                color: const Color(0xFFEAD7C3),
-                borderRadius: BorderRadius.circular(15.0),
-              ),
-              padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-              child: Center(
-                child: Text(
-                  widget.notification!,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.w500,
-                    fontFamily: 'Jost',
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-            backgroundColor: Colors.transparent,
-            duration: const Duration(seconds: 1),
-            behavior: SnackBarBehavior.floating,
-            margin: EdgeInsets.only(
-              bottom: MediaQuery.of(context).size.height - 200,
-              left: 16,
-              right: 16,
-            ),
-            elevation: 0,
-          ),
-        );
+    _tabController.addListener(_handleTabChange);
+  }
+
+  void _handleTabChange() {
+    if (_tabController.index == 1) { // Мои обмены
+      if (!AuthUtils.checkGuestAccess(context, 'my_exchanges_screen')) {
+        _tabController.animateTo(0); // Возвращаемся на вкладку "Обмен"
       }
-    });
+    }
   }
   
   @override
   void dispose() {
+    _tabController.removeListener(_handleTabChange);
     _tabController.dispose();
     super.dispose();
   }
@@ -77,6 +57,7 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
       appBar: AppBar(
         backgroundColor: const Color(0xFFFBF6EF),
         elevation: 0,
+        automaticallyImplyLeading: false,
         title: Container(
           padding: const EdgeInsets.all(8.0),
         ),
@@ -121,10 +102,13 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
               children: [
                 InkWell(
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const CreateExchangeScreen()),
-                    );
+                    if (AuthUtils.checkGuestAccess(context, 'create_exchange_screen')) {
+                      AnalyticsService.trackExchange();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const CreateExchangeScreen()),
+                      );
+                    }
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 12.0),
@@ -159,7 +143,7 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
                 
                 Container(
                   child: IconButton(
-                    icon: Image.asset('assets/icons/поиск.png', height: 32),
+                    icon: Image.asset('assets/icons/поиск.png', height: 26),
                     onPressed: () {
                       showModalBottomSheet(
                         context: context,
@@ -643,6 +627,69 @@ class _ExchangesScreenState extends State<ExchangesScreen> with SingleTickerProv
         ),
       ],
     );
+  }
+
+  Future<void> _loadTrades() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      // Implement the logic to load trades from the API
+      // This is a placeholder and should be replaced with actual implementation
+      // For example, you can use a Future.delayed to simulate a delay
+      await Future.delayed(Duration(seconds: 2));
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _error = ErrorFormatter.formatError(e);
+      });
+    }
+  }
+
+  Future<void> _acceptTrade(Trade trade) async {
+    try {
+      await ApiService().acceptTrade(trade.trade_ID);
+      AnalyticsService.trackExchangeComplete();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Обмен принят')),
+      );
+      _loadTrades();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(ErrorFormatter.formatError(e))),
+      );
+    }
+  }
+
+  Future<void> _rejectTrade(Trade trade) async {
+    try {
+      await ApiService().rejectTrade(trade.trade_ID);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Обмен отклонен')),
+      );
+      _loadTrades();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(ErrorFormatter.formatError(e))),
+      );
+    }
+  }
+
+  Future<void> _cancelTrade(Trade trade) async {
+    try {
+      await ApiService().cancelTrade(trade.trade_ID);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Обмен отменен')),
+      );
+      _loadTrades();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(ErrorFormatter.formatError(e))),
+      );
+    }
   }
 }
 
