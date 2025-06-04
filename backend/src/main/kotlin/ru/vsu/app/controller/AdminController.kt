@@ -20,6 +20,7 @@ import ru.vsu.app.dto.PackDto
 import ru.vsu.app.dto.responses.common.InternalServerError
 import ru.vsu.app.dto.ReportDto
 import ru.vsu.app.dto.TradeDto
+import ru.vsu.app.dto.ThemeDto
 
 import ru.vsu.app.service.AchievementService
 import ru.vsu.app.service.CardService
@@ -665,7 +666,7 @@ fun adminUsersUserIDUnbanPost(@Parameter(description = "", required = true) @Pat
     produces = ["application/json"],
     consumes = ["application/json"]
 )
-fun adminThemesPost(@Parameter(description = "", required = true) @Valid @RequestBody theme: ThemeDto): ResponseEntity<Any> {
+fun adminThemesPost(@Parameter(description = "", required = true) @Valid @RequestBody theme: ThemeEntity): ResponseEntity<Any> {
     try {
         val createdTheme = themeService.createTheme(theme)
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTheme)
