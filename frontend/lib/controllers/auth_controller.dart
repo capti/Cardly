@@ -256,4 +256,21 @@ class AuthController with ChangeNotifier {
       throw Exception(errorMessage);
     }
   }
+
+  Future<void> loginAsGuest({BuildContext? context}) async {
+    _currentUser = UserModel(
+      email: 'guest@cardly.com',
+      username: 'Гость',
+      isEmailVerified: true,
+      isGuest: true,
+    );
+    
+    notifyListeners();
+
+    if (context != null) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const MainScreen()),
+      );
+    }
+  }
 } 

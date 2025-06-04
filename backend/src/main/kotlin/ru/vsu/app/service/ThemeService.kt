@@ -8,15 +8,15 @@ import ru.vsu.app.dto.ThemeDto
 @Service
 class ThemeService(private val themeRepository: ThemeRepository) {
 
-    fun getAllThemes(): List<ThemeDto> {
+    fun getAllThemes(): List<ThemeEntity> {
         return themeRepository.findAll()
     }
 
-    fun getThemeById(id: Long): ThemeDto? {
+    fun getThemeById(id: Long): ThemeEntity? {
         return themeRepository.findById(id).orElse(null)
     }
 
-    fun createTheme(theme: ThemeDto): ThemeDto {
+    fun createTheme(theme: ThemeEntity): ThemeEntity {
         return try {
             themeRepository.save(theme)
         } catch (e: Exception) {
@@ -24,10 +24,9 @@ class ThemeService(private val themeRepository: ThemeRepository) {
         }
     }
 
-    fun updateTheme(id: Long, theme: ThemeDto): ThemeDto {
+    fun updateTheme(id: Long, theme: ThemeEntity): ThemeEntity {
         val existingTheme = themeRepository.findById(id).orElseThrow { Exception("Theme not found") }
-        )
-        return themeRepository.save(updatedTheme)
+        return themeRepository.save(existingTheme)
     }
 
     fun deleteTheme(id: Long) {

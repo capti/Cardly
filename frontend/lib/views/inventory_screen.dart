@@ -5,6 +5,10 @@ import 'search_players_screen.dart';
 import '../services/api_service.dart';
 import '../models/card_model.dart';
 import '../utils/error_formatter.dart';
+import '../utils/auth_utils.dart';
+import 'package:provider/provider.dart';
+import '../controllers/auth_controller.dart';
+import '../services/analytics_service.dart';
 
 class InventoryScreen extends StatefulWidget {
   final bool isOtherUser;
@@ -38,6 +42,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
     _isLoading = true;
     _cards = [];
     _error = '';
+    AnalyticsService.trackScreenView('inventory_screen');
     _loadInventory();
   }
 
@@ -93,6 +98,15 @@ class _InventoryScreenState extends State<InventoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (Provider.of<AuthController>(context).currentUser?.isGuest ?? false) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!AuthUtils.checkGuestAccess(context, 'inventory_screen')) {
+          Navigator.of(context).pop();
+        }
+      });
+      return Container(); // Возвращаем пустой контейнер, пока происходит проверка
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFFFBF6EF),
       appBar: AppBar(
@@ -184,12 +198,14 @@ class _InventoryScreenState extends State<InventoryScreen> {
                       child: InkWell(
                         borderRadius: BorderRadius.circular(20.0),
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const ProfileScreen()),
-                          );
+                          if (AuthUtils.checkGuestAccess(context, 'profile_screen')) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                            );
+                          }
                         },
-                        child: Image.asset('assets/icons/профиль.png', height: 22),
+                        child: Image.asset('assets/icons/профиль.png', height: 24),
                       ),
                     ),
                   ),
@@ -219,7 +235,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
             ),
           ),
           IconButton(
-            icon: Image.asset('assets/icons/поиск.png', height: 32),
+            icon: Image.asset('assets/icons/поиск.png', height: 26),
             onPressed: () {
               showModalBottomSheet(
                 context: context,

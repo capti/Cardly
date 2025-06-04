@@ -4,6 +4,8 @@ import 'shop_screen.dart';
 import 'exchanges_screen.dart';
 import 'inventory_screen.dart';
 import 'profile_screen.dart';
+import '../utils/auth_utils.dart';
+import '../services/analytics_service.dart';
 
 class CreateCardScreen extends StatefulWidget {
   const CreateCardScreen({super.key});
@@ -17,6 +19,17 @@ class _CreateCardScreenState extends State<CreateCardScreen> {
   int _currentIndex = 0;
   final List<String> _categories = ['Категория 1', 'Категория 2', 'Категория 3', 'Категория 4'];
   String _selectedCategory = 'Выберите категорию';
+
+  @override
+  void initState() {
+    super.initState();
+    AnalyticsService.trackScreenView('create_card_screen');
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!AuthUtils.checkGuestAccess(context, 'create_card_screen')) {
+        Navigator.of(context).pop();
+      }
+    });
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -33,10 +46,12 @@ class _CreateCardScreenState extends State<CreateCardScreen> {
             child: InkWell(
               borderRadius: BorderRadius.circular(20.0),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ProfileScreen()),
-                );
+                if (AuthUtils.checkGuestAccess(context, 'profile_screen')) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                  );
+                }
               },
               child: Image.asset('assets/icons/профиль.png', height: 22),
             ),
@@ -85,7 +100,7 @@ class _CreateCardScreenState extends State<CreateCardScreen> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFEDD6B0),
+                        color: const Color(0xFFEAD7C3),
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       child: Row(
@@ -127,7 +142,7 @@ class _CreateCardScreenState extends State<CreateCardScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(12.0),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFEDD6B0).withOpacity(0.95),
+                        color: const Color(0xFFEAD7C3).withOpacity(0.95),
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       child: Column(
@@ -147,6 +162,7 @@ class _CreateCardScreenState extends State<CreateCardScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
+                  AnalyticsService.trackCardGeneration();
                   // Логика создания карточки
                 },
                 style: ElevatedButton.styleFrom(

@@ -14,12 +14,12 @@ interface ReportService {
 
 @Service
 class ReportServiceImpl : ReportService {
-    fun getAllReports(): List<ReportDto> {
+    override fun getAllReports(): List<ReportDto> {
         // Implementation for getting all reports
         return emptyList()
     }
 
-    fun getReportById(reportID: Int): ReportDto {
+    override fun getReportById(reportID: Int): ReportDto {
         // Implementation for getting a report by ID
         return ReportDto(
             reportID = reportID,
@@ -31,7 +31,7 @@ class ReportServiceImpl : ReportService {
         )
     }
 
-    fun updateReportStatus(reportID: Int, request: AdminReportsReportIDPutRequest): ReportDto {
+    override fun updateReportStatus(reportID: Int, request: AdminReportsReportIDPutRequest): ReportDto {
         // Implementation for updating report status
         return ReportDto(
             reportID = reportID,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'auth_screen.dart';
 
 class AuthorizationDialog extends StatelessWidget {
   const AuthorizationDialog({super.key});
@@ -34,9 +35,12 @@ class AuthorizationDialog extends StatelessWidget {
                 // Button
                 ElevatedButton(
                   onPressed: () {
-                    // TODO: Implement navigation to login screen
-                    // Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
-                    // Navigator.pop(context); // Close dialog after navigation
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                        builder: (context) => const AuthScreen(initialTabIndex: 0),
+                      ),
+                      (route) => false,
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFD6A067), // Match button color
@@ -50,8 +54,8 @@ class AuthorizationDialog extends StatelessWidget {
                     'Перейти на вход',
                     style: TextStyle(
                       fontSize: 18.0, // Match text style
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Roboto',
+                      fontWeight: FontWeight.w500,
+                      fontFamily: 'Jost',
                     ),
                   ),
                 ),
@@ -68,7 +72,7 @@ class AuthorizationDialog extends StatelessWidget {
                 width: 36, // Match size from other dialogs
                 height: 36, // Match size
                 decoration: BoxDecoration(
-                  color: Color(0xFFD6A067), // Match color from other dialogs
+                  color: const Color(0xFFD6A067), // Match color from other dialogs
                   borderRadius: BorderRadius.circular(8), // Match radius
                   border: Border.all(color: Colors.black, width: 2), // Match border
                 ),

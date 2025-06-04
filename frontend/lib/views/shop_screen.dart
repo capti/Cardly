@@ -7,6 +7,10 @@ import '../services/api_service.dart';
 import '../models/shop_model.dart';
 import '../models/card_model.dart';
 import '../utils/error_formatter.dart';
+import '../utils/auth_utils.dart';
+import 'package:provider/provider.dart';
+import '../controllers/auth_controller.dart';
+import '../services/analytics_service.dart';
 
 class ShopScreen extends StatefulWidget {
   const ShopScreen({super.key});
@@ -29,6 +33,7 @@ class _ShopScreenState extends State<ShopScreen> {
     _coinOffers = [];
     _error = '';
     _loadShopData();
+    AnalyticsService.trackScreenView('shop_screen');
   }
 
   Future<void> _loadShopData() async {
@@ -109,12 +114,14 @@ class _ShopScreenState extends State<ShopScreen> {
             child: InkWell(
               borderRadius: BorderRadius.circular(20.0),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ProfileScreen()),
-                );
+                if (AuthUtils.checkGuestAccess(context, 'profile_screen')) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                  );
+                }
               },
-              child: Image.asset('assets/icons/профиль.png', height: 22),
+              child: Image.asset('assets/icons/профиль.png', height: 24),
             ),
           ),
         ),
@@ -145,7 +152,7 @@ class _ShopScreenState extends State<ShopScreen> {
             ),
           ),
           IconButton(
-            icon: Image.asset('assets/icons/поиск.png', height: 32),
+            icon: Image.asset('assets/icons/поиск.png', height: 26),
             onPressed: () {
               showModalBottomSheet(
                 context: context,

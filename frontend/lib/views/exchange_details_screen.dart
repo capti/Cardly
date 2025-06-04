@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'exchanges_screen.dart';
+import '../main.dart';
 
 class ExchangeDetailsScreen extends StatelessWidget {
   final ExchangeItem exchangeItem;
@@ -163,7 +164,8 @@ class ExchangeDetailsScreen extends StatelessWidget {
                                 Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => ExchangesScreen(
+                                    builder: (context) => MainScreen(
+                                      initialIndex: 3,
                                       notification: 'Обмен принят',
                                     ),
                                   ),
@@ -195,7 +197,8 @@ class ExchangeDetailsScreen extends StatelessWidget {
                                 Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => ExchangesScreen(
+                                    builder: (context) => MainScreen(
+                                      initialIndex: 3,
                                       notification: 'Обмен отклонен',
                                     ),
                                   ),
@@ -232,7 +235,8 @@ class ExchangeDetailsScreen extends StatelessWidget {
                             Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ExchangesScreen(
+                                builder: (context) => MainScreen(
+                                  initialIndex: 3,
                                   notification: 'Обмен отклонен',
                                 ),
                               ),

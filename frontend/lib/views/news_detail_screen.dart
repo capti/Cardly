@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/news_model.dart';
 import '../utils/error_formatter.dart';
+import '../services/analytics_service.dart';
 
 // Remove unused imports
 // import 'home_screen.dart';
@@ -19,6 +20,7 @@ class NewsDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AnalyticsService.trackScreenView('news_detail_screen');
     return Scaffold(
       appBar: AppBar(
         title: Text(news.title),

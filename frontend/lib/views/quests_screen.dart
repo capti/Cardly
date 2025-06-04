@@ -6,6 +6,10 @@ import 'news_screen.dart';
 import '../services/api_service.dart';
 import '../models/quest_model.dart';
 import '../utils/error_formatter.dart';
+import '../utils/auth_utils.dart';
+import 'package:provider/provider.dart';
+import '../controllers/auth_controller.dart';
+import '../services/analytics_service.dart';
 
 class QuestsDialogContent extends StatefulWidget {
   const QuestsDialogContent({super.key});
@@ -22,6 +26,7 @@ class _QuestsDialogContentState extends State<QuestsDialogContent> with SingleTi
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this, initialIndex: _selectedTab);
+    AnalyticsService.trackScreenView('quests_dialog_content');
   }
 
   @override
@@ -287,6 +292,15 @@ class _QuestsScreenState extends State<QuestsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (Provider.of<AuthController>(context).currentUser?.isGuest ?? false) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!AuthUtils.checkGuestAccess(context, 'quests_screen')) {
+          Navigator.of(context).pop();
+        }
+      });
+      return Container(); // Return empty container while checking
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Квесты'),
