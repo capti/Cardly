@@ -2,6 +2,63 @@
 
  **Cardly** - это сервис для обмена коллекционными карточками и наборами, включая карточки с изображениями животных, пейзажей и т.д.
 
+## Сборка и развертывание
+
+### Требования
+
+#### Для мобильного приложения:
+- Flutter SDK (версия указана в pubspec.yaml)
+- Android Studio
+- JDK 17 или выше
+- Android SDK (для Android сборки)
+
+
+#### Для бэкенда:
+- JDK 17 или выше
+- Kotlin 1.9.25 или выше
+- Docker и Docker Compose
+- Gradle 8.13 или выше
+- Spring Boot 3.4.4 или выше
+
+### Сборка мобильного приложения
+
+1. Перейдите в директорию frontend:
+```bash
+cd frontend
+```
+
+2. Установите зависимости:
+```bash
+flutter pub get
+```
+
+3. Для сборки Android APK:
+```bash
+flutter build apk --release
+```
+APK файл будет находиться в `build/app/outputs/flutter-apk/app-release.apk`
+
+### Развертывание бэкенда
+
+1. Перейдите в директорию backend:
+```bash
+cd backend
+```
+
+2. Запустите с помощью Docker Compose:
+```bash
+docker-compose up --build
+```
+
+### Конфигурация
+
+#### Бэкенд
+- Для изменения порта или других параметров отредактируйте `docker-compose.yml`
+
+#### Мобильное приложение
+- API URL настраивается в `frontend/lib/config/api_config.dart`
+
+
 ---
 
 ## Команда (ТП 5-1)
